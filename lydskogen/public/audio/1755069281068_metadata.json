@@ -1,0 +1,19 @@
+{
+  "id": "music-1755069281068",
+  "title": "Cristobal",
+  "artist": "Lydskog",
+  "genre": "hiphop",
+  "price": 450,
+  "audioUrl": "/audio/1755069281068_Inspired_by_Cristobal.wav",
+  "description": "Her hører vi musikk inspirert av cristobal som er kjent for sine unike og spesieller musikkstiler",
+  "status": "available",
+  "duration": "40",
+  "bpm": 110,
+  "key": "",
+  "tags": [
+    "playfull",
+    "weird"
+  ],
+  "uploadedAt": "2025-08-13T07:14:41.074Z",
+  "isUploaded": true
+}

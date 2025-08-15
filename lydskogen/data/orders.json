@@ -1,0 +1,27 @@
+{
+  "orders": [
+    {
+      "id": "order-1755070003188-6n7on46kg",
+      "type": "contact",
+      "name": "Daniel Ekaas",
+      "email": "danielekaas@gmail.com",
+      "phone": "41636640",
+      "subject": "InlineGenrePanel - Hip-Hop",
+      "message": "Hei! jeg ønsker en atmosfærisk hip-hop låt som bruker elementer fra 70tallet, med litt boombap preg i seg. ",
+      "formData": {
+        "name": "Daniel Ekaas",
+        "email": "danielekaas@gmail.com",
+        "phone": "41636640",
+        "message": "Hei! jeg ønsker en atmosfærisk hip-hop låt som bruker elementer fra 70tallet, med litt boombap preg i seg. ",
+        "budget": "tilpasset",
+        "genre": "Hip-Hop",
+        "priceOption": "Tilpasset bestilling",
+        "source": "InlineGenrePanel"
+      },
+      "status": "processing",
+      "createdAt": "2025-08-13T07:26:43.188Z",
+      "updatedAt": "2025-08-13T10:10:50.537Z",
+      "source": "InlineGenrePanel"
+    }
+  ]
+}

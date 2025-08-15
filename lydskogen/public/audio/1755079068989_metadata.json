@@ -1,0 +1,19 @@
+{
+  "id": "music-1755079068989",
+  "title": "Submersive",
+  "artist": "Lydskog",
+  "genre": "hiphop",
+  "price": 450,
+  "audioUrl": "/audio/1755079068989_Submersive.mp3",
+  "description": "Energisk og melodisk hip-hop med elementer i orkestral instrumentering",
+  "status": "available",
+  "duration": "",
+  "bpm": 90,
+  "key": "",
+  "tags": [
+    "hip-hop",
+    "ochestral"
+  ],
+  "uploadedAt": "2025-08-13T09:57:48.992Z",
+  "isUploaded": true
+}
