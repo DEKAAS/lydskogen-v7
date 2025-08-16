@@ -1,4 +1,5 @@
 import HeaderHero from '@/components/HeaderHero';
+import PortfolioSection from '@/components/sections/PortfolioSection';
 import VerticalSections from '@/components/VerticalSections';
 import AboutAndContact from '@/components/AboutAndContact';
 import Footer from '@/components/Footer';
@@ -8,6 +9,9 @@ export default function Home() {
     <div className="min-h-screen">
       {/* Header Hero Section - UNCHANGED as requested */}
       <HeaderHero />
+
+      {/* Portfolio Section - Recent Work */}
+      <PortfolioSection />
 
       {/* Vertical Sections Layout */}
       <VerticalSections />

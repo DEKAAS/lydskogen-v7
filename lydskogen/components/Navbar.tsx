@@ -25,6 +25,15 @@ const navSections: NavSection[] = [
     }
   },
   {
+    id: 'portfolio',
+    name: 'Portfolio',
+    colors: {
+      from: '#0f766e',
+      to: '#0d9488',
+      text: '#14b8a6'
+    }
+  },
+  {
     id: 'services',
     name: 'Tjenester',
     colors: {
