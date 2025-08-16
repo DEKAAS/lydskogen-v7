@@ -8,6 +8,7 @@ const WINDOW_MS = 5 * 60 * 1000 // 5 minutes
 const MAX_ATTEMPTS = 10
 
 const handler = NextAuth({
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -33,9 +34,12 @@ const handler = NextAuth({
           }
         }
 
-        // Updated credentials
-        if (credentials.username === "lydskog0307") {
-          const isValid = credentials.password === "41gqn98jXX"
+        // Check environment variables for credentials
+        const adminUsername = process.env.ADMIN_USERNAME || "lydskog0307"
+        const adminPassword = process.env.ADMIN_PASSWORD || "41gqn98jXX"
+        
+        if (credentials.username === adminUsername) {
+          const isValid = credentials.password === adminPassword
           if (isValid) {
             return {
               id: "admin",
