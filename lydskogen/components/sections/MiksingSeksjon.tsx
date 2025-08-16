@@ -5,24 +5,24 @@ import { useState } from 'react';
 
 const mixingPrices = [
   {
-    tracks: 'Ambient',
-    price: 600,
-    description: 'Perfekt for enkle prosjekter'
-  },
-  {
-    tracks: 'Hip-Hop',
-    price: 800,
-    description: 'Ideelt for små produksjoner'
-  },
-  {
-    tracks: 'Lo-fi',
-    price: 500,
-    description: 'Komplett miksing for større prosjekter'
-  },
-  {
-    tracks: 'Soundscape',
+    tracks: '1 spor',
     price: 400,
-    description: 'Cinematisk og atmosfærisk'
+    description: 'Enkelt spor - perfekt for testing'
+  },
+  {
+    tracks: '3 spor',
+    price: 800,
+    description: 'Liten produksjon - ideelt for demo'
+  },
+  {
+    tracks: '5 spor',
+    price: 1200,
+    description: 'Middels produksjon - full låt'
+  },
+  {
+    tracks: '10+ spor',
+    price: 2000,
+    description: 'Stor produksjon - kompleks miksing'
   }
 ];
 

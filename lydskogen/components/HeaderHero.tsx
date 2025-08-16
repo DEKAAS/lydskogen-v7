@@ -145,7 +145,7 @@ export default function HeaderHero() {
           animate={{ opacity: 0.9, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          Hvor lyd blir til opplevelse
+          Velkommen hit!
         </motion.p>
 
         </div>
