@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile } from 'fs/promises'
-import { mkdir } from 'fs/promises'
-import path from 'path'
+import { supabaseAdmin } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,28 +26,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid file type. Please upload audio files only." }, { status: 400 })
     }
 
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-
-    // Create filename with timestamp to avoid conflicts
-    const timestamp = Date.now()
-    const extension = path.extname(file.name)
-    const filename = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
-    
-    // Ensure upload directory exists
-    const uploadDir = path.join(process.cwd(), 'public/audio')
-    try {
-      await mkdir(uploadDir, { recursive: true })
-    } catch (error) {
-      // Directory might already exist
-    }
-
-    const filepath = path.join(uploadDir, filename)
-
-    // Write the file
-    await writeFile(filepath, buffer)
-
-    // Create music item data
     // Normalize genre to canonical slugs
     const normalizeGenre = (g: string) => {
       const lower = (g || '').toLowerCase()
@@ -60,38 +36,58 @@ export async function POST(request: NextRequest) {
     }
 
     const normalizedGenre = normalizeGenre(genre)
+    const timestamp = Date.now()
+    const filename = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
 
-    const musicItem = {
-      id: `music-${timestamp}`,
-      title: title || `Track ${timestamp}`,
-      artist,
-      genre: normalizedGenre,
-      price: parseInt(price) || 450,
-      audioUrl: `/audio/${filename}`,
-      description: description || '',
-      status: status,
-      isNew: false,
-      duration: duration || '',
-      bpm: bpm ? parseInt(bpm) : null,
-      key: key || '',
-      tags: tags
-        ? tags.split(',').map(t => t.trim()).filter(Boolean)
-        : [],
-      uploadedAt: new Date().toISOString(),
-      isUploaded: true
+    // Upload file to Supabase Storage
+    const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+      .from('music-files')
+      .upload(filename, file, {
+        cacheControl: '3600',
+        upsert: false
+      })
+
+    if (uploadError) {
+      console.error('Supabase upload error:', uploadError)
+      return NextResponse.json({ error: "Failed to upload file to storage" }, { status: 500 })
     }
 
-    // Persist metadata alongside audio file for categorization
-    try {
-      const metadataPath = path.join(process.cwd(), 'public/audio', `${timestamp}_metadata.json`)
-      await writeFile(metadataPath, JSON.stringify(musicItem, null, 2))
-    } catch (metaErr) {
-      console.error('Error saving music metadata:', metaErr)
+    // Get public URL for the uploaded file
+    const { data: urlData } = supabaseAdmin.storage
+      .from('music-files')
+      .getPublicUrl(filename)
+
+    // Insert record into database
+    const { data: musicData, error: dbError } = await supabaseAdmin
+      .from('music_tracks')
+      .insert({
+        title: title || `Track ${timestamp}`,
+        artist,
+        genre: normalizedGenre,
+        price: parseFloat(price) || 450,
+        audio_url: urlData.publicUrl,
+        description: description || '',
+        status: status as 'available' | 'sold' | 'pending',
+        is_new: false,
+        duration: duration || '',
+        bpm: bpm ? parseInt(bpm) : null,
+        key: key || '',
+        tags: tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : [],
+        is_uploaded: true
+      })
+      .select()
+      .single()
+
+    if (dbError) {
+      console.error('Database error:', dbError)
+      // Try to clean up uploaded file
+      await supabaseAdmin.storage.from('music-files').remove([filename])
+      return NextResponse.json({ error: "Failed to save music metadata" }, { status: 500 })
     }
 
     return NextResponse.json({ 
       message: "Music file uploaded successfully",
-      music: musicItem
+      music: musicData
     })
 
   } catch (error) {
