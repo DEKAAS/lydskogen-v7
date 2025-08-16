@@ -2,17 +2,14 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   poweredByHeader: false,
   reactStrictMode: true,
   compress: true,
-  experimental: {
-    optimizeCss: true,
-  },
   headers: async () => [
     {
       source: "/(.*)",

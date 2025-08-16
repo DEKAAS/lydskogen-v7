@@ -51,6 +51,8 @@ interface MusicTrack {
   tags: string[]
   uploadedAt: string
   isUploaded: boolean
+  isNew?: boolean
+  status?: 'available' | 'sold' | 'pending'
 }
 
 export default function MusikkproduksjonSeksjon() {
