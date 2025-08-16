@@ -34,7 +34,7 @@ export default function AdminArtwork() {
     if (status === "unauthenticated" || session?.user?.role !== 'admin') {
       router.push('/admin/login')
     }
-    fetch('/api/artwork').then(r => r.json()).then(d => setUploadedList(d.artwork || [])).catch(() => setUploadedList([]))
+    fetch('/api/admin/artwork').then(r => r.json()).then(d => setUploadedList(d.artwork || [])).catch(() => setUploadedList([]))
   }, [status, session, router])
 
   if (status === "loading") {
@@ -47,6 +47,46 @@ export default function AdminArtwork() {
 
   if (!session || session.user?.role !== 'admin') {
     return null
+  }
+
+  const handleDeleteArtwork = async (id: string) => {
+    if (!confirm('Er du sikker på at du vil slette dette artwork? Dette kan ikke angres.')) return
+    
+    try {
+      const response = await fetch(`/api/admin/artwork?id=${id}`, {
+        method: 'DELETE'
+      })
+      
+      if (response.ok) {
+        setUploadedList(list => list.filter(x => x.id !== id))
+        alert('Artwork slettet')
+      } else {
+        alert('Feil ved sletting')
+      }
+    } catch (error) {
+      console.error('Error deleting artwork:', error)
+      alert('Feil ved sletting')
+    }
+  }
+
+  const handleUpdateArtwork = async (id: string, updates: { status?: string, isNew?: boolean }) => {
+    try {
+      const response = await fetch(`/api/admin/artwork?id=${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      })
+      
+      if (response.ok) {
+        const result = await response.json()
+        setUploadedList(list => list.map(x => x.id === id ? result.artwork : x))
+      } else {
+        alert('Feil ved oppdatering')
+      }
+    } catch (error) {
+      console.error('Error updating artwork:', error)
+      alert('Feil ved oppdatering')
+    }
   }
 
   const handleFileUpload = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -247,29 +287,22 @@ export default function AdminArtwork() {
                     <td className="py-2">{(a as any).isNew ? 'Ja' : 'Nei'}</td>
                     <td className="py-2 flex gap-2">
                       <button
-                        className="px-3 py-1 rounded bg-yellow-600/20 text-yellow-300"
-                        onClick={() => {
-                          setUploadedList(list => list.map(x => x.id === a.id ? ({...x, isNew: !(x as any).isNew} as any) : x))
-                        }}
+                        className="px-3 py-1 rounded bg-yellow-600/20 text-yellow-300 hover:bg-yellow-600/30"
+                        onClick={() => handleUpdateArtwork(a.id, { isNew: !(a as any).isNew })}
                       >
-                        Marker nyhet
+                        {(a as any).isNew ? 'Fjern nyhet' : 'Marker nyhet'}
                       </button>
                       <button
-                        className="px-3 py-1 rounded bg-green-600/20 text-green-300"
-                        onClick={() => {
-                          setUploadedList(list => list.map(x => x.id === a.id ? ({...x, status: 'sold'} as any) : x))
-                        }}
+                        className="px-3 py-1 rounded bg-green-600/20 text-green-300 hover:bg-green-600/30"
+                        onClick={() => handleUpdateArtwork(a.id, { status: (a as any).status === 'sold' ? 'available' : 'sold' })}
                       >
-                        Marker solgt
+                        {(a as any).status === 'sold' ? 'Marker tilgjengelig' : 'Marker solgt'}
                       </button>
                       <button
-                        className="px-3 py-1 rounded bg-red-600/20 text-red-300"
-                        onClick={() => {
-                          if (!confirm('Fjern fra listen? (fil slettes ikke)')) return
-                          setUploadedList(list => list.filter(x => x.id !== a.id))
-                        }}
+                        className="px-3 py-1 rounded bg-red-600/20 text-red-300 hover:bg-red-600/30"
+                        onClick={() => handleDeleteArtwork(a.id)}
                       >
-                        Fjern
+                        Slett
                       </button>
                     </td>
                   </tr>
