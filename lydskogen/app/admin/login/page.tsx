@@ -47,7 +47,7 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-base-dark flex items-center justify-center p-4">
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
       <div className="bg-secondary-dark p-8 rounded-lg shadow-lg w-full max-w-md border border-white/10">
         <button
           onClick={() => (window.location.href = '/')}
@@ -69,7 +69,7 @@ export default function AdminLogin() {
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full p-3 bg-base-dark text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
+              className="w-full p-3 bg-black text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
               required
             />
           </div>
@@ -83,7 +83,7 @@ export default function AdminLogin() {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 bg-base-dark text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
+              className="w-full p-3 bg-black text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
               required
             />
           </div>

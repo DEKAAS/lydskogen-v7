@@ -213,7 +213,7 @@ export default function ArtworkGalleriSection() {
     <AnimatePresence>
       {isPopupOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -224,12 +224,13 @@ export default function ArtworkGalleriSection() {
 
           {/* Popup Content */}
           <motion.div
-            className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
+            className="relative w-full max-w-4xl min-h-0 my-8 mx-auto overflow-hidden rounded-2xl bg-black/90 border border-white/10"
+            initial={{ scale: 0.9, opacity: 0, y: 50 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 50 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
+            style={{ maxHeight: 'calc(100vh - 64px)' }}
           >
             {/* Close Button */}
             <button
@@ -257,7 +258,7 @@ export default function ArtworkGalleriSection() {
             </button>
 
             {/* Image */}
-            <div className="relative h-96 md:h-[500px]">
+            <div className="relative h-64 sm:h-80 md:h-96 lg:h-[400px] overflow-hidden">
               <img
                 src={artworks[selectedArtwork].image}
                 alt={artworks[selectedArtwork].title}

@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 interface UploadedMusic {
   id: string
   title: string
+  artist: string
   genre: string
   price: number
   audioUrl: string
@@ -15,7 +16,10 @@ interface UploadedMusic {
   duration: string
   bpm: number | null
   key: string
+  tags: string[]
   uploadedAt: string
+  isUploaded: boolean
+  isNew?: boolean
 }
 
 export default function AdminMusic() {
@@ -43,12 +47,12 @@ export default function AdminMusic() {
       router.push('/admin/login')
     }
     // fetch existing music list
-    fetch('/api/music').then(r => r.json()).then(d => setUploadedList(d.music || [])).catch(() => setUploadedList([]))
+    fetch('/api/admin/music').then(r => r.json()).then(d => setUploadedList(d.music || [])).catch(() => setUploadedList([]))
   }, [status, session, router])
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-base-dark flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-white">Laster...</div>
       </div>
     )
@@ -122,7 +126,7 @@ export default function AdminMusic() {
   }
 
   return (
-    <div className="min-h-screen bg-base-dark p-6">
+    <div className="min-h-screen bg-black p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
@@ -136,7 +140,7 @@ export default function AdminMusic() {
         </div>
 
         {/* Upload Form */}
-        <div className="bg-secondary-dark p-6 rounded-lg mb-8">
+        <div className="bg-gray-900 border border-gray-800 p-6 rounded-lg mb-8">
           <h2 className="text-xl font-semibold text-white mb-6">Last opp ny låt</h2>
           
           <form onSubmit={handleFileUpload} className="space-y-4">
@@ -147,7 +151,7 @@ export default function AdminMusic() {
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  className="w-full p-3 bg-base-dark text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
+                  className="w-full p-3 bg-black text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
                   required
                 />
               </div>
@@ -159,7 +163,7 @@ export default function AdminMusic() {
                   value={formData.artist}
                   onChange={(e) => setFormData({...formData, artist: e.target.value})}
                   placeholder="Lydskog"
-                  className="w-full p-3 bg-base-dark text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
+                  className="w-full p-3 bg-black text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
                 />
               </div>
 
@@ -169,7 +173,7 @@ export default function AdminMusic() {
                   type="number"
                   value={formData.price}
                   onChange={(e) => setFormData({...formData, price: e.target.value})}
-                  className="w-full p-3 bg-base-dark text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
+                  className="w-full p-3 bg-black text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
                   min="0"
                   required
                 />
@@ -180,7 +184,7 @@ export default function AdminMusic() {
                 <select
                   value={formData.genre}
                   onChange={(e) => setFormData({...formData, genre: e.target.value})}
-                  className="w-full p-3 bg-base-dark text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
+                  className="w-full p-3 bg-black text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
                 >
                   <option value="ambient">Ambient</option>
                   <option value="hiphop">Hip-Hop</option>
@@ -194,7 +198,7 @@ export default function AdminMusic() {
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({...formData, status: e.target.value})}
-                  className="w-full p-3 bg-base-dark text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
+                  className="w-full p-3 bg-black text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
                 >
                   <option value="available">Tilgjengelig</option>
                   <option value="sold">Solgt</option>
@@ -209,7 +213,7 @@ export default function AdminMusic() {
                   value={formData.duration}
                   onChange={(e) => setFormData({...formData, duration: e.target.value})}
                   placeholder="3:42"
-                  className="w-full p-3 bg-base-dark text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
+                  className="w-full p-3 bg-black text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
                 />
               </div>
 
@@ -222,7 +226,7 @@ export default function AdminMusic() {
                   placeholder="120"
                   min="60"
                   max="200"
-                  className="w-full p-3 bg-base-dark text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
+                  className="w-full p-3 bg-black text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
                 />
               </div>
 
@@ -233,7 +237,7 @@ export default function AdminMusic() {
                   value={formData.key}
                   onChange={(e) => setFormData({...formData, key: e.target.value})}
                   placeholder="C major, A minor"
-                  className="w-full p-3 bg-base-dark text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
+                  className="w-full p-3 bg-black text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
                 />
               </div>
 
@@ -244,7 +248,7 @@ export default function AdminMusic() {
                   value={formData.tags}
                   onChange={(e) => setFormData({...formData, tags: e.target.value})}
                   placeholder="ambient, fokus, nature"
-                  className="w-full p-3 bg-base-dark text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
+                  className="w-full p-3 bg-black text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
                 />
               </div>
             </div>
@@ -255,7 +259,7 @@ export default function AdminMusic() {
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
                 rows={3}
-                className="w-full p-3 bg-base-dark text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
+                className="w-full p-3 bg-black text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
                 placeholder="Beskriv stemningen, instrumentering, og stilen til låten..."
               />
             </div>
@@ -265,7 +269,7 @@ export default function AdminMusic() {
               <input
                 type="file"
                 accept="audio/*"
-                className="w-full p-3 bg-base-dark text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-accent-green file:text-base-dark hover:file:bg-accent-green/80"
+                className="w-full p-3 bg-black text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-accent-green file:text-base-dark hover:file:bg-accent-green/80"
                 required
               />
             </div>
@@ -307,7 +311,7 @@ export default function AdminMusic() {
         )}
 
         {/* Uploaded tracks management */}
-        <div className="bg-secondary-dark p-6 rounded-lg mt-8">
+        <div className="bg-gray-900 border border-gray-800 p-6 rounded-lg mt-8">
           <h2 className="text-xl font-semibold text-white mb-4">Opplastede låter</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">

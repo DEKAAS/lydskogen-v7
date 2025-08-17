@@ -13,6 +13,8 @@ interface UploadedArtwork {
   description: string
   tags: string[]
   uploadedAt: string
+  isNew?: boolean
+  status?: 'available' | 'sold' | 'pending'
 }
 
 export default function AdminArtwork() {
@@ -39,7 +41,7 @@ export default function AdminArtwork() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-base-dark flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-white">Laster...</div>
       </div>
     )
@@ -143,7 +145,7 @@ export default function AdminArtwork() {
   }
 
   return (
-    <div className="min-h-screen bg-base-dark p-6">
+    <div className="min-h-screen bg-black p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
@@ -157,7 +159,7 @@ export default function AdminArtwork() {
         </div>
 
         {/* Upload Form */}
-        <div className="bg-secondary-dark p-6 rounded-lg mb-8">
+        <div className="bg-gray-900 border border-gray-800 p-6 rounded-lg mb-8">
           <h2 className="text-xl font-semibold text-white mb-6">Last opp nytt artwork</h2>
           
           <form onSubmit={handleFileUpload} className="space-y-4">
@@ -168,7 +170,7 @@ export default function AdminArtwork() {
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  className="w-full p-3 bg-base-dark text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
+                  className="w-full p-3 bg-black text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
                   required
                 />
               </div>
@@ -179,7 +181,7 @@ export default function AdminArtwork() {
                   type="number"
                   value={formData.price}
                   onChange={(e) => setFormData({...formData, price: e.target.value})}
-                  className="w-full p-3 bg-base-dark text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
+                  className="w-full p-3 bg-black text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
                   min="0"
                   required
                 />
@@ -190,7 +192,7 @@ export default function AdminArtwork() {
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({...formData, category: e.target.value})}
-                  className="w-full p-3 bg-base-dark text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
+                  className="w-full p-3 bg-black text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
                 >
                   <option value="gallery">Galleri</option>
                   <option value="custom">Skreddersydd</option>
@@ -204,7 +206,7 @@ export default function AdminArtwork() {
                   value={formData.tags}
                   onChange={(e) => setFormData({...formData, tags: e.target.value})}
                   placeholder="natura, abstract, premium"
-                  className="w-full p-3 bg-base-dark text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
+                  className="w-full p-3 bg-black text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
                 />
               </div>
             </div>
@@ -215,7 +217,7 @@ export default function AdminArtwork() {
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
                 rows={3}
-                className="w-full p-3 bg-base-dark text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
+                className="w-full p-3 bg-black text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none"
               />
             </div>
 
@@ -224,7 +226,7 @@ export default function AdminArtwork() {
               <input
                 type="file"
                 accept="image/*"
-                className="w-full p-3 bg-base-dark text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-accent-green file:text-base-dark hover:file:bg-accent-green/80"
+                className="w-full p-3 bg-black text-white rounded border border-gray-600 focus:border-accent-green focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-accent-green file:text-base-dark hover:file:bg-accent-green/80"
                 required
               />
             </div>
@@ -263,7 +265,7 @@ export default function AdminArtwork() {
         )}
 
         {/* Uploaded artwork management */}
-        <div className="bg-secondary-dark p-6 rounded-lg mt-8">
+        <div className="bg-gray-900 border border-gray-800 p-6 rounded-lg mt-8">
           <h2 className="text-xl font-semibold text-white mb-4">Opplastet artwork</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
@@ -283,20 +285,20 @@ export default function AdminArtwork() {
                     <td className="py-2">{a.title}</td>
                     <td className="py-2">{a.category}</td>
                     <td className="py-2">{a.price} kr</td>
-                    <td className="py-2">{(a as any).status || 'available'}</td>
-                    <td className="py-2">{(a as any).isNew ? 'Ja' : 'Nei'}</td>
+                    <td className="py-2">{a.status || 'available'}</td>
+                    <td className="py-2">{a.isNew ? 'Ja' : 'Nei'}</td>
                     <td className="py-2 flex gap-2">
                       <button
                         className="px-3 py-1 rounded bg-yellow-600/20 text-yellow-300 hover:bg-yellow-600/30"
-                        onClick={() => handleUpdateArtwork(a.id, { isNew: !(a as any).isNew })}
+                        onClick={() => handleUpdateArtwork(a.id, { isNew: !a.isNew })}
                       >
-                        {(a as any).isNew ? 'Fjern nyhet' : 'Marker nyhet'}
+                        {a.isNew ? 'Fjern nyhet' : 'Marker nyhet'}
                       </button>
                       <button
                         className="px-3 py-1 rounded bg-green-600/20 text-green-300 hover:bg-green-600/30"
-                        onClick={() => handleUpdateArtwork(a.id, { status: (a as any).status === 'sold' ? 'available' : 'sold' })}
+                        onClick={() => handleUpdateArtwork(a.id, { status: a.status === 'sold' ? 'available' : 'sold' })}
                       >
-                        {(a as any).status === 'sold' ? 'Marker tilgjengelig' : 'Marker solgt'}
+                        {a.status === 'sold' ? 'Marker tilgjengelig' : 'Marker solgt'}
                       </button>
                       <button
                         className="px-3 py-1 rounded bg-red-600/20 text-red-300 hover:bg-red-600/30"

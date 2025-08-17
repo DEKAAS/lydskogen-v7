@@ -133,19 +133,6 @@ export default function MusikkproduksjonSeksjon() {
           >
             <div className="flex items-center justify-center gap-2 mb-3">
               <button
-                onClick={() => setActiveView('custom')}
-                className={`px-4 py-2 rounded-lg font-medium ${activeView === 'custom' ? 'text-black' : 'text-white/85 hover:text-white'}`}
-                style={{
-                  background: activeView === 'custom' 
-                    ? 'linear-gradient(135deg, rgba(219,186,54,1), rgba(219,186,54,0.85))' 
-                    : 'transparent',
-                  border: '1px solid var(--border-light)',
-                  boxShadow: activeView === 'custom' ? '0 6px 16px rgba(0,0,0,0.25)' : 'none'
-                }}
-              >
-                Skreddersy
-              </button>
-              <button
                 onClick={() => setActiveView('ready')}
                 className={`px-4 py-2 rounded-lg font-medium ${activeView === 'ready' ? 'text-black' : 'text-white/85 hover:text-white'}`}
                 style={{
@@ -157,6 +144,19 @@ export default function MusikkproduksjonSeksjon() {
                 }}
               >
                 Ferdig musikk
+              </button>
+              <button
+                onClick={() => setActiveView('custom')}
+                className={`px-4 py-2 rounded-lg font-medium ${activeView === 'custom' ? 'text-black' : 'text-white/85 hover:text-white'}`}
+                style={{
+                  background: activeView === 'custom' 
+                    ? 'linear-gradient(135deg, rgba(219,186,54,1), rgba(219,186,54,0.85))' 
+                    : 'transparent',
+                  border: '1px solid var(--border-light)',
+                  boxShadow: activeView === 'custom' ? '0 6px 16px rgba(0,0,0,0.25)' : 'none'
+                }}
+              >
+                Skreddersy
               </button>
             </div>
 

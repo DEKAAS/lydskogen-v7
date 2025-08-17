@@ -41,7 +41,7 @@ export default function PortfolioSection() {
   const [activeTrack, setActiveTrack] = useState<string | null>(null);
 
   return (
-    <section id="portfolio" className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <section id="portfolio" className="py-20 bg-gradient-to-br from-green-950 via-emerald-900 to-teal-950">
       <div className="container mx-auto px-4">
         {/* Header */}
         <motion.div
@@ -72,7 +72,7 @@ export default function PortfolioSection() {
               className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl border border-gray-700/50 backdrop-blur-sm overflow-hidden"
             >
               {/* Album Art Placeholder */}
-              <div className="aspect-square bg-gradient-to-br from-accent-green/20 to-purple-600/20 relative overflow-hidden">
+              <div className="aspect-square bg-gradient-to-br from-accent-green/20 to-emerald-600/20 relative overflow-hidden">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-6xl font-bold text-white/20">
                     {track.artist.charAt(0)}

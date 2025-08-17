@@ -17,7 +17,7 @@ interface NavSection {
 const navSections: NavSection[] = [
   {
     id: 'hero',
-    name: 'Hjem',
+    name: '🏠',
     colors: {
       from: '#10b981',
       to: '#059669', 
@@ -34,7 +34,7 @@ const navSections: NavSection[] = [
     }
   },
   {
-    id: 'services',
+    id: 'artist',
     name: 'Tjenester',
     colors: {
       from: '#26244F',
@@ -51,24 +51,6 @@ const navSections: NavSection[] = [
       text: '#f87171'
     }
   },
-  {
-    id: 'artist',
-    name: 'Artistside',
-    colors: {
-      from: '#3C2B4F',
-      to: '#5C3D78',
-      text: '#c084fc'
-    }
-  },
-  {
-    id: 'fullpackage',
-    name: 'Helhetlig',
-    colors: {
-      from: '#3C2B4F',
-      to: '#5C3D78',
-      text: '#c084fc'
-    }
-  }
 ];
 
 export default function Navbar() {
@@ -84,7 +66,7 @@ export default function Navbar() {
       setIsScrolled(scrollY > 20);
 
       // Determine active section based on scroll position
-      const sections = ['hero', 'services', 'artwork', 'artist', 'fullpackage', 'about', 'projects'];
+      const sections = ['hero', 'portfolio', 'artist', 'artwork'];
       let currentSection = 'hero';
 
       for (const section of sections) {

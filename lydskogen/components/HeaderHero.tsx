@@ -53,16 +53,13 @@ export default function HeaderHero() {
           transition={{ duration: 0.8, delay: 0.5 }}
         >
           <Link href="/" className="nav-link-small transition-colors duration-300 text-sm" style={{color: 'var(--text-on-dark)'}}>
-            Hjem
+            🏠
           </Link>
-          <Link href="#services" className="nav-link-small transition-colors duration-300 text-sm" style={{color: 'var(--text-on-dark)'}}>
+          <Link href="#artist" className="nav-link-small transition-colors duration-300 text-sm" style={{color: 'var(--text-on-dark)'}}>
             Tjenester
           </Link>
           <Link href="#contact" className="nav-link-small transition-colors duration-300 text-sm" style={{color: 'var(--text-on-dark)'}}>
             Kontakt
-          </Link>
-          <Link href="#about" className="nav-link-small transition-colors duration-300 text-sm" style={{color: 'var(--text-on-dark)'}}>
-            Om oss
           </Link>
           {session?.user?.role === 'admin' ? (
             <Link href="/admin/dashboard" className="nav-link-small transition-colors duration-300 text-sm bg-accent-green/20 px-3 py-1 rounded-full border border-accent-green/30" style={{color: 'var(--accent-green)'}}>
@@ -99,7 +96,7 @@ export default function HeaderHero() {
             <div className="relative z-10">
               <motion.span
                 className="text-transparent bg-clip-text"
-                style={{ backgroundImage: 'linear-gradient(90deg, #0f9d58, #16a34a, #34d399)' }}
+                style={{ backgroundImage: 'linear-gradient(90deg, #059669, #0d9488, #14b8a6)' }}
                 initial={{ opacity: 0, y: 10, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.9, delay: 0.15 }}

@@ -3,6 +3,7 @@ import PortfolioSection from '@/components/sections/PortfolioSection';
 import VerticalSections from '@/components/VerticalSections';
 import AboutAndContact from '@/components/AboutAndContact';
 import Footer from '@/components/Footer';
+import HomeButton from '@/components/HomeButton';
 
 export default function Home() {
   return (
@@ -21,6 +22,9 @@ export default function Home() {
         <AboutAndContact />
         <Footer />
       </div>
+
+      {/* Global Home Button */}
+      <HomeButton />
     </div>
   );
 }

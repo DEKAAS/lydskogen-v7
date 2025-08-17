@@ -29,7 +29,7 @@ export default function AdminDashboard() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-base-dark flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-white">Laster...</div>
       </div>
     )
@@ -44,7 +44,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-base-dark p-6">
+    <div className="min-h-screen bg-black p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
@@ -62,25 +62,25 @@ export default function AdminDashboard() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-secondary-dark p-6 rounded-lg">
+          <div className="bg-gray-900 border border-gray-800 p-6 rounded-lg">
             <h3 className="text-gray-400 text-sm font-medium mb-2">Totale besøk</h3>
             <p className="text-2xl font-bold text-white">{stats.totalVisits.toLocaleString()}</p>
             <p className="text-sm text-accent-green mt-1">+12% fra forrige uke</p>
           </div>
           
-          <div className="bg-secondary-dark p-6 rounded-lg">
+          <div className="bg-gray-900 border border-gray-800 p-6 rounded-lg">
             <h3 className="text-gray-400 text-sm font-medium mb-2">Unike besøkende</h3>
             <p className="text-2xl font-bold text-white">{stats.uniqueVisitors.toLocaleString()}</p>
             <p className="text-sm text-accent-green mt-1">+8% fra forrige uke</p>
           </div>
           
-          <div className="bg-secondary-dark p-6 rounded-lg">
+          <div className="bg-gray-900 border border-gray-800 p-6 rounded-lg">
             <h3 className="text-gray-400 text-sm font-medium mb-2">Gjennomsnittlig økt</h3>
             <p className="text-2xl font-bold text-white">{stats.avgSessionDuration}</p>
             <p className="text-sm text-accent-green mt-1">+15% fra forrige uke</p>
           </div>
           
-          <div className="bg-secondary-dark p-6 rounded-lg">
+          <div className="bg-gray-900 border border-gray-800 p-6 rounded-lg">
             <h3 className="text-gray-400 text-sm font-medium mb-2">Konverteringsrate</h3>
             <p className="text-2xl font-bold text-white">3.2%</p>
             <p className="text-sm text-accent-green mt-1">+5% fra forrige uke</p>
@@ -88,7 +88,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Top Pages */}
-        <div className="bg-secondary-dark p-6 rounded-lg mb-8">
+        <div className="bg-gray-900 border border-gray-800 p-6 rounded-lg mb-8">
           <h3 className="text-xl font-semibold text-white mb-4">Mest besøkte sider</h3>
           <div className="space-y-3">
             {stats.topPages.map((page, index) => (
@@ -101,7 +101,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Visits Graph */}
-        <div className="bg-secondary-dark p-6 rounded-lg mb-8">
+        <div className="bg-gray-900 border border-gray-800 p-6 rounded-lg mb-8">
           <h3 className="text-xl font-semibold text-white mb-4">Besøksgraf (siste 30 dager)</h3>
           <div className="h-32 flex items-end gap-1">
             {visitsSeries.map((v, i) => {
@@ -120,7 +120,7 @@ export default function AdminDashboard() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-secondary-dark p-6 rounded-lg">
+          <div className="bg-gray-900 border border-gray-800 p-6 rounded-lg">
             <h3 className="text-lg font-semibold text-white mb-4">Innholdsadministrasjon</h3>
             <div className="space-y-3">
               <button 
@@ -146,7 +146,7 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-secondary-dark p-6 rounded-lg">
+          <div className="bg-gray-900 border border-gray-800 p-6 rounded-lg">
             <h3 className="text-lg font-semibold text-white mb-4">Bestillinger & Kundeservice</h3>
             <div className="space-y-3">
               <button 
@@ -161,7 +161,7 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-secondary-dark p-6 rounded-lg">
+          <div className="bg-gray-900 border border-gray-800 p-6 rounded-lg">
             <h3 className="text-lg font-semibold text-white mb-4">Systemstatus</h3>
             <div className="space-y-3">
               <div className="flex justify-between">
