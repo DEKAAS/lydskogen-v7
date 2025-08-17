@@ -41,8 +41,55 @@ export default function PortfolioSection() {
   const [activeTrack, setActiveTrack] = useState<string | null>(null);
 
   return (
-    <section id="portfolio" className="py-20 bg-gradient-to-br from-green-950 via-emerald-900 to-teal-950">
-      <div className="container mx-auto px-4">
+    <section id="portfolio" className="py-20 bg-gradient-to-br from-gray-800 via-gray-700 to-gray-800 relative overflow-hidden">
+      {/* Subtle animated background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <motion.div
+          className="absolute top-20 left-20 w-96 h-96 rounded-full blur-3xl opacity-5"
+          style={{ background: 'radial-gradient(circle, #10b981, transparent 60%)' }}
+          animate={{ 
+            x: [0, 30, -20, 0],
+            y: [0, -20, 15, 0],
+            scale: [1, 1.05, 0.95, 1]
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute bottom-32 right-32 w-80 h-80 rounded-full blur-3xl opacity-5"
+          style={{ background: 'radial-gradient(circle, #10b981, transparent 60%)' }}
+          animate={{ 
+            x: [0, -25, 15, 0],
+            y: [0, 10, -25, 0],
+            scale: [1, 0.9, 1.1, 1]
+          }}
+          transition={{ duration: 30, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        
+        {/* Floating subtle particles */}
+        {Array.from({ length: 4 }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-accent-green/10 rounded-full"
+            style={{
+              top: `${30 + Math.random() * 40}%`,
+              left: `${20 + Math.random() * 60}%`,
+            }}
+            animate={{
+              y: [0, -15, 0],
+              x: [0, 8, -4, 0],
+              opacity: [0.1, 0.3, 0.1]
+            }}
+            transition={{
+              duration: 12 + Math.random() * 6,
+              repeat: Infinity,
+              ease: 'easeInOut',
+              delay: i * 1.5
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -72,7 +119,7 @@ export default function PortfolioSection() {
               className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl border border-gray-700/50 backdrop-blur-sm overflow-hidden"
             >
               {/* Album Art Placeholder */}
-              <div className="aspect-square bg-gradient-to-br from-accent-green/20 to-emerald-600/20 relative overflow-hidden">
+              <div className="aspect-square bg-gradient-to-br from-accent-green/15 to-accent-green/25 relative overflow-hidden">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-6xl font-bold text-white/20">
                     {track.artist.charAt(0)}
