@@ -133,15 +133,15 @@ export default function ArtistNettsideSection() {
           viewport={{ once: true }}
         >
           <motion.div
-            className="inline-block p-4 rounded-2xl bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-400/30 backdrop-blur-sm mb-6"
+            className="inline-block p-4 rounded-2xl bg-gradient-to-r from-accent-green/15 to-accent-green/25 border border-accent-green/30 backdrop-blur-sm mb-6"
             whileHover={{ scale: 1.05 }}
           >
-            <svg className="w-8 h-8 text-purple-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-8 h-8 text-accent-green mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
             </svg>
           </motion.div>
           
-          <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
+          <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-accent-green/80 to-accent-green/60 bg-clip-text text-transparent">
             Artist-nettside
           </h2>
           <p className="text-xl max-w-3xl mx-auto text-gray-300 leading-relaxed">
@@ -163,7 +163,7 @@ export default function ArtistNettsideSection() {
             >
               <div className="relative">
                 <motion.div
-                  className="absolute -inset-4 bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-2xl blur-xl"
+                  className="absolute -inset-4 bg-gradient-to-r from-accent-green/15 to-accent-green/25 rounded-2xl blur-xl"
                   animate={{ opacity: [0.2, 0.4, 0.2] }}
                   transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                 />
@@ -175,7 +175,7 @@ export default function ArtistNettsideSection() {
                     viewport={{ once: true }}
                   >
                     <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-                      <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
+                      <div className="w-2 h-2 bg-accent-green rounded-full animate-pulse" />
                       Dedikert Artist-nettside
                     </h3>
                     <p className="text-gray-300 leading-relaxed mb-6 text-lg">
@@ -190,7 +190,7 @@ export default function ArtistNettsideSection() {
                     viewport={{ once: true }}
                   >
                     <h4 className="text-xl font-bold text-white mb-3 flex items-center gap-3">
-                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+                      <div className="w-2 h-2 bg-accent-green/80 rounded-full animate-pulse" />
                       Linktree
                     </h4>
                     <p className="text-gray-300 leading-relaxed text-lg">
@@ -200,7 +200,7 @@ export default function ArtistNettsideSection() {
 
                   <motion.button
                     onClick={() => setShowForm(true)}
-                    className="mt-8 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+                    className="mt-8 bg-gradient-to-r from-accent-green to-green-600 hover:from-green-500 hover:to-accent-green text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.95 }}
                     initial={{ opacity: 0, y: 20 }}
@@ -224,7 +224,7 @@ export default function ArtistNettsideSection() {
             >
               <div className="relative">
                 <motion.div
-                  className="absolute -inset-4 bg-gradient-to-r from-blue-600/30 to-purple-600/30 rounded-3xl blur-xl"
+                  className="absolute -inset-4 bg-gradient-to-r from-accent-green/20 to-accent-green/30 rounded-3xl blur-xl"
                   animate={{ 
                     opacity: [0.3, 0.6, 0.3],
                     scale: [1, 1.02, 1]
@@ -234,7 +234,7 @@ export default function ArtistNettsideSection() {
                 
                 <div className="relative bg-black/50 backdrop-blur-xl p-6 rounded-3xl border border-gray-700/50 overflow-hidden">
                   <div className="aspect-[4/5] rounded-2xl overflow-hidden border border-gray-600/30 relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 to-blue-900/20" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-accent-green/10 to-accent-green/20" />
                     <iframe 
                       src="https://dekaas.github.io/MODAN" 
                       className="w-full h-full scale-90 origin-top-left transform"
@@ -247,7 +247,7 @@ export default function ArtistNettsideSection() {
                     href="https://dekaas.github.io/MODAN"
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="mt-6 block w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 text-center shadow-lg hover:shadow-xl"
+                    className="mt-6 block w-full bg-gradient-to-r from-accent-green to-green-600 hover:from-green-500 hover:to-accent-green text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 text-center shadow-lg hover:shadow-xl"
                     whileHover={{ scale: 1.02, y: -1 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -315,10 +315,10 @@ export default function ArtistNettsideSection() {
                   exit={{ opacity: 0, scale: 0.8, y: 50 }}
                   className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-lg"
                 >
-                  <div className="bg-gradient-to-br from-purple-900/95 to-blue-900/95 backdrop-blur-xl p-8 rounded-3xl border border-purple-400/30 shadow-2xl">
+                  <div className="bg-gradient-to-br from-gray-900/95 to-black/95 backdrop-blur-xl p-8 rounded-3xl border border-accent-green/30 shadow-2xl">
                     <div className="flex items-center justify-between mb-6">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-gradient-to-r from-accent-green to-green-600 rounded-full flex items-center justify-center">
                           <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
@@ -337,7 +337,7 @@ export default function ArtistNettsideSection() {
 
                     <div className="space-y-6 text-gray-200">
                       <div>
-                        <h4 className="text-lg font-semibold text-purple-200 mb-2">🎨 Artist-nettside</h4>
+                        <h4 className="text-lg font-semibold text-accent-green mb-2">🎨 Artist-nettside</h4>
                         <p className="leading-relaxed">
                           En fullstendig nettside dedikert til din artistprofil. Inkluderer biografi, diskografi, 
                           bildegalleri, kontaktinfo og integrasjoner med Spotify, YouTube og sosiale medier.
@@ -345,30 +345,30 @@ export default function ArtistNettsideSection() {
                       </div>
 
                       <div>
-                        <h4 className="text-lg font-semibold text-blue-200 mb-2">🔗 Linktree</h4>
+                        <h4 className="text-lg font-semibold text-accent-green/80 mb-2">🔗 Linktree</h4>
                         <p className="leading-relaxed">
                           En enkel landing-side som samler alle dine viktige lenker på ett sted. 
                           Perfekt for Instagram bio, TikTok profil eller andre sosiale medier hvor du bare har plass til én link.
                         </p>
                       </div>
 
-                      <div className="bg-white/5 rounded-xl p-4 border border-purple-400/20">
+                      <div className="bg-white/5 rounded-xl p-4 border border-accent-green/20">
                         <h4 className="text-lg font-semibold text-white mb-2">✨ Hvorfor trenger du dette?</h4>
                         <ul className="space-y-2 text-sm">
                           <li className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-purple-400 rounded-full" />
+                            <div className="w-1.5 h-1.5 bg-accent-green rounded-full" />
                             Professional presentasjon av din musikk
                           </li>
                           <li className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
+                            <div className="w-1.5 h-1.5 bg-accent-green/80 rounded-full" />
                             Økt synlighet og booking-muligheter
                           </li>
                           <li className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-purple-400 rounded-full" />
+                            <div className="w-1.5 h-1.5 bg-accent-green rounded-full" />
                             Enkelt å dele på sosiale medier
                           </li>
                           <li className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
+                            <div className="w-1.5 h-1.5 bg-accent-green/80 rounded-full" />
                             Egen domene og branding
                           </li>
                         </ul>

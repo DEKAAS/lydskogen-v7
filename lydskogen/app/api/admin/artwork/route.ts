@@ -3,10 +3,13 @@ import { supabaseAdmin } from '@/lib/supabase'
 
 export async function GET() {
   try {
+    console.log('Admin artwork API: Starting fetch...')
     const { data: artworkItems, error } = await supabaseAdmin
       .from('artwork_items')
       .select('*')
       .order('uploaded_at', { ascending: false })
+
+    console.log('Admin artwork API: Query result:', { data: artworkItems, error })
 
     if (error) {
       console.error('Error fetching artwork items:', error)

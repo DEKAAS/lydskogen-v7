@@ -171,7 +171,7 @@ export default function PortfolioSection() {
                 {/* Spotify Embed Toggle */}
                 <motion.button
                   onClick={() => setActiveTrack(activeTrack === track.id ? null : track.id)}
-                  className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
+                  className="w-full bg-gradient-to-r from-accent-green to-green-600 hover:from-green-500 hover:to-accent-green text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >

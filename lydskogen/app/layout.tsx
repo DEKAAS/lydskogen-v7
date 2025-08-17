@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/components/AuthProvider";
+import AnalyticsProvider from "@/components/AnalyticsProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -46,9 +47,11 @@ export default function RootLayout({
     <html lang="no" className="scroll-smooth">
       <body className={`${inter.variable} font-sans antialiased text-white`}>
         <AuthProvider>
-          <main>
-          {children}
-          </main>
+          <AnalyticsProvider>
+            <main>
+            {children}
+            </main>
+          </AnalyticsProvider>
         </AuthProvider>
       </body>
     </html>

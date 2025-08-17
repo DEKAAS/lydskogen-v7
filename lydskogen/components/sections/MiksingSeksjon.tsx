@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 
 const mixingPrices = [
@@ -28,6 +28,7 @@ const mixingPrices = [
 
 export default function MiksingSeksjon() {
   const [showForm, setShowForm] = useState<null | { plan: string }>(null)
+  const [showInfoPopup, setShowInfoPopup] = useState(false)
   const [details, setDetails] = useState('')
   const [sending, setSending] = useState(false)
 
@@ -75,7 +76,22 @@ export default function MiksingSeksjon() {
   }
 
   return (
-    <section className="py-16" style={{backgroundColor: 'var(--primary-bg)'}}>
+    <section className="relative py-16" style={{backgroundColor: 'var(--primary-bg)'}}>
+      {/* Info Button */}
+      <motion.button
+        onClick={() => setShowInfoPopup(true)}
+        className="absolute top-8 left-1/2 transform -translate-x-1/2 z-30 bg-accent-green/80 hover:bg-accent-green/90 backdrop-blur-sm text-white p-3 rounded-full border border-accent-green/30 transition-all duration-300 shadow-lg hover:shadow-xl"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </motion.button>
+
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <motion.div
@@ -270,6 +286,88 @@ export default function MiksingSeksjon() {
           </div>
         </motion.div>
         {/* Modal removed; inline panel used under selected kort */}
+
+        {/* Info Popup */}
+        <AnimatePresence>
+          {showInfoPopup && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowInfoPopup(false)}
+                className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center px-4"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8, y: 50 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.8, y: 50 }}
+                className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-lg"
+              >
+                <div className="bg-gradient-to-br from-gray-900/95 to-black/95 backdrop-blur-xl p-8 rounded-3xl border border-accent-green/30 shadow-2xl">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-accent-green to-green-600 rounded-full flex items-center justify-center">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-2xl font-bold text-white">Miksing & Mastering</h3>
+                    </div>
+                    <button
+                      onClick={() => setShowInfoPopup(false)}
+                      className="w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors"
+                    >
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className="space-y-6 text-gray-200">
+                    <div>
+                      <h4 className="text-lg font-semibold text-accent-green mb-2">🎚️ Profesjonell Miksing</h4>
+                      <p className="leading-relaxed">
+                        Vi gir dine råopptak den profesjonelle finishen de fortjener. Fra enkle demospor 
+                        til komplekse produksjoner med mange lag.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 className="text-lg font-semibold text-accent-green mb-2">✨ Mastering</h4>
+                      <p className="leading-relaxed">
+                        Den siste finishen som gjør musikken din klar for distribusjon på alle plattformer. 
+                        Profesjonell loudness og frekvensbehandling.
+                      </p>
+                    </div>
+
+                    <div className="bg-white/5 rounded-xl p-4 border border-accent-green/20">
+                      <h4 className="text-lg font-semibold text-white mb-2">🔧 Hva inkluderer miksing?</h4>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-accent-green rounded-full" />
+                          EQ og kompresjon på alle spor
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-accent-green rounded-full" />
+                          Romklang og effekter
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-accent-green rounded-full" />
+                          Balansering og panorering
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-accent-green rounded-full" />
+                          Kreativ lyddesign
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </div>
     </section>
   );

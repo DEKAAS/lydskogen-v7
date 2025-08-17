@@ -36,7 +36,13 @@ export default function AdminArtwork() {
     if (status === "unauthenticated" || session?.user?.role !== 'admin') {
       router.push('/admin/login')
     }
-    fetch('/api/admin/artwork').then(r => r.json()).then(d => setUploadedList(d.artwork || [])).catch(() => setUploadedList([]))
+    fetch('/api/admin/artwork').then(r => r.json()).then(d => {
+      console.log('Admin artwork page: API response:', d)
+      setUploadedList(d.artwork || [])
+    }).catch((error) => {
+      console.error('Admin artwork page: API error:', error)
+      setUploadedList([])
+    })
   }, [status, session, router])
 
   if (status === "loading") {

@@ -60,6 +60,7 @@ export default function MusikkproduksjonSeksjon() {
   const [loading, setLoading] = useState(true)
   const [activeGenre, setActiveGenre] = useState<'ambient' | 'hiphop' | 'lofi' | 'soundscape'>('ambient')
   const [activeView, setActiveView] = useState<'custom' | 'ready'>('ready')
+  const [showInfoPopup, setShowInfoPopup] = useState(false)
   const genreOrder: Array<'ambient' | 'hiphop' | 'lofi' | 'soundscape'> = ['ambient','hiphop','lofi','soundscape']
   const titleMap: Record<string, string> = {
     ambient: 'Ambient',
@@ -98,7 +99,22 @@ export default function MusikkproduksjonSeksjon() {
   }, [])
 
   return (
-    <section id="services" className="py-16" style={{backgroundColor: 'var(--primary-bg)'}}>
+    <section id="services" className="relative py-16" style={{backgroundColor: 'var(--primary-bg)'}}>
+      {/* Info Button */}
+      <motion.button
+        onClick={() => setShowInfoPopup(true)}
+        className="absolute top-8 left-1/2 transform -translate-x-1/2 z-30 bg-accent-green/80 hover:bg-accent-green/90 backdrop-blur-sm text-white p-3 rounded-full border border-accent-green/30 transition-all duration-300 shadow-lg hover:shadow-xl"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </motion.button>
+
       <div className="container mx-auto px-4">
         {/* Section Header (ikon fjernet) */}
         <motion.div
@@ -232,6 +248,88 @@ export default function MusikkproduksjonSeksjon() {
 
         {/* ensure data fetched */}
         <div className="sr-only">{!loading && tracks.length}</div>
+
+        {/* Info Popup */}
+        <AnimatePresence>
+          {showInfoPopup && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowInfoPopup(false)}
+                className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center px-4"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8, y: 50 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.8, y: 50 }}
+                className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-lg"
+              >
+                <div className="bg-gradient-to-br from-gray-900/95 to-black/95 backdrop-blur-xl p-8 rounded-3xl border border-accent-green/30 shadow-2xl">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-accent-green to-green-600 rounded-full flex items-center justify-center">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                        </svg>
+                      </div>
+                      <h3 className="text-2xl font-bold text-white">Musikkproduksjon</h3>
+                    </div>
+                    <button
+                      onClick={() => setShowInfoPopup(false)}
+                      className="w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors"
+                    >
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className="space-y-6 text-gray-200">
+                    <div>
+                      <h4 className="text-lg font-semibold text-accent-green mb-2">🎵 Skreddersydd Musikk</h4>
+                      <p className="leading-relaxed">
+                        Bestill original musikk laget spesielt for ditt prosjekt. Vi produserer i fire hovedsjangre: 
+                        Ambient, Hip-hop, Lo-fi og Soundscape.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 className="text-lg font-semibold text-accent-green mb-2">🎧 Ferdiglåter</h4>
+                      <p className="leading-relaxed">
+                        Bla gjennom vårt bibliotek av ferdigproduserte låter. Perfekt for raske prosjekter 
+                        eller når du trenger kvalitetsmusikk umiddelbart.
+                      </p>
+                    </div>
+
+                    <div className="bg-white/5 rounded-xl p-4 border border-accent-green/20">
+                      <h4 className="text-lg font-semibold text-white mb-2">✨ Hva får du?</h4>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-accent-green rounded-full" />
+                          Profesjonell produksjon og miksing
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-accent-green rounded-full" />
+                          Høykvalitets WAV og MP3 filer
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-accent-green rounded-full" />
+                          Kommersielle rettigheter inkludert
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-accent-green rounded-full" />
+                          Revideringer til du er fornøyd
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </div>
     </section>
   );
