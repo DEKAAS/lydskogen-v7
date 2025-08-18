@@ -19,18 +19,20 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Insert event into database
+    // Insert event into database (simplified for existing table structure)
     const { data, error } = await supabaseAdmin
       .from('analytics_events')
       .insert({
-        session_id: sessionId,
-        event_type: eventType,
-        event_name: eventName,
-        page_url: pageUrl,
-        element_selector: elementSelector || null,
-        element_text: elementText || null,
-        properties: properties || null,
-        created_at: new Date().toISOString()
+        event_name: `${eventType}: ${eventName}`,
+        event_data: {
+          sessionId,
+          eventType,
+          pageUrl,
+          elementSelector,
+          elementText,
+          properties
+        },
+        page_url: pageUrl
       })
       .select()
 

@@ -45,18 +45,24 @@ export async function POST(request: Request) {
       ? initialStatus as Order['status']
       : 'new'
 
+    // Adapt to existing orders table structure
     const { data: newOrder, error } = await supabaseAdmin
       .from('orders')
       .insert({
-        type,
-        name,
-        email,
-        phone,
-        subject,
-        message,
-        form_data: formData,
+        total_amount: 0, // Default value
+        currency: 'NOK',
         status: resolvedStatus,
-        source
+        payment_method: 'contact', // Since these are contact forms
+        order_items: {
+          type,
+          name,
+          email,
+          phone,
+          subject,
+          message,
+          formData,
+          source
+        }
       })
       .select()
       .single()
@@ -91,8 +97,7 @@ export async function PUT(request: Request) {
     const { data: updatedOrder, error } = await supabaseAdmin
       .from('orders')
       .update({ 
-        status, 
-        updated_at: new Date().toISOString() 
+        status
       })
       .eq('id', orderId)
       .select()

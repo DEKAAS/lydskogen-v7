@@ -40,17 +40,14 @@ export async function POST(request: NextRequest) {
 
     const now = new Date().toISOString()
 
-    // Upsert active session (update if exists, insert if not)
+    // Upsert active session (simplified for existing table structure)
     const { data, error } = await supabaseAdmin
       .from('active_sessions')
       .upsert({
         session_id: sessionId,
-        page_url: pageUrl,
-        last_seen: now,
         user_agent: userAgent,
         ip_address: ipAddress,
-        country,
-        device_type: deviceType
+        last_activity: now
       }, {
         onConflict: 'session_id'
       })
@@ -66,7 +63,7 @@ export async function POST(request: NextRequest) {
     await supabaseAdmin
       .from('active_sessions')
       .delete()
-      .lt('last_seen', fiveMinutesAgo)
+      .lt('last_activity', fiveMinutesAgo)
 
     return NextResponse.json({ 
       success: true,

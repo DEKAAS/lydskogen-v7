@@ -14,13 +14,13 @@ export async function GET() {
       .select('*', { count: 'exact', head: true })
       .gte('created_at', thirtyDaysAgo.toISOString())
 
-    // Get unique visitors (last 30 days)
+    // Get unique visitors (simplified - use IP as proxy for unique visitors)
     const { data: uniqueVisitorsData } = await supabaseAdmin
       .from('page_views')
-      .select('session_id')
+      .select('ip_address')
       .gte('created_at', thirtyDaysAgo.toISOString())
 
-    const uniqueVisitors = new Set(uniqueVisitorsData?.map(v => v.session_id) || []).size
+    const uniqueVisitors = new Set(uniqueVisitorsData?.map(v => v.ip_address) || []).size
 
     // Get views from last week for comparison
     const { count: lastWeekViews } = await supabaseAdmin

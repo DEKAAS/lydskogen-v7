@@ -9,14 +9,14 @@ export async function GET() {
     const { count: activeVisitors } = await supabaseAdmin
       .from('active_sessions')
       .select('*', { count: 'exact', head: true })
-      .gte('last_seen', fiveMinutesAgo)
+      .gte('last_activity', fiveMinutesAgo)
 
     // Get current active sessions with details
     const { data: activeSessions } = await supabaseAdmin
       .from('active_sessions')
       .select('*')
-      .gte('last_seen', fiveMinutesAgo)
-      .order('last_seen', { ascending: false })
+      .gte('last_activity', fiveMinutesAgo)
+      .order('last_activity', { ascending: false })
 
     // Get page views in the last hour
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
@@ -31,11 +31,10 @@ export async function GET() {
       .select('*', { count: 'exact', head: true })
       .gte('created_at', oneHourAgo)
 
-    // Get top pages being viewed right now
-    const currentPages = (activeSessions || []).reduce((acc: Record<string, number>, session) => {
-      acc[session.page_url] = (acc[session.page_url] || 0) + 1
-      return acc
-    }, {})
+    // Get top pages being viewed right now (simplified since we don't store page_url in sessions)
+    const currentPages: Record<string, number> = {
+      '/': activeSessions?.length || 0
+    }
 
     const topCurrentPages = Object.entries(currentPages)
       .sort(([,a], [,b]) => (b as number) - (a as number))
