@@ -21,21 +21,21 @@ export default function ProjectsSection() {
   }, [])
 
   return (
-    <section id="projects" className="py-16" style={{backgroundColor: 'var(--primary-bg)'}}>
+    <section id="projects" className="py-12" style={{backgroundColor: 'var(--primary-bg)'}}>
       <div className="container mx-auto px-4">
         <motion.div
-          className="text-center mb-10"
+          className="text-center mb-8"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-4xl font-bold mb-2" style={{color: 'var(--text-on-dark)'}}>Tidligere prosjekter</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-2" style={{color: 'var(--text-on-dark)'}}>Tidligere prosjekter</h2>
           <p className="text-gray-300">Et utvalg av arbeid vi har levert – lyd og visuell identitet</p>
         </motion.div>
 
         <motion.div 
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ staggerChildren: 0.06 }}
@@ -43,31 +43,32 @@ export default function ProjectsSection() {
         >
           {projects.map((p, idx) => (
             <motion.div key={p.id}
-              className="relative rounded-2xl overflow-hidden border border-white/10 backdrop-blur-sm"
+              className="relative rounded-xl overflow-hidden border border-white/10 backdrop-blur-sm"
               style={{ background: 'rgba(0,0,0,0.35)' }}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: idx * 0.03 }}
               viewport={{ once: true }}
             >
-              <div className="relative aspect-video">
+              <div className="relative aspect-square">
                 <img src={p.artworkUrl} alt={p.title} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-white">{p.title}</h3>
+              <div className="p-3">
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="text-sm font-semibold text-white truncate">{p.title}</h3>
                   {p.musicUrl && (
-                    <a href={p.musicUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1 rounded text-sm font-medium"
+                    <a href={p.musicUrl} target="_blank" rel="noopener noreferrer" className="px-2 py-1 rounded text-xs font-medium flex-shrink-0 ml-2"
                       style={{ background: 'var(--accent-gold)', color: '#1b1b1b' }}>Hør</a>
                   )}
                 </div>
-                {p.description && <p className="text-sm text-gray-300 mb-3">{p.description}</p>}
+                {p.description && <p className="text-xs text-gray-300 mb-2" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'}}>{p.description}</p>}
                 {p.tags && p.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1">
-                    {p.tags.map((t, i) => (
-                      <span key={i} className="px-2 py-0.5 text-xs rounded border border-white/10 bg-black/20 text-gray-300">{t}</span>
+                    {p.tags.slice(0, 3).map((t, i) => (
+                      <span key={i} className="px-1.5 py-0.5 text-xs rounded border border-white/10 bg-black/20 text-gray-300">{t}</span>
                     ))}
+                    {p.tags.length > 3 && <span className="text-xs text-gray-400">+{p.tags.length - 3}</span>}
                   </div>
                 )}
               </div>

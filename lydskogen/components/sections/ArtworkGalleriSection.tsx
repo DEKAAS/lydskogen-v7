@@ -81,14 +81,14 @@ export default function ArtworkGalleriSection() {
       {/* Info Button */}
       <motion.button
         onClick={() => setShowInfoPopup(true)}
-        className="absolute top-8 left-1/2 transform -translate-x-1/2 z-30 bg-accent-green/80 hover:bg-accent-green/90 backdrop-blur-sm text-white p-3 rounded-full border border-accent-green/30 transition-all duration-300 shadow-lg hover:shadow-xl"
+        className="absolute top-4 left-1/2 transform -translate-x-1/2 z-30 bg-accent-green/80 hover:bg-accent-green/90 backdrop-blur-sm text-white p-2 md:p-3 rounded-full border border-accent-green/30 transition-all duration-300 shadow-lg hover:shadow-xl"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.5 }}
       >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       </motion.button>
@@ -229,24 +229,24 @@ export default function ArtworkGalleriSection() {
     <AnimatePresence>
       {isPopupOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={closePopup}
+          style={{ overflow: 'hidden' }}
         >
           {/* Backdrop */}
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
 
           {/* Popup Content */}
           <motion.div
-            className="relative w-full max-w-4xl min-h-0 my-8 mx-auto overflow-hidden rounded-2xl bg-black/90 border border-white/10"
-            initial={{ scale: 0.9, opacity: 0, y: 50 }}
+            className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl bg-black/90 border border-white/10"
+            initial={{ scale: 0.9, opacity: 0, y: 0 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 50 }}
+            exit={{ scale: 0.9, opacity: 0, y: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
-            style={{ maxHeight: 'calc(100vh - 64px)' }}
           >
             {/* Close Button */}
             <button
@@ -274,7 +274,7 @@ export default function ArtworkGalleriSection() {
             </button>
 
             {/* Image */}
-            <div className="relative h-64 sm:h-80 md:h-96 lg:h-[400px] overflow-hidden">
+            <div className="relative h-48 sm:h-64 md:h-80 overflow-hidden">
               <img
                 src={artworks[selectedArtwork].image}
                 alt={artworks[selectedArtwork].title}
@@ -283,7 +283,7 @@ export default function ArtworkGalleriSection() {
             </div>
 
             {/* Info Panel */}
-            <div className="bg-white/10 backdrop-blur-lg p-6">
+            <div className="bg-white/10 backdrop-blur-lg p-4 md:p-6">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div className="flex-1">
                   <h3 className="text-2xl font-bold text-white mb-2">
@@ -335,13 +335,14 @@ export default function ArtworkGalleriSection() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowInfoPopup(false)}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center px-4"
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            style={{ overflow: 'hidden' }}
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 50 }}
+            initial={{ opacity: 0, scale: 0.8, y: 0 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 50 }}
-            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-lg"
+            exit={{ opacity: 0, scale: 0.8, y: 0 }}
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-lg max-h-[90vh] overflow-y-auto"
           >
             <div className="bg-gradient-to-br from-gray-900/95 to-black/95 backdrop-blur-xl p-8 rounded-3xl border border-accent-green/30 shadow-2xl">
               <div className="flex items-center justify-between mb-6">
