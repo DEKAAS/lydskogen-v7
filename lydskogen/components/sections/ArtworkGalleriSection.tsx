@@ -102,20 +102,6 @@ export default function ArtworkGalleriSection() {
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
-          <motion.div
-            className="inline-block p-3 mb-6"
-            style={{
-              background: 'var(--glass-section)',
-              backdropFilter: 'blur(15px)',
-              border: '1px solid var(--border-light)',
-              borderRadius: '16px'
-            }}
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="text-5xl">🎨</div>
-          </motion.div>
-          
           <h2 className="text-4xl md:text-5xl font-bold mb-6" style={{color: 'var(--text-on-dark)'}}>
             Artwork galleri
           </h2>
