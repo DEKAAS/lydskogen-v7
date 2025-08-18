@@ -1,0 +1,111 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="mixingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1d1b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#202426;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="greenGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2BF574;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#2BF574;stop-opacity:0.3" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="300" fill="url(#mixingGradient)"/>
+  
+  <!-- Mixing Console -->
+  <g transform="translate(50, 80)">
+    <!-- Console base -->
+    <rect x="0" y="0" width="300" height="140" rx="8" fill="#1c1f1f" stroke="#2BF574" stroke-width="1" opacity="0.8"/>
+    
+    <!-- Channel strips -->
+    <g id="channels">
+      <!-- Channel 1 -->
+      <g transform="translate(20, 15)">
+        <rect x="0" y="0" width="25" height="110" rx="2" fill="#181b1b"/>
+        <circle cx="12.5" cy="20" r="8" fill="#2BF574" opacity="0.7"/>
+        <rect x="8" y="35" width="9" height="60" rx="2" fill="#2BF574" opacity="0.5"/>
+        <rect x="10" y="45" width="5" height="3" rx="1" fill="#2BF574">
+          <animate attributeName="y" values="45;75;45" dur="2s" repeatCount="indefinite"/>
+        </rect>
+      </g>
+      
+      <!-- Channel 2 -->
+      <g transform="translate(60, 15)">
+        <rect x="0" y="0" width="25" height="110" rx="2" fill="#181b1b"/>
+        <circle cx="12.5" cy="20" r="8" fill="#2BF574" opacity="0.6"/>
+        <rect x="8" y="35" width="9" height="60" rx="2" fill="#2BF574" opacity="0.4"/>
+        <rect x="10" y="55" width="5" height="3" rx="1" fill="#2BF574">
+          <animate attributeName="y" values="55;85;55" dur="1.8s" repeatCount="indefinite"/>
+        </rect>
+      </g>
+      
+      <!-- Channel 3 -->
+      <g transform="translate(100, 15)">
+        <rect x="0" y="0" width="25" height="110" rx="2" fill="#181b1b"/>
+        <circle cx="12.5" cy="20" r="8" fill="#2BF574" opacity="0.8"/>
+        <rect x="8" y="35" width="9" height="60" rx="2" fill="#2BF574" opacity="0.6"/>
+        <rect x="10" y="40" width="5" height="3" rx="1" fill="#2BF574">
+          <animate attributeName="y" values="40;70;40" dur="2.2s" repeatCount="indefinite"/>
+        </rect>
+      </g>
+      
+      <!-- Channel 4 -->
+      <g transform="translate(140, 15)">
+        <rect x="0" y="0" width="25" height="110" rx="2" fill="#181b1b"/>
+        <circle cx="12.5" cy="20" r="8" fill="#2BF574" opacity="0.5"/>
+        <rect x="8" y="35" width="9" height="60" rx="2" fill="#2BF574" opacity="0.3"/>
+        <rect x="10" y="65" width="5" height="3" rx="1" fill="#2BF574">
+          <animate attributeName="y" values="65;85;65" dur="1.6s" repeatCount="indefinite"/>
+        </rect>
+      </g>
+    </g>
+    
+    <!-- Master section -->
+    <g transform="translate(200, 15)">
+      <rect x="0" y="0" width="80" height="110" rx="4" fill="#0d140d" stroke="#2BF574" stroke-width="1"/>
+      <text x="40" y="15" text-anchor="middle" fill="#2BF574" font-size="8" font-weight="bold">MASTER</text>
+      
+      <!-- Master fader -->
+      <rect x="35" y="25" width="10" height="70" rx="2" fill="#2BF574" opacity="0.4"/>
+      <rect x="37" y="40" width="6" height="4" rx="1" fill="#2BF574">
+        <animate attributeName="y" values="40;80;40" dur="3s" repeatCount="indefinite"/>
+      </rect>
+      
+      <!-- LED meters -->
+      <g transform="translate(10, 30)">
+        <rect x="0" y="0" width="3" height="8" fill="#2BF574" opacity="0.9">
+          <animate attributeName="opacity" values="0.9;0.3;0.9" dur="1s" repeatCount="indefinite"/>
+        </rect>
+        <rect x="0" y="10" width="3" height="8" fill="#2BF574" opacity="0.7">
+          <animate attributeName="opacity" values="0.7;0.2;0.7" dur="1.2s" repeatCount="indefinite"/>
+        </rect>
+        <rect x="0" y="20" width="3" height="8" fill="#2BF574" opacity="0.5">
+          <animate attributeName="opacity" values="0.5;0.1;0.5" dur="1.4s" repeatCount="indefinite"/>
+        </rect>
+      </g>
+    </g>
+  </g>
+  
+  <!-- Sound waves emanating from console -->
+  <g opacity="0.4">
+    <ellipse cx="200" cy="150" rx="80" ry="15" fill="none" stroke="#2BF574" stroke-width="2" opacity="0.6">
+      <animate attributeName="rx" values="80;120;80" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0.1;0.6" dur="3s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="200" cy="150" rx="60" ry="12" fill="none" stroke="#2BF574" stroke-width="1.5" opacity="0.4">
+      <animate attributeName="rx" values="60;100;60" dur="2.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0.05;0.4" dur="2.5s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+  
+  <!-- Floating musical notes -->
+  <g opacity="0.6">
+    <text x="320" y="60" fill="#2BF574" font-size="24" opacity="0.7">♪</text>
+    <text x="340" y="80" fill="#2BF574" font-size="18" opacity="0.5">♫</text>
+    <text x="360" y="100" fill="#2BF574" font-size="20" opacity="0.6">♪</text>
+    
+    <animateTransform attributeName="transform" attributeType="XML" type="translate" values="0,0; 0,-10; 0,0" dur="4s" repeatCount="indefinite"/>
+  </g>
+</svg> 

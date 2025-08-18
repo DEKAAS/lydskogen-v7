@@ -1,0 +1,286 @@
+# Lydskog – Fullstendig PRD v1.0
+
+---
+
+<context>
+
+## Overview
+
+Lydskog er en atmosfærisk og funksjonsrik porteføljeside for lydtjenester og visuell identitet. Den samler tjenester som miksing, musikkproduksjon, artwork og artistside-oppsett i en sømløs og estetisk struktur. Målet er å tilby profesjonell lyd og design i et miljø som oppleves naturlig og inspirert av skog og ro – med tydelig, moderne navigasjon og responsivt design.
+
+Plattformen er bygget for indie-artister, produsenter og kreative som ønsker hjelp til å løfte sine prosjekter visuelt og auditivt, uten å måtte forholde seg til tung teknologi eller fragmenterte løsninger.
+
+---
+
+## Core Features
+
+### 1. Header / Hero
+
+* **Hva det gjør**: Presenterer merkevaren og stemningen
+* **Hvorfor**: Setter førsteinntrykket, skaper tilknytning og kontekst
+* **Hvordan**: Fullskjermseksjon med bakgrunnsbilde (`<img>` med `object-contain`) og overlegg av gradient. Tittel "Lydskog", undertittel og CTA "Prosjekter"
+
+### 2. Tjenestekortseksjoner (Miksing, Artwork, Produksjon, Artistside)
+
+* **Hva det gjør**: Viser hver tjeneste i egen seksjon med bilde, beskrivelse og knapp
+* **Hvorfor**: Gir rask oversikt over tjenester
+* **Hvordan**: `ServiceSection` med bakgrunnsfarge/gradient, `ServiceCard` med bilde, tekst, CTA
+
+### 3. Musikkproduksjon med sjangerundersider
+
+* **Hva**: Viser 4 sjangere (Ambient, Hiphop, Lo-fi, Soundscape)
+* **Hvordan**: Kortvisning → Klikk åpner underside
+* **Underside**: Dedikert side per sjanger med info, inspirasjon, kontaktfelt
+
+  #### 🎨 Designspesifikasjon for sjanger-undersider
+
+  * **Farger/gradient**:
+
+    * Ambient: `linear-gradient(to bottom, #1c1f1f, #202426)`
+    * Hiphop: `linear-gradient(to bottom, #202426, #2b2b2b)`
+    * Lo-fi: `linear-gradient(to bottom, #202426, #1a1d1b)`
+    * Soundscape: `linear-gradient(to bottom, #1e2221, #101312)`
+  * **Animasjoner**:
+
+    * Fade-in ved scroll på tekst og lydspillere
+    * Hover på CTA med `ring`-effekt eller puls
+    * Parallax-effekt i bakgrunnsillustrasjoner (valgfritt)
+  * **Grid/layout**:
+
+    * Øverst: stor tittel + inspirasjonsbilde (helbredde)
+    * Midt: tekst + lytteeksempler (kan være embedded SoundCloud el. lokal player)
+    * Nederst: "Bestill produksjon" + kontaktfelt
+    * Intern navigasjon mellom sjangere (tab/meny)
+  * **Typografi**:
+
+    * Tittel: `Manrope`, bold, `text-4xl`
+    * Brødtekst: `text-base` til `lg`, hvit eller `gray-200`
+    * Lytteeksempler: visuelle kort med `rounded`, `shadow`, sjanger-spesifikk bakgrunn (Ambient, Hiphop, Lo-fi, Soundscape)
+* **Hvordan**: Kortvisning → Klikk åpner underside
+* **Underside**: Dedikert side per sjanger med info, inspirasjon, kontaktfelt
+
+### 4. Artwork Galleri
+
+* **Hva**: Viser artworks i kort-grid, med pris og bestilling
+* **Hvordan**: "Se galleri"-knapp → popup/lysbox eller egen underside
+* **Pris**: 200,- galleri, fra 350,- egendesign
+
+  #### 🎨 Designspesifikasjon for artwork-underside
+
+  * **Farger/gradient**:
+
+    * Bakgrunn: `linear-gradient(to bottom, #202426, #1a1d1b)`
+    * Popup-overlay: semitransparent `rgba(0,0,0,0.85)` med blur
+  * **Animasjoner**:
+
+    * Fade-in på galleri-kort
+    * Lightbox popup med scale/opacity overgang
+    * Hover-zoom på thumbnails
+  * **Grid/layout**:
+
+    * 3-kol grid (desktop), 1-kol på mobil
+    * Kort inneholder: bilde, tittel, pris, kategori-tag
+    * Modal-visning ved klikk på bilde
+  * **Typografi**:
+
+    * Tittel: `Manrope`, semibold, `text-xl`
+    * Pris: fremhevet i kort (`text-white`, `text-lg`, `font-bold`)
+    * Kategoritag: `text-xs`, `bg-opacity`, runde kanteri kort-grid, med pris og bestilling
+* **Hvordan**: "Se galleri"-knapp → popup/lysbox eller egen underside
+* **Pris**: 200,- galleri, fra 350,- egendesign
+
+### 5. Artistside / Linktree
+
+* **Hva**: Eksempelkort for to nettsider (screenshots)
+* **Hvordan**: Klikk åpner undersiden med detaljer:
+
+  * Hva tjenesten er
+  * Hvordan domene og hosting fungerer
+  * Kontakt og bestilling
+  * Oppstartspris: 700 kr (engangskostnad for oppsett, design og lansering)
+  * **Abonnementsmodell**:
+
+    * Basis: 59 kr/mnd (inkl. vedlikehold og oppdatering av lenker/innhold ved forespørsel)
+    * Pro: 99 kr/mnd (inkl. designjusteringer, prioritert respons og ett domene inkludert)
+    * Betaling via Stripe eller faktura (manuell prosess i MVP)
+    * Kunde kan velge om Lydskog skal stå for oppsett og drift, eller om de ønsker full kontroll selv (eksport)
+
+  #### 🎨 Designspesifikasjon for artistside-undersiden
+
+  * **Farger/gradient**:
+
+    * Bakgrunn: `#202426` som base, toppseksjon med `linear-gradient(to bottom, #202426, #1f2322)`
+    * Prisplanmodul: `#1c1f1f` med border-glow i `#2BF574` for aktiv plan
+  * **Animasjoner**:
+
+    * Seksjoner fader inn med `fade-up` på scroll (AOS.js eller Framer Motion)
+    * CTA-knapper har `hover:scale-105` + `transition-all`
+    * Accordion (FAQ) med myk åpne/lukke animasjon og pilrotasjon
+  * **Grid/layout**:
+
+    * 2-kol layout på desktop: venstre info, høyre prisplan
+    * Mobile: stacked layout med sticky pricing CTA nederst
+    * `PricingPlans`-komponent med visuell separasjon, border-radius og skygge
+  * **Typografi**:
+
+    * Hovedtekst: `Manrope` semibold
+    * Prisvisning: stor, høy kontrast (`text-white`, `text-3xl`)
+    * Tilleggsinfo: `text-sm`, `text-gray-400`
+
+### 6. Fullpakke-tjeneste
+
+* **Hva**: Modul for å velge én eller flere tjenester i kombinasjon
+* **Hvordan**: To valgkort – venstre (tjenester), høyre (kombinasjon). CTA: "Kontakt for tilbud"
+
+  #### 🎨 Designspesifikasjon for fullpakke-seksjon
+
+  * **Farger/gradient**:
+
+    * `linear-gradient(to bottom, #1e1e1e, #202426)`
+    * Aktivt valg får lysere bakgrunn + outline `#2BF574`
+  * **Animasjoner**:
+
+    * Kort svever med `hover:translate-y-1` og `shadow-xl`
+    * CTA-knapp har `pulse` animasjon ved visning første gang
+  * **Grid/layout**:
+
+    * 2 store kort i rad med CTA-knapper under
+    * Tooltip med info på hover ved hvert valg
+    * Sticky "Bestill"-knapp på mobil nederst
+  * **Typografi**:
+
+    * Store titler (`text-2xl`) og kort tekst (`text-md`, `text-gray-300`)
+    * Prisestimat (valgfritt) med `text-green-400`, boldfor å velge én eller flere tjenester i kombinasjon
+* **Hvordan**: To valgkort – venstre (tjenester), høyre (kombinasjon). CTA: "Kontakt for tilbud"
+
+### 7. Kontakt / Om meg
+
+* **Hva**: Tekstseksjon "Hvem er Lydskog" + kontaktskjema
+* **Hvordan**: Venstre side: tekst om deg. Høyre: skjema med felter: navn, e-post, melding
+* **Bilde**: Kommer senere – klippet, blendet inn i bakgrunnen
+
+  #### 🎨 Designspesifikasjon for kontakt/om-seksjon
+
+  * **Farger/gradient**:
+
+    * `linear-gradient(to bottom, #202426, #181b1b)`
+    * Skjema: semi-transparent container (`bg-opacity-80`, `backdrop-blur`)
+  * **Animasjoner**:
+
+    * Kontaktkort og tekst fade in fra siden (`fade-left`, `fade-right`)
+    * Submit-knapp med ripple-effekt eller enkel loading-indikator
+  * **Grid/layout**:
+
+    * 2-kol: venstre (tekst + bilde), høyre (skjema)
+    * Mobil: stacked layout, CTA øverst eller sticky nederst
+  * **Typografi**:
+
+    * Tekst: `text-lg`, `font-light`, `text-gray-200`
+    * Formfelt: `rounded`, `focus:outline-none`, `focus:ring`
+    * Send-knapp: `bg-green-600`, `hover:bg-green-500`, `text-white`"Hvem er Lydskog" + kontaktskjema
+* **Hvordan**: Venstre side: tekst om deg. Høyre: skjema med felter: navn, e-post, melding
+* **Bilde**: Kommer senere – klippet, blendet inn i bakgrunnen
+
+### 8. Footer
+
+* Kontakt: `lydskog@proton.me`
+* Org.nr: 927091577
+* Responstid: 24 timer
+* Ikoner: Instagram, Spotify
+
+</context>
+
+---
+
+<PRD>
+
+## Technical Architecture
+
+### System Components
+
+* `HeaderHero`
+* `ServiceSection` (miksing, artwork, osv.)
+* `ServiceCard`
+* `GenreGrid` + `GenrePage`
+* `GalleryGrid`
+* `ArtistExampleCards` + `ArtistPage`
+* `ComboOfferModule`
+* `AboutAndContact`
+* `Footer`
+* `PricingPlans`
+* `AnimatedAccordion`
+
+### Data Models
+
+* Tjenester: `title`, `description`, `price`, `image`, `cta`
+* Artwork: `imageSrc`, `title`, `price`, `tags`
+* Artistside: `title`, `thumbnail`, `faqSections`, `pricingPlan`, `contactCTA`
+* PricingPlan: `tier`, `monthlyPrice`, `features[]`, `billingMethod`
+* Undersider: dynamisk innhold basert på ruteparametre (eks: /produksjon/ambient)
+
+### APIs and Integrations
+
+* MVP: kun `mailto:`
+* Videre: Netlify Forms / Supabase Email / filopplasting
+* Fremtid: Stripe Checkout for artistside-abonnement
+
+### Infrastructure Requirements
+
+* Static hosting (Netlify/Vercel)
+* Mulighet for bildeoptimalisering og CDN
+* Evt. Supabase for skjema/lagring senere
+* Stripe API-integrasjon for betaling (valgfritt i MVP)
+
+---
+
+## Development Roadmap
+
+### MVP
+
+* HeaderHero
+* 4 ServiceSections med CTA (miksing, artwork, produksjon, artistside)
+* Footer med kontakt og ikoner
+* Om-seksjon med kontaktskjema
+
+### Phase 2
+
+* Genre-undersider med egne ruter
+* Popup-galleri for artwork
+* ArtistPage med accordion og bestillingsinfo
+* Fullpakke-modul
+* **Abonnementsseksjon for artistside** (PricingPlans-komponent, statisk visning)
+
+### Phase 3
+
+* Ekte booking + opplasting
+* Dynamisk galleri (tagfilter)
+* Admin-verktøy (valgfritt)
+* Stripe-integrasjon for live abonnementshåndtering
+
+---
+
+## Logical Dependency Chain
+
+1. **Grunnmur**: Layout, header, footer, responsive rammeverk
+2. **Kjerneinnhold**: ServiceCards og kontaktseksjon
+3. **Utvidelser**: undersider og gallerier
+4. **Interaktivitet**: skjema, popup, filopplasting
+5. **Betalingsflyt og abonnement**
+
+---
+
+## Risks and Mitigations
+
+* **Feil bildeoppførsel**: Bruk `<img>` med `object-contain`, ikke CSS `cover`
+* **Seksjonsmellomrom**: Fjern `margin/padding` mellom seksjoner, bruk `gradient` som skille
+* **Navigasjon**: Sørg for sticky navbar eller lenkeanker for seksjoner
+* **Stripe-feil/kompleksitet**: Start med statisk planvisning – vurder manuell faktura først
+
+---
+
+## Appendix
+
+* Referansebilder: Total-layout.png, fullpakke-kontakt-footer.png, mixingkort-visuell
+* Alle tekster og priser verifisert
+* Bakgrunnsfarger: #202426, #1c1f1f, #181b1b + gradients per seksjon
+* Prisplaner og faktureringsmodell for artistsider inkludert

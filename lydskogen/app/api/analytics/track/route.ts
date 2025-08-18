@@ -27,7 +27,6 @@ function getClientIP(request: NextRequest): string {
     request.headers.get('x-forwarded-for')?.split(',')[0] ||
     request.headers.get('x-real-ip') ||
     request.headers.get('x-client-ip') ||
-    request.ip ||
     'unknown'
   )
 }

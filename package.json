@@ -1,0 +1,20 @@
+{
+  "name": "lydskog-v6",
+  "version": "1.0.0",
+  "description": "En moderne nettside for musikkproduksjon og lyddesign-tjenester.",
+  "main": "postcss.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.7",
+    "@types/react-dom": "^19.1.6"
+  }
+}

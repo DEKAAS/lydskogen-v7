@@ -1,0 +1,104 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark forest background gradient -->
+  <defs>
+    <linearGradient id="backgroundGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0f0a;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1a1d1b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#202426;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Sound wave gradient -->
+    <linearGradient id="soundGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#2BF574;stop-opacity:0" />
+      <stop offset="25%" style="stop-color:#2BF574;stop-opacity:0.3" />
+      <stop offset="50%" style="stop-color:#2BF574;stop-opacity:0.6" />
+      <stop offset="75%" style="stop-color:#2BF574;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#2BF574;stop-opacity:0" />
+    </linearGradient>
+    
+    <!-- Tree gradient -->
+    <linearGradient id="treeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1c2e1c;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d140d;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1920" height="1080" fill="url(#backgroundGradient)"/>
+  
+  <!-- Distant trees/mountains silhouette -->
+  <polygon points="0,600 300,500 600,550 900,450 1200,500 1500,400 1920,450 1920,1080 0,1080" 
+           fill="#0d1a0d" opacity="0.8"/>
+  
+  <!-- Mid-ground trees -->
+  <polygon points="0,750 200,650 400,700 600,600 800,650 1000,550 1200,600 1400,500 1600,550 1800,450 1920,500 1920,1080 0,1080" 
+           fill="url(#treeGradient)" opacity="0.9"/>
+  
+  <!-- Sound waves visualization -->
+  <g opacity="0.4">
+    <!-- Sound wave bars representing forest sounds -->
+    <rect x="150" y="300" width="4" height="200" fill="url(#soundGradient)" rx="2">
+      <animate attributeName="height" values="200;350;200;120;200" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="300;225;300;380;300" dur="3s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="170" y="250" width="4" height="300" fill="url(#soundGradient)" rx="2">
+      <animate attributeName="height" values="300;180;400;250;300" dur="2.5s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="250;320;150;275;250" dur="2.5s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="190" y="280" width="4" height="240" fill="url(#soundGradient)" rx="2">
+      <animate attributeName="height" values="240;320;160;280;240" dur="3.2s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="280;240;360;260;280" dur="3.2s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="210" y="320" width="4" height="160" fill="url(#soundGradient)" rx="2">
+      <animate attributeName="height" values="160;280;120;200;160" dur="2.8s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="320;240;360;300;320" dur="2.8s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="230" y="290" width="4" height="220" fill="url(#soundGradient)" rx="2">
+      <animate attributeName="height" values="220;150;340;190;220" dur="3.5s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="290;325;180;305;290" dur="3.5s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+  
+  <!-- More sound waves on the right -->
+  <g opacity="0.3">
+    <rect x="1650" y="320" width="4" height="180" fill="url(#soundGradient)" rx="2">
+      <animate attributeName="height" values="180;250;140;300;180" dur="2.7s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="320;275;360;200;320" dur="2.7s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="1670" y="280" width="4" height="260" fill="url(#soundGradient)" rx="2">
+      <animate attributeName="height" values="260;180;320;200;260" dur="3.1s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="280;320;240;300;280" dur="3.1s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="1690" y="350" width="4" height="140" fill="url(#soundGradient)" rx="2">
+      <animate attributeName="height" values="140;220;100;180;140" dur="2.9s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="350;290;400;320;350" dur="2.9s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+  
+  <!-- Subtle light rays from top -->
+  <g opacity="0.1">
+    <polygon points="400,0 450,0 600,1080 500,1080" fill="#2BF574"/>
+    <polygon points="800,0 850,0 1000,1080 900,1080" fill="#2BF574"/>
+    <polygon points="1300,0 1350,0 1500,1080 1400,1080" fill="#2BF574"/>
+  </g>
+  
+  <!-- Floating particles for ambience -->
+  <g opacity="0.6">
+    <circle cx="300" cy="200" r="2" fill="#2BF574" opacity="0.5">
+      <animate attributeName="cy" values="200;180;220;200" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0.8;0.3;0.5" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="800" cy="150" r="1.5" fill="#2BF574" opacity="0.4">
+      <animate attributeName="cy" values="150;130;170;150" dur="5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0.7;0.2;0.4" dur="5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1400" cy="180" r="2.5" fill="#2BF574" opacity="0.3">
+      <animate attributeName="cy" values="180;160;200;180" dur="3.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;0.6;0.1;0.3" dur="3.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1600" cy="220" r="1" fill="#2BF574" opacity="0.6">
+      <animate attributeName="cy" values="220;200;240;220" dur="4.2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0.9;0.3;0.6" dur="4.2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg> 
