@@ -1,0 +1,6 @@
+{
+  "buildCommand": "cd lydskogen && npm run build",
+  "outputDirectory": "lydskogen/.next",
+  "installCommand": "cd lydskogen && npm install",
+  "rootDirectory": "lydskogen"
+}
