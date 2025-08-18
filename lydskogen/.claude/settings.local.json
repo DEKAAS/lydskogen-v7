@@ -17,6 +17,10 @@
       "Bash(git checkout:*)"
     ],
     "deny": [],
-    "defaultMode": "acceptEdits"
+    "defaultMode": "acceptEdits",
+    "additionalDirectories": [
+      "/mnt/c/Users/danie/Documents/kodemappa/Lydskog-v6",
+      "/mnt/c/Users/danie/Documents/kodemappa"
+    ]
   }
 }

@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server'
-import { readFile, writeFile, mkdir } from 'fs/promises'
-import path from 'path'
-
-const ordersFile = path.join(process.cwd(), 'data/orders.json')
+import { supabaseAdmin } from '@/lib/supabase'
 
 interface Order {
   id: string
@@ -12,35 +9,26 @@ interface Order {
   phone?: string
   subject: string
   message?: string
-  formData?: any
+  form_data?: any
   status: 'new' | 'processing' | 'completed' | 'cancelled'
-  createdAt: string
-  updatedAt: string
+  created_at: string
+  updated_at: string
   source: string
-}
-
-async function ensureOrdersFile() {
-  try {
-    await mkdir(path.dirname(ordersFile), { recursive: true })
-    await readFile(ordersFile, 'utf-8')
-  } catch (error) {
-    // File doesn't exist, create it
-    await writeFile(ordersFile, JSON.stringify({ orders: [] }, null, 2))
-  }
 }
 
 export async function GET() {
   try {
-    await ensureOrdersFile()
-    const data = await readFile(ordersFile, 'utf-8')
-    const ordersData = JSON.parse(data)
+    const { data: orders, error } = await supabaseAdmin
+      .from('orders')
+      .select('*')
+      .order('created_at', { ascending: false })
     
-    // Sort by creation date (newest first)
-    const sortedOrders = ordersData.orders.sort((a: Order, b: Order) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    )
+    if (error) {
+      console.error('Error fetching orders:', error)
+      return NextResponse.json({ orders: [], error: 'Failed to fetch orders' })
+    }
     
-    return NextResponse.json({ orders: sortedOrders })
+    return NextResponse.json({ orders: orders || [] })
   } catch (error) {
     console.error('Error fetching orders:', error)
     return NextResponse.json({ orders: [], error: 'Failed to fetch orders' })
@@ -52,33 +40,34 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { type, name, email, phone, subject, message, formData, source, status: initialStatus } = body
     
-    await ensureOrdersFile()
-    const data = await readFile(ordersFile, 'utf-8')
-    const ordersData = JSON.parse(data)
-    
     const allowedStatuses: Order['status'][] = ['new', 'processing', 'completed', 'cancelled']
     const resolvedStatus: Order['status'] = allowedStatuses.includes(initialStatus)
       ? initialStatus as Order['status']
       : 'new'
 
-    const newOrder: Order = {
-      id: `order-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      type,
-      name,
-      email,
-      phone,
-      subject,
-      message,
-      formData,
-      status: resolvedStatus,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      source
+    const { data: newOrder, error } = await supabaseAdmin
+      .from('orders')
+      .insert({
+        type,
+        name,
+        email,
+        phone,
+        subject,
+        message,
+        form_data: formData,
+        status: resolvedStatus,
+        source
+      })
+      .select()
+      .single()
+    
+    if (error) {
+      console.error('Error saving order:', error)
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Failed to save order' 
+      }, { status: 500 })
     }
-    
-    ordersData.orders.push(newOrder)
-    
-    await writeFile(ordersFile, JSON.stringify(ordersData, null, 2))
     
     return NextResponse.json({ 
       success: true, 
@@ -99,28 +88,28 @@ export async function PUT(request: Request) {
     const body = await request.json()
     const { orderId, status } = body
     
-    await ensureOrdersFile()
-    const data = await readFile(ordersFile, 'utf-8')
-    const ordersData = JSON.parse(data)
+    const { data: updatedOrder, error } = await supabaseAdmin
+      .from('orders')
+      .update({ 
+        status, 
+        updated_at: new Date().toISOString() 
+      })
+      .eq('id', orderId)
+      .select()
+      .single()
     
-    const orderIndex = ordersData.orders.findIndex((order: Order) => order.id === orderId)
-    
-    if (orderIndex === -1) {
+    if (error) {
+      console.error('Error updating order status:', error)
       return NextResponse.json({ 
         success: false, 
-        error: 'Order not found' 
+        error: 'Order not found or failed to update' 
       }, { status: 404 })
     }
-    
-    ordersData.orders[orderIndex].status = status
-    ordersData.orders[orderIndex].updatedAt = new Date().toISOString()
-    
-    await writeFile(ordersFile, JSON.stringify(ordersData, null, 2))
     
     return NextResponse.json({ 
       success: true, 
       message: 'Order status updated successfully',
-      order: ordersData.orders[orderIndex]
+      order: updatedOrder
     })
   } catch (error) {
     console.error('Error updating order status:', error)
