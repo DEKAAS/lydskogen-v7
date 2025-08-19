@@ -94,6 +94,58 @@ export async function DELETE(request: Request) {
   }
 }
 
+export async function POST(request: Request) {
+  try {
+    const artworkItems = await request.json()
+
+    if (!Array.isArray(artworkItems)) {
+      return NextResponse.json({ error: 'Expected an array of artwork items' }, { status: 400 })
+    }
+
+    // Transform frontend format to database format
+    const dbArtwork = artworkItems.map(item => ({
+      title: item.title,
+      category: item.category,
+      price: item.price,
+      image_url: item.image_url || item.imageUrl,
+      description: item.description,
+      tags: item.tags,
+      is_new: item.is_new || false,
+      status: item.status || 'available'
+    }))
+
+    const { data, error } = await supabaseAdmin
+      .from('artwork_items')
+      .insert(dbArtwork)
+      .select()
+
+    if (error) {
+      console.error('Error inserting artwork items:', error)
+      return NextResponse.json({ error: 'Failed to insert artwork items' }, { status: 500 })
+    }
+
+    // Transform response
+    const transformedArtwork = data.map(item => ({
+      id: item.id,
+      title: item.title,
+      category: item.category,
+      price: item.price,
+      imageUrl: item.image_url,
+      description: item.description,
+      tags: item.tags,
+      uploadedAt: item.uploaded_at,
+      isNew: item.is_new,
+      status: item.status
+    }))
+
+    return NextResponse.json({ artwork: transformedArtwork })
+
+  } catch (error) {
+    console.error('Error inserting artwork items:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url)

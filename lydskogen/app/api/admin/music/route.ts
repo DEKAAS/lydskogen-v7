@@ -96,6 +96,68 @@ export async function DELETE(request: Request) {
   }
 }
 
+export async function POST(request: Request) {
+  try {
+    const musicTracks = await request.json()
+
+    if (!Array.isArray(musicTracks)) {
+      return NextResponse.json({ error: 'Expected an array of music tracks' }, { status: 400 })
+    }
+
+    // Transform frontend format to database format
+    const dbTracks = musicTracks.map(track => ({
+      title: track.title,
+      artist: track.artist,
+      genre: track.genre,
+      price: track.price,
+      audio_url: track.audio_url || track.audioUrl,
+      description: track.description,
+      duration: track.duration,
+      bpm: track.bpm,
+      key: track.key,
+      tags: track.tags,
+      is_uploaded: track.is_uploaded || false,
+      is_new: track.is_new || false,
+      status: track.status || 'available'
+    }))
+
+    const { data, error } = await supabaseAdmin
+      .from('music_tracks')
+      .insert(dbTracks)
+      .select()
+
+    if (error) {
+      console.error('Error inserting music tracks:', error)
+      return NextResponse.json({ error: 'Failed to insert music tracks' }, { status: 500 })
+    }
+
+    // Transform response
+    const transformedTracks = data.map(track => ({
+      id: track.id,
+      title: track.title,
+      artist: track.artist,
+      genre: track.genre,
+      price: track.price,
+      audioUrl: track.audio_url,
+      description: track.description,
+      duration: track.duration,
+      bpm: track.bpm,
+      key: track.key,
+      tags: track.tags,
+      uploadedAt: track.uploaded_at,
+      isUploaded: track.is_uploaded,
+      isNew: track.is_new,
+      status: track.status
+    }))
+
+    return NextResponse.json({ music: transformedTracks })
+
+  } catch (error) {
+    console.error('Error inserting music tracks:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url)

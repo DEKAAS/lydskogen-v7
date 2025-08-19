@@ -4,6 +4,7 @@ import VerticalSections from '@/components/VerticalSections';
 import AboutAndContact from '@/components/AboutAndContact';
 import Footer from '@/components/Footer';
 import HomeButton from '@/components/HomeButton';
+import CartButton from '@/components/CartButton';
 
 export default function Home() {
   return (
@@ -25,6 +26,9 @@ export default function Home() {
 
       {/* Global Home Button */}
       <HomeButton />
+      
+      {/* Shopping Cart Button */}
+      <CartButton />
     </div>
   );
 }

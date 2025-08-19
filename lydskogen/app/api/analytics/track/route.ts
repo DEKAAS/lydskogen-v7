@@ -57,13 +57,19 @@ export async function POST(request: NextRequest) {
       city = 'Oslo'
     }
 
-    // Insert page view into database (simplified for existing table structure)
+    // Insert page view into database
     const { data, error } = await supabaseAdmin
       .from('page_views')
       .insert({
         page_url: pageUrl,
+        referrer: referrer || null,
         user_agent: userAgent,
-        ip_address: ipAddress
+        ip_address: ipAddress,
+        session_id: finalSessionId,
+        country,
+        city,
+        device_type: deviceType,
+        browser
       })
       .select()
 

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { artworkItems } from '@/data/artwork';
 import { ArtworkItem } from '@/types/services';
+import { useCart } from '@/contexts/CartContext';
 
 interface GalleryGridProps {
   selectedCategory?: string;
@@ -195,6 +196,76 @@ function ArtworkCard({ item, index, onClick }: ArtworkCardProps) {
       </div>
     </motion.div>
   );
+}
+
+function ArtworkActions({ item }: { item: ArtworkItem }) {
+  const { addItem, isInCart } = useCart()
+  const inCart = isInCart(item.id)
+  const [isPurchasing, setIsPurchasing] = useState(false)
+
+  const handleAddToCart = () => {
+    addItem({
+      id: item.id,
+      type: 'artwork',
+      title: item.title,
+      price: item.price,
+      imageUrl: item.imageUrl
+    })
+  }
+
+  const handlePurchase = async () => {
+    setIsPurchasing(true)
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productName: item.title,
+          productId: item.id,
+          genre: 'artwork',
+          amount: Math.max(0, Math.round(item.price * 100))
+        })
+      })
+      const data = await response.json()
+      if (response.ok && data?.url) {
+        window.location.href = data.url
+        return
+      }
+    } catch (e) {
+      // Fallback below
+    } finally {
+      setIsPurchasing(false)
+    }
+
+    // Fallback to email
+    const subject = `Kjøp av artwork: ${item.title}`
+    const body = `Hei Lydskog!\n\nJeg vil gjerne kjøpe følgende artwork:\n\nTittel: ${item.title}\nPris: ${item.price} kr\nBeskrivelse: ${item.description}\n\nKan dere kontakte meg for å gjennomføre kjøpet?\n\nMvh,\n[Ditt navn]`
+    window.location.href = `mailto:lydskog@proton.me?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+  }
+
+  return (
+    <div className="flex gap-3 mb-4">
+      <button
+        onClick={handleAddToCart}
+        disabled={inCart}
+        className="flex-1 font-semibold py-3 px-4 rounded-xl transition-colors duration-300 disabled:opacity-60"
+        style={{ 
+          background: inCart ? 'var(--accent-green)' : 'var(--accent-gold)', 
+          color: '#1b1b1b' 
+        }}
+      >
+        {inCart ? '✓ I kurv' : '🛒 Legg til'}
+      </button>
+      <button
+        onClick={handlePurchase}
+        disabled={isPurchasing}
+        className="flex-1 font-semibold py-3 px-4 rounded-xl transition-colors duration-300 disabled:opacity-60"
+        style={{ background: 'var(--accent-gold)', color: '#1b1b1b' }}
+      >
+        {isPurchasing ? 'Behandler...' : 'Kjøp nå'}
+      </button>
+    </div>
+  )
 }
 
 export default function GalleryGrid({ selectedCategory = 'all', onItemClick, artworkItems: propArtworkItems, showAll = false }: GalleryGridProps) {
@@ -400,7 +471,9 @@ export default function GalleryGrid({ selectedCategory = 'all', onItemClick, art
                     </div>
                   )}
 
-                  {/* Order Button */}
+                  {/* Action Buttons */}
+                  <ArtworkActions item={lightboxItem} />
+                  
                   <button
                     onClick={() => {
                       const subject = `Bestilling av artwork: ${lightboxItem.title}`;
@@ -419,10 +492,10 @@ Mvh,
 
                       window.location.href = `mailto:lydskog@proton.me?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                     }}
-                    className="w-full font-semibold py-3 px-6 rounded-xl transition-colors duration-300"
-                    style={{ background: 'var(--accent-gold)', color: '#1b1b1b' }}
+                    className="w-full font-semibold py-3 px-6 rounded-xl transition-colors duration-300 mt-3"
+                    style={{ background: 'transparent', color: 'var(--text-on-dark)', border: '1px solid var(--border-light)' }}
                   >
-                    Bestill artwork
+                    Kontakt for bestilling
                   </button>
                 </div>
               </div>

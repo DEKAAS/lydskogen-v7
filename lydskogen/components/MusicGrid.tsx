@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useCart } from '@/contexts/CartContext'
 
 interface MusicTrack {
   id: string
@@ -213,6 +214,20 @@ function TrackCard({ track, index, isPlaying, onPlayToggle, onPurchase, purchasi
 
 function Disclosure({ track, purchasingId, onPurchase }: { track: MusicTrack, purchasingId?: string | null, onPurchase: (t: MusicTrack) => void }) {
   const [open, setOpen] = useState(false)
+  const { addItem, isInCart } = useCart()
+  const inCart = isInCart(track.id)
+
+  const handleAddToCart = () => {
+    addItem({
+      id: track.id,
+      type: 'music',
+      title: track.title,
+      artist: track.artist,
+      price: track.price,
+      audioUrl: track.audioUrl
+    })
+  }
+
   return (
     <div>
       {!open ? (
@@ -242,14 +257,25 @@ function Disclosure({ track, purchasingId, onPurchase }: { track: MusicTrack, pu
               </div>
             )}
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              onClick={handleAddToCart}
+              disabled={inCart}
+              className="w-full py-2.5 px-3 rounded-lg font-semibold transition-all duration-300 disabled:opacity-60"
+              style={{ 
+                background: inCart ? 'var(--accent-green)' : 'var(--accent-gold)', 
+                color: '#1b1b1b' 
+              }}
+            >
+              {inCart ? '✓ I kurv' : '🛒 Legg til'}
+            </button>
             <button
               onClick={() => onPurchase(track)}
               disabled={purchasingId === track.id}
               className="w-full py-2.5 px-3 rounded-lg font-semibold transition-all duration-300 disabled:opacity-60"
               style={{ background: 'var(--accent-gold)', color: '#1b1b1b' }}
             >
-              {purchasingId === track.id ? 'Videresender…' : `Kjøp – ${track.price} kr`}
+              {purchasingId === track.id ? 'Videresender…' : `Kjøp nå`}
             </button>
             <a
               href="#services"

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface CustomArtworkModalProps {
@@ -23,6 +23,19 @@ export default function CustomArtworkModal({ isOpen, onClose }: CustomArtworkMod
     dimensions: '',
     fileFormat: 'jpg'
   })
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen])
 
   const updateField = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -76,19 +89,23 @@ export default function CustomArtworkModal({ isOpen, onClose }: CustomArtworkMod
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
         >
-          <motion.div
-            className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-base-dark rounded-2xl border border-white/20"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <motion.div
+                className="relative w-full max-w-4xl bg-base-dark rounded-2xl border border-white/20 shadow-2xl"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                style={{ maxHeight: '90vh', overflowY: 'auto' }}
+              >
             {/* Header */}
             <div className="p-6 border-b border-white/10">
               <div className="flex justify-between items-start">
@@ -265,7 +282,9 @@ export default function CustomArtworkModal({ isOpen, onClose }: CustomArtworkMod
                 </div>
               </div>
             </form>
-          </motion.div>
+              </motion.div>
+            </div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

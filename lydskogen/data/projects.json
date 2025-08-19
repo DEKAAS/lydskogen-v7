@@ -1,3 +1,88 @@
 {
-  "projects": []
+  "projects": [
+    {
+      "id": "project-1755626372852",
+      "title": "Ambient Waves - Album",
+      "artworkUrl": "https://images.unsplash.com/photo-1571974599782-87624638276e?w=400&h=400&fit=crop",
+      "musicUrl": "https://open.spotify.com/album/example",
+      "description": "Et fullstendig ambient album produsert for en independent artist. Inkluderer mastering, mixing og albumcover design.",
+      "tags": [
+        "ambient",
+        "album",
+        "mastering",
+        "design"
+      ],
+      "createdAt": "2025-08-19T17:59:32.852Z"
+    },
+    {
+      "id": "project-1755626390441",
+      "title": "Lo-Fi Beats Collection",
+      "artworkUrl": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop",
+      "musicUrl": "https://open.spotify.com/playlist/example",
+      "description": "En samling lo-fi beats produsert for studie og avslapping. Komplett produksjon fra scratch.",
+      "tags": [
+        "lo-fi",
+        "beats",
+        "chill",
+        "production"
+      ],
+      "createdAt": "2025-08-19T17:59:50.441Z"
+    },
+    {
+      "id": "project-1755626459124",
+      "title": "Hip-Hop Artist Website",
+      "artworkUrl": "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=400&h=400&fit=crop",
+      "musicUrl": "https://example.com/artist-demo",
+      "description": "Komplett web-løsning for en hip-hop artist. Inkluderer logo design, nettside og visual identity.",
+      "tags": [
+        "website",
+        "hip-hop",
+        "branding",
+        "logo"
+      ],
+      "createdAt": "2025-08-19T18:00:59.124Z"
+    },
+    {
+      "id": "project-1755626540052",
+      "title": "Soundscape for Film",
+      "artworkUrl": "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=400&h=400&fit=crop",
+      "musicUrl": null,
+      "description": "Atmosfærisk lydlandskap komponert for kortfilm. Komplett lyddesign og post-produksjon.",
+      "tags": [
+        "soundscape",
+        "film",
+        "ambient",
+        "sound-design"
+      ],
+      "createdAt": "2025-08-19T18:02:20.052Z"
+    },
+    {
+      "id": "project-1755626557267",
+      "title": "Electronic EP Mastering",
+      "artworkUrl": "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=400&h=400&fit=crop",
+      "musicUrl": "https://open.spotify.com/album/electronic-ep",
+      "description": "Profesjonell mastering av 5-spors elektronisk EP. Optimalisert for streaming og vinyl.",
+      "tags": [
+        "electronic",
+        "mastering",
+        "EP",
+        "vinyl"
+      ],
+      "createdAt": "2025-08-19T18:02:37.267Z"
+    },
+    {
+      "id": "project-1755626575937",
+      "title": "Podcast Intro & Outro",
+      "artworkUrl": "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=400&h=400&fit=crop",
+      "musicUrl": null,
+      "description": "Tilpassede intro og outro-jingles for populær norsk podcast. Inkluderer voice-over og musikk.",
+      "tags": [
+        "podcast",
+        "jingle",
+        "voice-over",
+        "branding"
+      ],
+      "createdAt": "2025-08-19T18:02:55.937Z"
+    }
+  ]
 }

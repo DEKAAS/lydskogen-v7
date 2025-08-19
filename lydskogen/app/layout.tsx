@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/components/AuthProvider";
 import AnalyticsProvider from "@/components/AnalyticsProvider";
+import { CartProvider } from "@/contexts/CartContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -46,13 +47,15 @@ export default function RootLayout({
   return (
     <html lang="no" className="scroll-smooth">
       <body className={`${inter.variable} font-sans antialiased text-white`}>
-        <AuthProvider>
-          <AnalyticsProvider>
-            <main>
-            {children}
-            </main>
-          </AnalyticsProvider>
-        </AuthProvider>
+        <CartProvider>
+          <AuthProvider>
+            <AnalyticsProvider>
+              <main>
+              {children}
+              </main>
+            </AnalyticsProvider>
+          </AuthProvider>
+        </CartProvider>
       </body>
     </html>
   );

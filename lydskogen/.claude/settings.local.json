@@ -14,7 +14,9 @@
       "Bash(git add:*)",
       "Bash(git push:*)",
       "Bash(git commit:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(cat:*)",
+      "WebFetch(domain:lydskogen.vercel.app)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits",
