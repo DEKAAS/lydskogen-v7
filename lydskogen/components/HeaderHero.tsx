@@ -45,35 +45,27 @@ export default function HeaderHero() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.3 }}
       >
-        {/* Internal Navigation */}
-        <motion.nav 
+        {/* Internal Navigation - transparent */}
+        <nav 
           className="internal-navbar flex justify-center space-x-4 mb-8 px-3 py-2 sticky top-4 z-20"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)', backdropFilter: 'blur(10px)' }}
         >
-          <Link href="/" className="nav-link-small transition-colors duration-300 text-sm flex items-center gap-1" style={{color: 'var(--text-on-dark)'}}>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
-            Hjem
-          </Link>
-          <Link href="#artist" className="nav-link-small transition-colors duration-300 text-sm" style={{color: 'var(--text-on-dark)'}}>
+          <Link href="#artist" className="nav-link-small text-sm" style={{color: 'rgba(255, 255, 255, 0.9)'}}>
             Tjenester
           </Link>
-          <Link href="#contact" className="nav-link-small transition-colors duration-300 text-sm" style={{color: 'var(--text-on-dark)'}}>
+          <Link href="#contact" className="nav-link-small text-sm" style={{color: 'rgba(255, 255, 255, 0.9)'}}>
             Kontakt
           </Link>
           {session?.user?.role === 'admin' ? (
-            <Link href="/admin/dashboard" className="nav-link-small transition-colors duration-300 text-sm bg-accent-green/20 px-3 py-1 rounded-full border border-accent-green/30" style={{color: 'var(--accent-green)'}}>
-              Admin Panel
+            <Link href="/admin/dashboard" className="nav-link-small text-sm px-3 py-1 rounded-full border border-white/30" style={{color: 'rgba(255, 255, 255, 0.9)', backgroundColor: 'rgba(255, 255, 255, 0.1)'}}>
+              Admin
             </Link>
           ) : (
-            <Link href="/admin/login" className="nav-link-small transition-colors duration-300 text-sm bg-white/10 px-3 py-1 rounded-full border border-white/20" style={{color: 'var(--text-on-dark)'}}>
+            <Link href="/admin/login" className="nav-link-small text-sm px-3 py-1 rounded-full border border-white/30" style={{color: 'rgba(255, 255, 255, 0.9)', backgroundColor: 'rgba(255, 255, 255, 0.1)'}}>
               Logg inn
             </Link>
           )}
-        </motion.nav>
+        </nav>
 
         {/* Content Container - Centered */}
         <div className="flex-1 flex flex-col justify-center items-center max-w-4xl mx-auto">
@@ -82,58 +74,26 @@ export default function HeaderHero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <h1 className="hero-title text-5xl md:text-7xl font-extrabold mb-6 tracking-tight relative" style={{color: 'var(--text-on-dark)'}}>
-            {/* Subtle glow background */}
-            <motion.div
-              className="absolute inset-0 text-4xl md:text-6xl font-bold tracking-tight opacity-30 blur-2xl"
-              animate={{
-                opacity: [0.2, 0.4, 0.2]
-              }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          <h1 className="hero-title text-5xl md:text-7xl font-extrabold mb-6 tracking-tight relative">
+            {/* Subtil grønn glow */}
+            <div
+              className="absolute inset-0 text-4xl md:text-6xl font-bold tracking-tight opacity-15 blur-2xl"
+              style={{ color: '#5a9068' }}
             >
-              <span className="text-accent-green/60">Lyd</span>
-              <span className="text-accent-green/80">skog</span>
-            </motion.div>
+              Lydskog
+            </div>
             
-            {/* Main text */}
+            {/* Main text - naturlig grønn */}
             <div className="relative z-10">
-              <motion.span
-                className="text-transparent bg-clip-text"
-                style={{ backgroundImage: 'linear-gradient(90deg, #059669, #0d9488, #14b8a6)' }}
-                initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.9, delay: 0.15 }}
+              <span
+                style={{ 
+                  color: '#c8e6d0',
+                  fontWeight: 700,
+                  letterSpacing: '0.02em'
+                }}
               >
                 Lydskog
-              </motion.span>
-              {/* overlay sheen */}
-              {mounted && (
-              <motion.div
-                className="absolute inset-0 overflow-hidden rounded"
-                initial={{ opacity: 0.15 }}
-                animate={{ opacity: [0.15, 0.3, 0.15] }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                {/* particle-like dust */}
-                {Array.from({ length: 20 }).map((_, i) => (
-                  <motion.span
-                    key={i}
-                    className="absolute w-1 h-1 rounded-full"
-                    style={{
-                      top: `${Math.random() * 80 + 10}%`,
-                      left: `${Math.random() * 80 + 10}%`,
-                      background: 'rgba(255,255,255,0.6)'
-                    }}
-                    animate={{
-                      y: [0, -6, 0],
-                      x: [0, 4, -3, 0],
-                      opacity: [0.4, 0.8, 0.4]
-                    }}
-                    transition={{ duration: 6 + Math.random() * 4, repeat: Infinity, ease: 'easeInOut', delay: i * 0.15 }}
-                  />
-                ))}
-              </motion.div>
-              )}
+              </span>
             </div>
           </h1>
         </motion.div>

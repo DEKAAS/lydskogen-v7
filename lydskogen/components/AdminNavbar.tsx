@@ -18,6 +18,12 @@ const navItems = [
     description: 'Dashboard oversikt'
   },
   { 
+    id: 'projects', 
+    label: 'Portfolio', 
+    icon: '🎨',
+    description: 'Administrer portfolio-prosjekter'
+  },
+  { 
     id: 'content', 
     label: 'Innhold', 
     icon: '📝',

@@ -8,25 +8,23 @@ import ProjectsSection from './sections/ProjectsSection';
 
 export default function VerticalSections() {
   return (
-    <div style={{backgroundColor: 'var(--primary-bg)'}}>
+    <div>
       {/* Artist-nettside Section */}
-      <ArtistNettsideSection />
+      <div style={{backgroundColor: 'var(--section-bg-1)'}}>
+        <ArtistNettsideSection />
+      </div>
       <div className="section-divider" />
       
       {/* Miksing Section */}
-      <MiksingSeksjon />
+      <div style={{backgroundColor: 'var(--section-bg-2)'}}>
+        <MiksingSeksjon />
+      </div>
       <div className="section-divider" />
       
-      {/* Musikkproduksjon Section (inkluderer ferdig musikk per sjanger) */}
-      <MusikkproduksjonSeksjon />
-      <div className="section-divider" />
-      
-      {/* Artwork Galleri Section */}
-      <CombinedArtworkSection />
-      <div className="section-divider" />
-
-      {/* Prosjekter */}
-      <ProjectsSection />
+      {/* Musikkproduksjon Section */}
+      <div style={{backgroundColor: 'var(--section-bg-3)'}}>
+        <MusikkproduksjonSeksjon />
+      </div>
     </div>
   );
 }

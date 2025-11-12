@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import AdminNavbar from '@/components/AdminNavbar'
 import OverviewTab from '@/components/admin/OverviewTab'
+import ProjectsTab from '@/components/admin/ProjectsTab'
 import ContentTab from '@/components/admin/ContentTab'
 import OrdersTab from '@/components/admin/OrdersTab'
 import AnalyticsTab from '@/components/admin/AnalyticsTab'
@@ -42,6 +43,8 @@ export default function AdminDashboard() {
     switch (activeTab) {
       case 'overview':
         return <OverviewTab />
+      case 'projects':
+        return <ProjectsTab />
       case 'content':
         return <ContentTab />
       case 'orders':
