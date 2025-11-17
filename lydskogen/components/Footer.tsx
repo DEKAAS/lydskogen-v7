@@ -36,7 +36,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/produksjon/ambient" className="transition-colors hover:opacity-100" style={{color: 'var(--text-on-dark)', opacity: 0.8}}>
+                <Link href="/#artist" className="transition-colors hover:opacity-100" style={{color: 'var(--text-on-dark)', opacity: 0.8}}>
                   Produksjon
                 </Link>
               </li>

@@ -1,334 +1,364 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import GenreGrid from '@/components/GenreGrid';
-import MusicGrid from '@/components/MusicGrid';
-import { useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion as m } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
+import AudioPlayer from '@/components/AudioPlayer';
+import { genreData } from '@/data/genres';
 
-const genres = [
-  {
-    id: 'ambient',
-    name: 'Ambient',
-    icon: '🌌',
-    description: 'Atmosfærisk og meditativ musikk som skaper ro og kontemplasjon',
-    color: 'rgb(147, 197, 253)' // blue-300
-  },
-  {
-    id: 'hiphop',
-    name: 'Hip-hop',
-    icon: '🎤',
-    description: 'Kraftfulle beats og grooves med moderne produksjonsteknikker',
-    color: 'rgb(251, 146, 60)' // orange-400
-  },
-  {
-    id: 'lofi',
-    name: 'Lo-fi',
-    icon: '📻',
-    description: 'Nostalgisk og avslappende musikk med vintage karakteristikker',
-    color: 'rgb(251, 191, 36)' // amber-400
-  },
-  {
-    id: 'soundscape',
-    name: 'Soundscape',
-    icon: '🏞️',
-    description: 'Cinematiske lydlandskap og atmosfærisk musikk for film og media',
-    color: 'rgb(148, 163, 184)' // slate-400
-  }
-];
+type DemoTrack = {
+  id: string;
+  title: string;
+  genre: string;
+  audioUrl: string;
+  duration?: string;
+};
 
-interface MusicTrack {
-  id: string
-  title: string
-  artist: string
-  genre: string
-  price: number
-  audioUrl: string
-  description: string
-  duration: string
-  bpm?: number
-  key?: string
-  tags: string[]
-  uploadedAt: string
-  isUploaded: boolean
-  isNew?: boolean
-  status?: 'available' | 'sold' | 'pending'
-}
+type ApiTrack = {
+  id: string;
+  title: string;
+  genre: string;
+  audioUrl: string;
+  duration?: string;
+};
+
+const ORDER_EMAIL = 'lydskog@proton.me';
+const customDescriptions: Record<string, string> = {
+  ambient: 'Rolige lydlandskap med feltopptak og teksturer som skaper ro og dybde.',
+  hiphop: 'Her henter vi inspirasjon fra 90-tallets boombap – field recordings, støvete trommer og klassiske lyder.',
+  lofi: 'Varme, nostalgiske beats med vinylstøy, myke trommer og jazzede akkorder.',
+  soundscape: 'Cinematiske lydverdener med naturlyder, atmosfæriske pads og dramatisk dynamikk.'
+};
 
 export default function MusikkproduksjonSeksjon() {
-  const [tracks, setTracks] = useState<MusicTrack[]>([])
-  const [loading, setLoading] = useState(true)
-  const [activeGenre, setActiveGenre] = useState<'ambient' | 'hiphop' | 'lofi' | 'soundscape'>('ambient')
-  const [activeView, setActiveView] = useState<'custom' | 'ready'>('ready')
-  const [showInfoPopup, setShowInfoPopup] = useState(false)
-  const genreOrder: Array<'ambient' | 'hiphop' | 'lofi' | 'soundscape'> = ['ambient','hiphop','lofi','soundscape']
-  const titleMap: Record<string, string> = {
-    ambient: 'Ambient',
-    hiphop: 'Hip-hop',
-    lofi: 'Lo-fi',
-    soundscape: 'Soundscape'
-  }
-  const tabsRef = useRef<HTMLDivElement>(null)
-  const [isTabsStuck, setIsTabsStuck] = useState(false)
+  const [demoTracks, setDemoTracks] = useState<Record<string, DemoTrack[]>>({});
+  const [loading, setLoading] = useState(true);
+  const [orderForm, setOrderForm] = useState({
+    name: '',
+    email: '',
+    genre: 'ambient',
+    brief: ''
+  });
+  const [orderErrors, setOrderErrors] = useState<Record<string, string>>({});
+  const [orderSending, setOrderSending] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
 
   useEffect(() => {
-    const fetchTracks = async () => {
+    const fetchMusic = async () => {
       try {
-        const response = await fetch('/api/music')
-        const data = await response.json()
-        setTracks(data.music || [])
-      } catch (e) {
-        setTracks([])
+        const response = await fetch('/api/music');
+        const data = await response.json();
+        const tracks: ApiTrack[] = data.music || [];
+
+        const grouped = tracks.reduce<Record<string, DemoTrack[]>>((acc, track) => {
+          const genreKey = track.genre || 'annet';
+          if (!acc[genreKey]) acc[genreKey] = [];
+          acc[genreKey].push({
+            id: track.id,
+            title: track.title,
+            genre: track.genre,
+            audioUrl: track.audioUrl,
+            duration: track.duration
+          });
+          return acc;
+        }, {});
+
+        setDemoTracks(grouped);
+      } catch (error) {
+        console.error('Failed to fetch music tracks', error);
+        setDemoTracks({});
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchTracks()
-  }, [])
+    };
+
+    fetchMusic();
+  }, []);
+
+  const genreCards = useMemo(() => genreData.filter((genre) =>
+    ['ambient', 'hiphop', 'lofi', 'soundscape'].includes(genre.id)
+  ), []);
 
   useEffect(() => {
-    const onScroll = () => {
-      const el = tabsRef.current
-      if (!el) return
-      const top = el.getBoundingClientRect().top
-      setIsTabsStuck(top <= 85) // navbar ~80px
+    if (!genreCards.some((g) => g.id === orderForm.genre) && genreCards.length > 0) {
+      setOrderForm((prev) => ({ ...prev, genre: genreCards[0].id }));
     }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    onScroll()
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+  }, [genreCards, orderForm.genre]);
+
+  const handleOrderChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setOrderForm((prev) => ({ ...prev, [name]: value }));
+    if (orderErrors[name]) {
+      setOrderErrors((prev) => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const validateOrder = () => {
+    const nextErrors: Record<string, string> = {};
+    if (!orderForm.name.trim()) nextErrors.name = 'Navn er påkrevd';
+    if (!orderForm.email.trim()) {
+      nextErrors.email = 'E-post er påkrevd';
+    } else if (!/^\S+@\S+\.\S+$/.test(orderForm.email)) {
+      nextErrors.email = 'Ugyldig e-post';
+    }
+    if (!orderForm.brief.trim()) nextErrors.brief = 'Beskrivelse er påkrevd';
+
+    setOrderErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+
+  const handleOrderSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateOrder()) return;
+
+    setOrderSending(true);
+    const genreTitle = genreCards.find((g) => g.id === orderForm.genre)?.title || orderForm.genre;
+    const subject = `Bestilling: ${genreTitle}`;
+    const body = `Hei Lydskog!\n\nNavn: ${orderForm.name}\nE-post: ${orderForm.email}\nSjanger: ${genreTitle}\n\nProsjekt:\n${orderForm.brief}`;
+
+    setTimeout(() => {
+      window.location.href = `mailto:${ORDER_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      setOrderSending(false);
+      setOrderSuccess(true);
+      setOrderForm({
+        name: '',
+        email: '',
+        genre: orderForm.genre,
+        brief: ''
+      });
+      setTimeout(() => setOrderSuccess(false), 4000);
+    }, 400);
+  };
 
   return (
-    <section id="services" className="relative py-16" style={{backgroundColor: 'var(--primary-bg)'}}>
-      {/* Info Button - liten og diskret */}
-      <button
-        onClick={() => setShowInfoPopup(true)}
-        className="absolute top-3 right-4 z-20 w-6 h-6 rounded-full flex items-center justify-center"
-        style={{ 
-          backgroundColor: 'rgba(255, 255, 255, 0.05)', 
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          color: 'var(--text-muted)'
-        }}
-        title="Info om musikkproduksjon"
-      >
-        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      </button>
-
+    <section id="services" className="py-16" style={{ backgroundColor: 'var(--primary-bg)' }}>
       <div className="container mx-auto px-4">
-        {/* Section Header (ikon fjernet) */}
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-        >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6" style={{color: 'var(--text-on-dark)'}}>
+        <div className="text-center mb-12">
+          <p className="uppercase tracking-[0.3em] text-xs mb-3" style={{ color: 'var(--text-muted)' }}>
             Musikkproduksjon
-          </h2>
-          <p className="text-xl max-w-3xl mx-auto leading-relaxed" style={{color: 'var(--text-on-dark)', opacity: 0.9}}>
-            Velg din sjanger og bestill skreddersydd musikk. Ferdiglåter finner du under – sortert per sjanger.
           </p>
-        </motion.div>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: 'var(--text-color)' }}>
+            Velg sjanger, hør demo, bestill
+          </h2>
+          <p className="text-base md:text-lg max-w-2xl mx-auto" style={{ color: 'var(--text-muted)' }}>
+            Fire spesialfelt – Ambient, Soundscape, Hip-hop og Lo-fi. Spill av et par eksempler og send bestilling når du er klar.
+          </p>
+        </div>
 
-        {/* Unified dark container with view-toggle */}
-        <motion.div
-          className="max-w-7xl mx-auto"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          viewport={{ once: true }}
-        >
-          <div 
-            className="p-4 md:p-6 rounded-3xl border backdrop-blur-sm"
+        <div className="grid gap-6 md:gap-8 md:grid-cols-2">
+          {genreCards.map((genre) => {
+            const demos = (genre.id && demoTracks[genre.id]) || [];
+            const topDemos = demos.slice(0, 2);
+
+            return (
+              <div
+                key={genre.id}
+                className="relative rounded-2xl overflow-hidden"
+                style={{ border: '1px solid var(--border-color)' }}
+              >
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    backgroundImage: `url(${genre.heroImage || genre.thumbnailImage})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    filter: 'blur(14px)',
+                    transform: 'scale(1.1)',
+                    opacity: 0.35
+                  }}
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(7,35,24,0.85), rgba(19,45,31,0.9))'
+                  }}
+                />
+
+                <div className="relative p-6 flex flex-col gap-6">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <h3
+                        className="text-2xl md:text-3xl font-serif tracking-[0.05em]"
+                        style={{ color: 'var(--text-color)' }}
+                      >
+                        {genre.title}
+                      </h3>
+                      <span
+                        className="text-xs uppercase tracking-[0.3em]"
+                        style={{ color: 'var(--text-muted)' }}
+                      >
+                        Skreddersøm
+                      </span>
+                    </div>
+                    <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                      {customDescriptions[genre.id] || genre.shortDescription}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs uppercase tracking-widest mb-3" style={{ color: 'var(--text-muted)' }}>
+                      Demoer fra arkivet
+                    </p>
+                    {loading ? (
+                      <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                        Laster inn demoer…
+                      </div>
+                    ) : topDemos.length > 0 ? (
+                      <div className="space-y-3">
+                        {topDemos.map((track) => (
+                          <AudioPlayer
+                            key={track.id}
+                            title={track.title}
+                            src={track.audioUrl}
+                            duration={track.duration}
+                            accentColor={genre.accentColor}
+                            bgClass="bg-black/20"
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div
+                        className="rounded-lg p-4 text-sm text-center font-medium"
+                        style={{
+                          backgroundColor: 'rgba(0,0,0,0.35)',
+                          border: '1px dashed var(--border-color)',
+                          color: 'var(--text-muted)'
+                        }}
+                      >
+                        Demo kommer snart
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mt-12 max-w-3xl mx-auto">
+          <div
+            className="rounded-2xl p-6 md:p-8"
             style={{
-              background: 'rgba(0,0,0,0.35)',
-              border: '1px solid rgba(255,255,255,0.08)'
+              backgroundColor: 'rgba(0,0,0,0.35)',
+              border: '1px solid var(--border-color)',
+              backdropFilter: 'blur(10px)'
             }}
           >
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <button
-                onClick={() => setActiveView('ready')}
-                className={`px-4 py-2 rounded-lg font-medium ${activeView === 'ready' ? 'text-black' : 'text-white/85 hover:text-white'}`}
-                style={{
-                  background: activeView === 'ready' 
-                    ? 'linear-gradient(135deg, rgba(219,186,54,1), rgba(219,186,54,0.85))' 
-                    : 'transparent',
-                  border: '1px solid var(--border-light)',
-                  boxShadow: activeView === 'ready' ? '0 6px 16px rgba(0,0,0,0.25)' : 'none'
-                }}
-              >
-                Ferdig musikk
-              </button>
-              <button
-                onClick={() => setActiveView('custom')}
-                className={`px-4 py-2 rounded-lg font-medium ${activeView === 'custom' ? 'text-black' : 'text-white/85 hover:text-white'}`}
-                style={{
-                  background: activeView === 'custom' 
-                    ? 'linear-gradient(135deg, rgba(219,186,54,1), rgba(219,186,54,0.85))' 
-                    : 'transparent',
-                  border: '1px solid var(--border-light)',
-                  boxShadow: activeView === 'custom' ? '0 6px 16px rgba(0,0,0,0.25)' : 'none'
-                }}
-              >
-                Skreddersy
-              </button>
+            <div className="mb-6 text-center">
+              <p className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: 'var(--text-muted)' }}>
+                Bestillingsskjema
+              </p>
+              <h3 className="text-2xl font-semibold" style={{ color: 'var(--text-color)' }}>
+                Klar for et prosjekt?
+              </h3>
+              <p className="text-sm mt-2" style={{ color: 'var(--text-muted)' }}>
+                Velg sjanger og beskriv kort hva du trenger. Vi tar kontakt for å avtale detaljer.
+              </p>
             </div>
 
-            <AnimatePresence mode="wait">
-              {activeView === 'custom' ? (
-                <m.div
-                  key="custom"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <GenreGrid />
-                </m.div>
-              ) : (
-                <m.div
-                  key="ready"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {/* Tabs for genre */}
-                  <div ref={tabsRef} className={`px-2 md:px-4 pt-1 transition-all duration-300`} onKeyDown={(e) => {
-                    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-                      e.preventDefault()
-                      const idx = genreOrder.indexOf(activeGenre)
-                      const delta = e.key === 'ArrowRight' ? 1 : -1
-                      const next = genreOrder[(idx + delta + genreOrder.length) % genreOrder.length]
-                      setActiveGenre(next)
-                    }
-                  }}>
-                    <div role="tablist" aria-label="Sjanger" className={`flex flex-wrap items-center justify-center gap-2 md:gap-3 rounded-2xl`}>
-                      {genreOrder.map((id) => (
-                        <button
-                          key={id}
-                          role="tab"
-                          aria-selected={activeGenre === id}
-                          tabIndex={activeGenre === id ? 0 : -1}
-                          onClick={() => setActiveGenre(id)}
-                          className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${activeGenre === id ? 'text-black' : 'text-white/80 hover:text-white'}`}
-                          style={{
-                            background: activeGenre === id 
-                              ? 'linear-gradient(135deg, rgba(219,186,54,1), rgba(219,186,54,0.85))' 
-                              : 'var(--glass-section)',
-                            border: '1px solid var(--border-light)'
-                          }}
-                        >
-                          {titleMap[id]}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  {/* Grid */}
-                  <div className="p-3 md:p-4">
-                    <AnimatePresence mode="wait">
-                      <m.div
-                        key={`grid-${activeGenre}`}
-                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -8, scale: 0.98 }}
-                        transition={{ duration: 0.25, ease: 'easeOut' }}
-                      >
-                        <MusicGrid tracks={tracks.filter(t => t.genre === activeGenre)} showAll />
-                      </m.div>
-                    </AnimatePresence>
-                  </div>
-                </m.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </motion.div>
-
-        {/* ensure data fetched */}
-        <div className="sr-only">{!loading && tracks.length}</div>
-
-        {/* Info Popup - enkel og sentrert */}
-        {showInfoPopup && (
-          <>
-            <div
-              onClick={() => setShowInfoPopup(false)}
-              className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center px-4"
-              style={{ backdropFilter: 'blur(4px)' }}
-            />
-            <div
-              className="fixed top-1/2 left-1/2 z-50 w-full max-w-md"
-              style={{ transform: 'translate(-50%, -50%)' }}
-            >
-              <div 
-                className="p-6 rounded-lg"
-                style={{ 
-                  backgroundColor: 'var(--card-bg)', 
-                  border: '1px solid var(--border-color)' 
-                }}
+            {orderSuccess ? (
+              <div
+                className="p-4 rounded-lg text-center"
+                style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)', color: 'var(--text-color)' }}
               >
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold" style={{ color: 'var(--text-color)' }}>
-                    Musikkproduksjon
-                  </h3>
-                  <button
-                    onClick={() => setShowInfoPopup(false)}
-                    className="w-6 h-6 rounded-full flex items-center justify-center"
-                    style={{ 
-                      backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+                Takk! Vi har mottatt forespørselen din.
+              </div>
+            ) : (
+              <form onSubmit={handleOrderSubmit} className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm mb-2" style={{ color: 'var(--text-muted)' }}>
+                      Navn
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={orderForm.name}
+                      onChange={handleOrderChange}
+                      className="w-full rounded-lg p-3 text-sm"
+                      style={{
+                        backgroundColor: 'var(--card-bg)',
+                        border: orderErrors.name ? '1px solid #ef4444' : '1px solid var(--border-color)',
+                        color: 'var(--text-color)'
+                      }}
+                    />
+                    {orderErrors.name && <p className="text-xs mt-1" style={{ color: '#ef4444' }}>{orderErrors.name}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm mb-2" style={{ color: 'var(--text-muted)' }}>
+                      E-post
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={orderForm.email}
+                      onChange={handleOrderChange}
+                      className="w-full rounded-lg p-3 text-sm"
+                      style={{
+                        backgroundColor: 'var(--card-bg)',
+                        border: orderErrors.email ? '1px solid #ef4444' : '1px solid var(--border-color)',
+                        color: 'var(--text-color)'
+                      }}
+                    />
+                    {orderErrors.email && <p className="text-xs mt-1" style={{ color: '#ef4444' }}>{orderErrors.email}</p>}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm mb-2" style={{ color: 'var(--text-muted)' }}>
+                    Sjanger
+                  </label>
+                  <select
+                    name="genre"
+                    value={orderForm.genre}
+                    onChange={handleOrderChange}
+                    className="w-full rounded-lg p-3 text-sm"
+                    style={{
+                      backgroundColor: 'var(--card-bg)',
                       border: '1px solid var(--border-color)',
                       color: 'var(--text-color)'
                     }}
                   >
-                    ✕
-                  </button>
+                    {genreCards.map((genre) => (
+                      <option key={genre.id} value={genre.id}>
+                        {genre.title}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
-                <div className="space-y-4 text-sm" style={{ color: 'var(--text-muted)' }}>
-                  <div>
-                    <h4 className="font-semibold mb-1" style={{ color: 'var(--text-color)' }}>
-                      🎵 Skreddersydd Musikk
-                    </h4>
-                    <p>
-                      Bestill original musikk laget spesielt for ditt prosjekt. 
-                      Vi produserer i fire hovedsjangre: Ambient, Hip-hop, Lo-fi og Soundscape.
-                    </p>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold mb-1" style={{ color: 'var(--text-color)' }}>
-                      🎧 Ferdiglåter
-                    </h4>
-                    <p>
-                      Bla gjennom vårt bibliotek av ferdigproduserte låter. 
-                      Perfekt for raske prosjekter eller når du trenger kvalitetsmusikk umiddelbart.
-                    </p>
-                  </div>
-
-                  <div 
-                    className="rounded p-3"
-                    style={{ 
-                      backgroundColor: 'var(--section-bg-2)', 
-                      border: '1px solid var(--border-color)' 
+                <div>
+                  <label className="block text-sm mb-2" style={{ color: 'var(--text-muted)' }}>
+                    Prosjektbeskrivelse
+                  </label>
+                  <textarea
+                    name="brief"
+                    value={orderForm.brief}
+                    onChange={handleOrderChange}
+                    rows={4}
+                    className="w-full rounded-lg p-3 text-sm resize-none"
+                    style={{
+                      backgroundColor: 'var(--card-bg)',
+                      border: orderErrors.brief ? '1px solid #ef4444' : '1px solid var(--border-color)',
+                      color: 'var(--text-color)'
                     }}
-                  >
-                    <h4 className="font-semibold mb-2" style={{ color: 'var(--text-color)' }}>
-                      Hva får du?
-                    </h4>
-                    <ul className="space-y-1 text-xs">
-                      <li>• Profesjonell produksjon og miksing</li>
-                      <li>• Høykvalitets WAV og MP3 filer</li>
-                      <li>• Kommersielle rettigheter inkludert</li>
-                      <li>• Revideringer til du er fornøyd</li>
-                    </ul>
-                  </div>
+                  ></textarea>
+                  {orderErrors.brief && <p className="text-xs mt-1" style={{ color: '#ef4444' }}>{orderErrors.brief}</p>}
                 </div>
-              </div>
-            </div>
-          </>
-        )}
+
+                <button
+                  type="submit"
+                  disabled={orderSending}
+                  className="w-full py-3 rounded-lg font-semibold transition-all disabled:opacity-70"
+                  style={{
+                    backgroundColor: '#c8e6d0',
+                    color: '#132d1f'
+                  }}
+                >
+                  {orderSending ? 'Sender…' : 'Send bestilling'}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
       </div>
     </section>
   );

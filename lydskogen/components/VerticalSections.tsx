@@ -3,8 +3,6 @@
 import ArtistNettsideSection from './sections/ArtistNettside';
 import MiksingSeksjon from './sections/MiksingSeksjon';
 import MusikkproduksjonSeksjon from './sections/MusikkproduksjonSeksjon';
-import CombinedArtworkSection from './CombinedArtworkSection';
-import ProjectsSection from './sections/ProjectsSection';
 
 export default function VerticalSections() {
   return (

@@ -1,160 +1,99 @@
 'use client';
 
-import { useState } from 'react';
-
 export default function ArtistNettsideSection() {
-  const [showForm, setShowForm] = useState(false);
+  const handleOrder = () => {
+    const subject = 'Bestilling: Artist-nettside / Linktree';
+    const body = `Hei Lydskog!\n\nJeg ønsker å bestille en artist-nettside eller linktree.\n\nFortell gjerne litt om hva du trenger:\n\n- Type: Artist-nettside / Linktree / Begge deler\n- Ønsket innhold:\n- Leveringsdato:\n\nSer frem til å høre fra dere!\n\nMvh\n[Ditt navn]`;
+    window.location.href = `mailto:lydskog@proton.me?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
 
   return (
     <section id="artist" className="py-12" style={{ backgroundColor: 'var(--section-bg-1)' }}>
       <div className="container mx-auto px-4">
-        {/* Enkel header */}
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-color)' }}>Artist-nettside</h2>
-          <p className="text-sm max-w-2xl mx-auto" style={{ color: 'var(--text-muted)' }}>
-            Profesjonell nettside som samler alle dine lenker på ett sted
-          </p>
-        </div>
-
-        {/* To-kolonne layout - enkel */}
-        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 items-start">
-          
-          {/* Venstre: Info */}
-          <div className="space-y-6">
-            <div className="rounded-lg p-6" style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)' }}>
-              <h3 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-color)' }}>
-                Dedikert Artist-nettside
-              </h3>
-              <p className="text-sm leading-relaxed mb-4" style={{ color: 'var(--text-muted)' }}>
-                En skreddersydd artistside som presenterer musikken din, historie, 
-                utgivelser og kontakt – alt på ett sted med profesjonell design.
-              </p>
-              
-              <h4 className="text-base font-semibold mb-2 mt-4" style={{ color: 'var(--text-color)' }}>
-                Linktree
-              </h4>
-              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-                Lett og effektiv måte å samle lenker til musikk, prosjekter og artwork. 
-                Perfekt for sosiale medier.
-              </p>
-            </div>
-
-            {/* Enkel knapp */}
-            {!showForm && (
-              <button
-                onClick={() => setShowForm(true)}
-                className="w-full py-3 px-6 rounded text-sm font-medium"
-                style={{ 
-                  backgroundColor: 'transparent', 
-                  border: '1px solid var(--border-color)', 
-                  color: 'var(--text-color)' 
-                }}
-              >
-                Forespørsel
-              </button>
-            )}
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3" style={{ color: 'var(--text-color)' }}>
+              Artist-nettside & Linktree
+            </h2>
+            <p className="text-base md:text-lg max-w-2xl mx-auto" style={{ color: 'var(--text-muted)' }}>
+              En enkel side som samler alle dine lenker på ett sted – perfekt for sosiale medier og musikkpromotering
+            </p>
           </div>
 
-          {/* Høyre: Demo eller form */}
-          <div>
-            {!showForm ? (
-              <div className="rounded-lg p-4 overflow-hidden" style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)' }}>
-                <div className="aspect-[4/5] rounded overflow-hidden relative" style={{ backgroundColor: 'var(--section-bg-2)' }}>
-                  <iframe 
-                    src="https://dekaas.github.io/MODAN" 
+          {/* Main content card */}
+          <div className="rounded-2xl p-8 md:p-10" style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)' }}>
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              {/* Left: Info */}
+              <div className="space-y-6">
+                <div>
+                  <p className="text-sm leading-relaxed mb-6" style={{ color: 'var(--text-muted)' }}>
+                    Folk vil ha et sted å vise frem det de lager – enten det er bilder, tekst, videoer eller alt mulig annet. En egen nettside gir deg et ryddig sted å samle alt på, og når det ser profesjonelt ut, gjør det rett og slett prosjektet ditt mye mer imponerende.
+                  </p>
+                  <h3 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-color)' }}>
+                    Hva får du?
+                  </h3>
+                  <ul className="space-y-3 text-sm" style={{ color: 'var(--text-muted)' }}>
+                    <li className="flex items-start gap-3">
+                      <span className="text-lg mt-0.5">•</span>
+                      <span>En skreddersydd side med ditt navn, bilde og lenker</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-lg mt-0.5">•</span>
+                      <span>Samler Spotify, SoundCloud, Instagram, YouTube og mer</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-lg mt-0.5">•</span>
+                      <span>Mobilvennlig design som fungerer overalt</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-lg mt-0.5">•</span>
+                      <span>Enkel å oppdatere med nye lenker når du vil</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                  <button
+                    onClick={handleOrder}
+                    className="flex-1 py-3 px-6 rounded-lg text-sm font-medium"
+                    style={{
+                      backgroundColor: 'rgba(255,255,255,0.08)',
+                      border: '1px solid var(--border-color)',
+                      color: 'var(--text-color)'
+                    }}
+                  >
+                    Bestill
+                  </button>
+                  <a
+                    href="https://dekaas.github.io/MODAN"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 py-3 px-6 rounded-lg text-sm font-medium text-center"
+                    style={{
+                      backgroundColor: 'transparent',
+                      border: '1px solid var(--border-color)',
+                      color: 'var(--text-muted)'
+                    }}
+                  >
+                    Se demo →
+                  </a>
+                </div>
+              </div>
+
+              {/* Right: Demo preview */}
+              <div className="rounded-lg overflow-hidden" style={{ backgroundColor: 'var(--section-bg-2)', border: '1px solid var(--border-color)' }}>
+                <div className="aspect-[4/5] relative">
+                  <iframe
+                    src="https://dekaas.github.io/MODAN"
                     className="w-full h-full"
                     style={{ border: 0 }}
                     loading="lazy"
                     title="Artist-nettside demo"
                   />
                 </div>
-                <a 
-                  href="https://dekaas.github.io/MODAN" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="mt-4 block w-full text-center py-2 px-4 rounded text-sm"
-                  style={{ 
-                    backgroundColor: 'transparent', 
-                    border: '1px solid var(--border-color)', 
-                    color: 'var(--text-color)' 
-                  }}
-                >
-                  Se live demo →
-                </a>
               </div>
-            ) : (
-              <div className="rounded-lg p-6" style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)' }}>
-                <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-color)' }}>Kontaktskjema</h3>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm mb-1" style={{ color: 'var(--text-muted)' }}>Navn</label>
-                    <input
-                      type="text"
-                      className="w-full rounded px-3 py-2 text-sm"
-                      style={{ 
-                        backgroundColor: 'var(--section-bg-2)', 
-                        border: '1px solid var(--border-color)', 
-                        color: 'var(--text-color)' 
-                      }}
-                      placeholder="Ditt navn"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm mb-1" style={{ color: 'var(--text-muted)' }}>E-post</label>
-                    <input
-                      type="email"
-                      className="w-full rounded px-3 py-2 text-sm"
-                      style={{ 
-                        backgroundColor: 'var(--section-bg-2)', 
-                        border: '1px solid var(--border-color)', 
-                        color: 'var(--text-color)' 
-                      }}
-                      placeholder="din@epost.no"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm mb-1" style={{ color: 'var(--text-muted)' }}>Melding</label>
-                    <textarea
-                      className="w-full rounded px-3 py-2 text-sm"
-                      style={{ 
-                        backgroundColor: 'var(--section-bg-2)', 
-                        border: '1px solid var(--border-color)', 
-                        color: 'var(--text-color)' 
-                      }}
-                      rows={4}
-                      placeholder="Fortell litt om prosjektet ditt..."
-                    />
-                  </div>
-
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setShowForm(false)}
-                      className="flex-1 py-2 px-4 rounded text-sm"
-                      style={{ 
-                        backgroundColor: 'transparent', 
-                        border: '1px solid var(--border-color)', 
-                        color: 'var(--text-color)' 
-                      }}
-                    >
-                      Avbryt
-                    </button>
-                    <button
-                      className="flex-1 py-2 px-4 rounded text-sm"
-                      style={{ 
-                        backgroundColor: 'var(--section-bg-3)', 
-                        border: '1px solid var(--border-color)', 
-                        color: 'var(--text-color)' 
-                      }}
-                    >
-                      Send
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
+            </div>
           </div>
         </div>
       </div>

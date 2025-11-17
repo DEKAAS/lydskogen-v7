@@ -314,7 +314,7 @@ export default function ProjectsTab() {
           style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)' }}
         >
           <p className="text-gray-400">Ingen prosjekter ennå</p>
-          <p className="text-gray-500 text-sm mt-2">Klikk "+ Nytt Prosjekt" for å legge til</p>
+          <p className="text-gray-500 text-sm mt-2">Klikk &quot;+ Nytt Prosjekt&quot; for å legge til</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
