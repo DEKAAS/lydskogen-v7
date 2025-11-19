@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 
 export default function UploadTab() {
-  const [activeUploadType, setActiveUploadType] = useState<'music' | 'artwork'>('music')
+  const [activeUploadType, setActiveUploadType] = useState<'music' | 'artwork' | 'portfolio'>('music')
   const router = useRouter()
 
   const uploadOptions = {
@@ -20,6 +20,13 @@ export default function UploadTab() {
       icon: '🎨', 
       description: 'Upload artwork og design filer',
       path: '/admin/artwork'
+    },
+    portfolio: {
+      title: 'Portfolio prosjekter',
+      icon: '📁',
+      description: 'Legg til prosjekter i portfolio med Spotify-link og bilder',
+      path: '/admin/dashboard',
+      tab: 'projects'
     }
   }
 
@@ -35,7 +42,7 @@ export default function UploadTab() {
         <div className="flex gap-3 p-2 rounded-2xl bg-white/5 border border-white/10">
           <button
             onClick={() => setActiveUploadType('music')}
-            className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+            className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
               activeUploadType === 'music' 
                 ? 'text-base-dark bg-accent-green' 
                 : 'text-white hover:text-white/80'
@@ -45,13 +52,23 @@ export default function UploadTab() {
           </button>
           <button
             onClick={() => setActiveUploadType('artwork')}
-            className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+            className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
               activeUploadType === 'artwork' 
                 ? 'text-base-dark bg-accent-green' 
                 : 'text-white hover:text-white/80'
             }`}
           >
             🎨 Artwork
+          </button>
+          <button
+            onClick={() => setActiveUploadType('portfolio')}
+            className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
+              activeUploadType === 'portfolio' 
+                ? 'text-base-dark bg-accent-green' 
+                : 'text-white hover:text-white/80'
+            }`}
+          >
+            📁 Portfolio
           </button>
         </div>
       </div>
@@ -64,7 +81,7 @@ export default function UploadTab() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
             className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 text-center"
           >
             <div className="text-6xl mb-6">{uploadOptions[activeUploadType].icon}</div>
@@ -76,10 +93,18 @@ export default function UploadTab() {
             </p>
             
             <button
-              onClick={() => router.push(uploadOptions[activeUploadType].path)}
-              className="px-8 py-4 bg-accent-green text-base-dark font-semibold rounded-xl hover:bg-accent-green/80 transition-colors text-lg"
+              onClick={() => {
+                if (activeUploadType === 'portfolio') {
+                  // Navigate to dashboard and set active tab to projects
+                  router.push('/admin/dashboard?tab=projects')
+                } else {
+                  router.push(uploadOptions[activeUploadType].path)
+                }
+              }}
+              className="px-8 py-4 bg-accent-green text-base-dark font-semibold rounded-xl hover:bg-accent-green/80 transition-colors text-lg relative overflow-hidden group"
             >
-              Gå til opplasting
+              <span className="relative z-10">Gå til opplasting</span>
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
             </button>
           </motion.div>
         </AnimatePresence>
@@ -139,6 +164,15 @@ export default function UploadTab() {
               <li>• Maks filstørrelse: 10MB</li>
               <li>• Anbefalt oppløsning: 1200x1200px</li>
               <li>• Bruk beskrivende filnavn</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-medium text-white mb-2">Portfolio:</h4>
+            <ul className="text-sm space-y-1">
+              <li>• Lim inn Spotify-link for auto-henting</li>
+              <li>• Bilde hentes automatisk fra Spotify</li>
+              <li>• Legg til tittel, artist og beskrivelse</li>
+              <li>• Tags for kategorisering</li>
             </ul>
           </div>
         </div>

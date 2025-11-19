@@ -76,7 +76,7 @@ export default function PortfolioSection() {
               style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)' }}
             >
               {/* Artwork */}
-              <div className="aspect-square relative" style={{ backgroundColor: 'var(--section-bg-2)' }}>
+              <div className="aspect-square relative group" style={{ backgroundColor: 'var(--section-bg-2)' }}>
                 {project.artworkUrl ? (
                   <img 
                     src={project.artworkUrl} 
@@ -91,20 +91,26 @@ export default function PortfolioSection() {
                   </div>
                 )}
                 
-                {/* Links */}
-                {(project.spotifyUrl || project.musicUrl || project.websiteUrl) && (
+                {/* Spotify Play Button Overlay */}
+                {project.spotifyUrl && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <a
+                      href={project.spotifyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-12 h-12 rounded-full bg-[#1DB954] flex items-center justify-center hover:bg-[#1ed760] transition-colors duration-200 shadow-lg"
+                      style={{ transform: 'scale(1)' }}
+                    >
+                      <svg className="w-6 h-6 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </a>
+                  </div>
+                )}
+                
+                {/* Other Links */}
+                {(project.musicUrl || project.websiteUrl) && !project.spotifyUrl && (
                   <div className="absolute top-1 right-1 flex gap-1">
-                    {project.spotifyUrl && (
-                      <a
-                        href={project.spotifyUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-1.5 rounded-full text-xs"
-                        style={{ backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', border: '1px solid var(--border-color)' }}
-                      >
-                        ♪
-                      </a>
-                    )}
                     {project.websiteUrl && (
                       <a
                         href={project.websiteUrl}

@@ -42,10 +42,9 @@ section {
   max-width: 1200px;
 }
 
-/* Fjern alle animasjoner og transitions for raskere side */
+/* Smooth transitions - 200ms for snappy feel */
 * {
-  animation: none !important;
-  transition: none !important;
+  transition-duration: 200ms !important;
 }
 
 /* Enklere container - mer transparent */

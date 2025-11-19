@@ -148,27 +148,34 @@ export default function MusikkproduksjonSeksjon() {
             const demos = (genre.id && demoTracks[genre.id]) || [];
             const topDemos = demos.slice(0, 2);
 
+            // Definer bakgrunnsbilde for Ambient
+            const backgroundImage = genre.id === 'ambient' 
+              ? '/images/ambient.png' 
+              : genre.heroImage || genre.thumbnailImage || null;
+
             return (
               <div
                 key={genre.id}
                 className="relative rounded-2xl overflow-hidden"
                 style={{ border: '1px solid var(--border-color)' }}
               >
+                {backgroundImage && (
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      backgroundImage: `url(${backgroundImage})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      filter: 'blur(3px)',
+                      transform: 'scale(1.05)',
+                      opacity: 0.85
+                    }}
+                  />
+                )}
                 <div
                   className="absolute inset-0"
                   style={{
-                    backgroundImage: `url(${genre.heroImage || genre.thumbnailImage})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    filter: 'blur(14px)',
-                    transform: 'scale(1.1)',
-                    opacity: 0.35
-                  }}
-                />
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(7,35,24,0.85), rgba(19,45,31,0.9))'
+                    background: 'linear-gradient(135deg, rgba(7,35,24,0.3), rgba(19,45,31,0.35))'
                   }}
                 />
 

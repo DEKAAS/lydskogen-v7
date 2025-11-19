@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSession } from 'next-auth/react';
 
 interface NavSection {
   id: string;
@@ -54,7 +53,6 @@ const navSections: NavSection[] = [
 ];
 
 export default function Navbar() {
-  const { data: session } = useSession()
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -123,8 +121,8 @@ export default function Navbar() {
       <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.5 }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        transition={{ duration: 0.2 }}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 ${
           isScrolled 
             ? 'bg-base-dark/95 backdrop-blur-md border-b border-gray-800/50 shadow-xl' 
             : 'bg-transparent'
@@ -161,7 +159,7 @@ export default function Navbar() {
                   <motion.button
                     key={section.id}
                     onClick={() => scrollToSection(section.id)}
-                    className={`relative px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
+                    className={`relative px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
                       isActive 
                         ? 'text-white shadow-lg' 
                         : 'text-gray-300 hover:text-white'
@@ -195,7 +193,7 @@ export default function Navbar() {
               })}
             </div>
 
-            {/* Contact + Login CTA */}
+            {/* Contact CTA */}
             <div className="hidden md:block">
               <motion.button
                 onClick={() => {
@@ -209,31 +207,13 @@ Mvh,
 
                   window.location.href = `mailto:lydskog@proton.me?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                 }}
-                className="bg-gradient-to-r from-accent-green to-green-600 hover:from-green-500 hover:to-green-600 text-base-dark font-semibold px-6 py-2 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+                className="bg-gradient-to-r from-accent-green to-green-600 hover:from-green-500 hover:to-green-600 text-base-dark font-semibold px-6 py-2 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl relative overflow-hidden group"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Kontakt oss
+                <span className="relative z-10">Kontakt oss</span>
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
               </motion.button>
-              {session?.user?.role === 'admin' ? (
-                <motion.button
-                  onClick={() => (window.location.href = '/admin/dashboard')}
-                  className="ml-3 bg-gradient-to-r from-accent-green to-green-600 hover:from-green-500 hover:to-green-600 text-base-dark font-semibold px-6 py-2 rounded-xl transition-all duration-300"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Admin Panel
-                </motion.button>
-              ) : (
-                <motion.button
-                  onClick={() => (window.location.href = '/admin/login')}
-                  className="ml-3 bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 text-white font-semibold px-6 py-2 rounded-xl transition-all duration-300 border border-white/10"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Admin Login
-                </motion.button>
-              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -277,7 +257,7 @@ Mvh,
           }}
           initial={{ scaleX: 0 }}
           animate={{ scaleX: isScrolled ? 1 : 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.2 }}
         />
       </motion.nav>
 
@@ -333,7 +313,7 @@ Mvh,
                       <motion.button
                         key={section.id}
                         onClick={() => scrollToSection(section.id)}
-                        className={`w-full text-left px-6 py-4 transition-all duration-300 relative ${
+                        className={`w-full text-left px-6 py-4 transition-all duration-200 relative ${
                           isActive ? 'text-white' : 'text-gray-300 hover:text-white'
                         }`}
                         initial={{ opacity: 0, x: 50 }}
@@ -346,7 +326,7 @@ Mvh,
                       >
                         <div className="flex items-center space-x-4">
                           <div 
-                            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                            className={`w-3 h-3 rounded-full transition-all duration-200 ${
                               isActive ? 'scale-100' : 'scale-50 opacity-50'
                             }`}
                             style={{
@@ -384,7 +364,7 @@ Mvh,
                 </div>
 
                 {/* Contact CTA */}
-                <div className="p-6 border-t border-gray-800 space-y-3">
+                <div className="p-6 border-t border-gray-800">
                   <motion.button
                     onClick={() => {
                       const subject = 'Kontakt fra Lydskog nettside';
@@ -398,38 +378,13 @@ Mvh,
                       window.location.href = `mailto:lydskog@proton.me?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full bg-gradient-to-r from-accent-green to-green-600 hover:from-green-500 hover:to-green-600 text-base-dark font-semibold py-3 rounded-xl transition-all duration-300 shadow-lg"
+                    className="w-full bg-gradient-to-r from-accent-green to-green-600 hover:from-green-500 hover:to-green-600 text-base-dark font-semibold py-3 rounded-xl transition-all duration-200 shadow-lg relative overflow-hidden group"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    Kontakt oss
+                    <span className="relative z-10">Kontakt oss</span>
+                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
                   </motion.button>
-                  
-                  {session?.user?.role === 'admin' ? (
-                    <motion.button
-                      onClick={() => {
-                        window.location.href = '/admin/dashboard';
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="w-full bg-gradient-to-r from-accent-green to-green-600 hover:from-green-500 hover:to-green-600 text-base-dark font-semibold py-3 rounded-xl transition-all duration-300 shadow-lg"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      Admin Panel
-                    </motion.button>
-                  ) : (
-                    <motion.button
-                      onClick={() => {
-                        window.location.href = '/admin/login';
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="w-full bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 text-white font-semibold py-3 rounded-xl transition-all duration-300 border border-white/10"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      Admin Login
-                    </motion.button>
-                  )}
                 </div>
               </div>
             </motion.div>

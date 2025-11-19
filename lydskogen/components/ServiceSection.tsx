@@ -43,7 +43,7 @@ function ServiceCardComponent({ card, index }: ServiceCardProps) {
         className={`block h-full ${isComingSoon ? 'pointer-events-none' : ''}`}
       >
         <div 
-          className="relative p-6 rounded-xl transition-all duration-300 h-full min-h-[200px] flex flex-col"
+          className="relative p-6 rounded-xl transition-all duration-200 h-full min-h-[200px] flex flex-col"
             style={{
             background: 'var(--glass-card)',
             backdropFilter: 'blur(15px)',
@@ -69,13 +69,13 @@ function ServiceCardComponent({ card, index }: ServiceCardProps) {
           {/* Content */}
           <div className="flex flex-col h-full">
             {/* Icon */}
-            <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
+            <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-200">
               {card.icon}
             </div>
 
             {/* Title and Description */}
             <div className="flex-grow">
-              <h3 className="text-xl font-semibold mb-3 transition-colors duration-300" style={{color: 'var(--text-on-dark)'}}>
+              <h3 className="text-xl font-semibold mb-3 transition-colors duration-200" style={{color: 'var(--text-on-dark)'}}>
                 {card.title}
               </h3>
               <p className="text-sm leading-relaxed" style={{color: 'var(--text-on-dark)', opacity: 0.8}}>
@@ -86,7 +86,7 @@ function ServiceCardComponent({ card, index }: ServiceCardProps) {
             {/* CTA Button */}
             <div className="mt-6">
               <div 
-                className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 group-hover:scale-105"
+                className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 group-hover:scale-105 relative overflow-hidden"
                 style={{ 
                   background: 'var(--glass-section)',
                   color: 'var(--text-on-dark)',
@@ -101,7 +101,7 @@ function ServiceCardComponent({ card, index }: ServiceCardProps) {
                   fill="none" 
                   stroke="currentColor" 
                   strokeWidth="2"
-                  className="ml-2 group-hover:translate-x-1 transition-transform duration-300"
+                  className="ml-2 group-hover:translate-x-1 transition-transform duration-200"
                 >
                   <path d="M7 17L17 7" />
                   <path d="M7 7h10v10" />
@@ -111,7 +111,7 @@ function ServiceCardComponent({ card, index }: ServiceCardProps) {
           </div>
 
           {/* Hover overlay */}
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" style={{
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl" style={{
             background: 'linear-gradient(135deg, rgba(207, 197, 176, 0.1), transparent)'
           }} />
         </div>
@@ -143,7 +143,7 @@ export default function ServiceSection() {
                 borderRadius: '16px'
               }}
               whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.2 }}
             >
               <div className="text-5xl">🛠️</div>
             </motion.div>

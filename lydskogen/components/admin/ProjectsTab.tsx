@@ -29,10 +29,46 @@ export default function ProjectsTab() {
   const [spotifyUrl, setSpotifyUrl] = useState('');
   const [websiteUrl, setWebsiteUrl] = useState('');
   const [musicUrl, setMusicUrl] = useState('');
+  const [loadingSpotify, setLoadingSpotify] = useState(false);
 
   useEffect(() => {
     fetchProjects();
   }, []);
+
+  // Fetch Spotify metadata when URL is entered
+  const handleSpotifyUrlChange = async (url: string) => {
+    setSpotifyUrl(url);
+    
+    // Validate Spotify URL
+    const spotifyUrlPattern = /^https?:\/\/(open|play)\.spotify\.com\/(track|album|playlist|artist)\/[a-zA-Z0-9]+/;
+    if (!spotifyUrlPattern.test(url)) {
+      return; // Not a valid Spotify URL yet
+    }
+
+    setLoadingSpotify(true);
+    try {
+      const response = await fetch(`/api/spotify/metadata?url=${encodeURIComponent(url)}`);
+      if (response.ok) {
+        const data = await response.json();
+        const metadata = data.metadata;
+        
+        // Auto-fill form fields
+        if (metadata.title && !title) {
+          setTitle(metadata.title);
+        }
+        if (metadata.artist && !artist) {
+          setArtist(metadata.artist);
+        }
+        if (metadata.thumbnail && !artworkUrl) {
+          setArtworkUrl(metadata.thumbnail);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching Spotify metadata:', error);
+    } finally {
+      setLoadingSpotify(false);
+    }
+  };
 
   const fetchProjects = async () => {
     setLoading(true);
@@ -235,20 +271,29 @@ export default function ProjectsTab() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm mb-1" style={{ color: 'var(--text-muted)' }}>
-                  Spotify URL
+                  Spotify URL {loadingSpotify && <span className="text-xs">(Henter metadata...)</span>}
                 </label>
                 <input
                   type="text"
                   value={spotifyUrl}
-                  onChange={(e) => setSpotifyUrl(e.target.value)}
+                  onChange={(e) => handleSpotifyUrlChange(e.target.value)}
+                  onBlur={(e) => {
+                    // Also fetch on blur if URL is valid
+                    if (e.target.value) {
+                      handleSpotifyUrlChange(e.target.value);
+                    }
+                  }}
                   className="w-full px-3 py-2 rounded text-sm"
                   style={{ 
                     backgroundColor: 'var(--section-bg-2)', 
                     border: '1px solid var(--border-color)',
                     color: 'var(--text-color)'
                   }}
-                  placeholder="https://open.spotify.com/..."
+                  placeholder="https://open.spotify.com/track/..."
                 />
+                <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
+                  Lim inn Spotify-link for å automatisk hente bilde og info
+                </p>
               </div>
 
               <div>

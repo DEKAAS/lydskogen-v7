@@ -1,11 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 
 export default function HeaderHero() {
-  const { data: session } = useSession()
   const [mounted, setMounted] = useState(false)
   useEffect(() => { setMounted(true) }, [])
   return (
@@ -52,23 +50,6 @@ export default function HeaderHero() {
           >
             Kontakt
           </Link>
-          {session?.user?.role === 'admin' ? (
-            <Link 
-              href="/admin/dashboard" 
-              className="nav-link-hero text-base font-medium px-4 py-2 rounded-lg border border-white/20 transition-all hover:bg-white/10 flex items-center justify-center" 
-              style={{color: 'rgba(255, 255, 255, 0.95)'}}
-            >
-              Admin
-            </Link>
-          ) : (
-            <Link 
-              href="/admin/login" 
-              className="nav-link-hero text-base font-medium px-4 py-2 rounded-lg border border-white/20 transition-all hover:bg-white/10 flex items-center justify-center" 
-              style={{color: 'rgba(255, 255, 255, 0.95)'}}
-            >
-              Logg inn
-            </Link>
-          )}
         </div>
       </nav>
 
@@ -106,13 +87,13 @@ export default function HeaderHero() {
               className="text-2xl md:text-3xl lg:text-4xl mb-4 max-w-3xl mx-auto leading-relaxed font-light"
               style={{color: 'rgba(255, 255, 255, 0.95)'}}
             >
-             Produksjon og miksing
+             
             </p>
             <p 
               className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed"
               style={{opacity: 0.85}}
             >
-              Hvor lyd blir til opplevelse
+              
             </p>
           </div>
         </div>
