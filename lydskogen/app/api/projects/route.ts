@@ -1,77 +1,147 @@
 import { NextResponse } from 'next/server'
-import { readFile, writeFile, mkdir, stat } from 'fs/promises'
-import path from 'path'
+import { supabaseAdmin } from '@/lib/supabase'
 
-const PROJECTS_PATH = path.join(process.cwd(), 'data/projects.json')
+interface PortfolioProjectRow {
+  id: string
+  title: string
+  artist: string | null
+  description: string | null
+  artwork_url: string
+  spotify_url: string | null
+  website_url: string | null
+  music_url: string | null
+  tags: string[] | null
+  created_at: string
+  updated_at: string
+}
 
-async function ensureFile() {
-  try { await stat(PROJECTS_PATH) } catch {
-    await mkdir(path.dirname(PROJECTS_PATH), { recursive: true })
-    await writeFile(PROJECTS_PATH, JSON.stringify({ projects: [] }, null, 2))
+const mapProject = (row: PortfolioProjectRow) => ({
+  id: row.id,
+  title: row.title,
+  artist: row.artist ?? undefined,
+  description: row.description ?? '',
+  artworkUrl: row.artwork_url,
+  spotifyUrl: row.spotify_url ?? undefined,
+  websiteUrl: row.website_url ?? undefined,
+  musicUrl: row.music_url ?? undefined,
+  tags: row.tags ?? [],
+  createdAt: row.created_at,
+  updatedAt: row.updated_at
+})
+
+const handleError = (message: string, error?: unknown, status = 500) => {
+  console.error(`[projects] ${message}`, error)
+  return NextResponse.json({ error: message }, { status })
+}
+
+const validatePayload = (body: any) => {
+  if (!body?.title || !body?.artworkUrl) {
+    return 'Title and artwork URL are required'
   }
+  return null
 }
 
 export async function GET() {
-  await ensureFile()
-  const raw = await readFile(PROJECTS_PATH, 'utf-8')
-  const json = JSON.parse(raw)
-  return NextResponse.json({ projects: json.projects || [] })
+  const { data, error } = await supabaseAdmin
+    .from('portfolio_projects')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    return handleError('Failed to load projects', error)
+  }
+
+  return NextResponse.json({
+    projects: (data ?? []).map(mapProject)
+  })
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { title, artworkUrl, musicUrl, description, tags } = body
-    await ensureFile()
-    const raw = await readFile(PROJECTS_PATH, 'utf-8')
-    const json = JSON.parse(raw)
-    const newProject = {
-      id: `project-${Date.now()}`,
-      title: title || 'Prosjekt',
-      artworkUrl,
-      musicUrl,
-      description: description || '',
-      tags: Array.isArray(tags) ? tags : [],
-      createdAt: new Date().toISOString()
+    const validationError = validatePayload(body)
+    if (validationError) {
+      return handleError(validationError, undefined, 400)
     }
-    json.projects.push(newProject)
-    await writeFile(PROJECTS_PATH, JSON.stringify(json, null, 2))
-    return NextResponse.json({ ok: true, project: newProject })
-  } catch (e) {
-    return NextResponse.json({ ok: false }, { status: 500 })
+
+    const { data, error } = await supabaseAdmin
+      .from('portfolio_projects')
+      .insert({
+        title: body.title,
+        artist: body.artist || null,
+        description: body.description || null,
+        artwork_url: body.artworkUrl,
+        spotify_url: body.spotifyUrl || null,
+        website_url: body.websiteUrl || null,
+        music_url: body.musicUrl || null,
+        tags: Array.isArray(body.tags) ? body.tags : []
+      })
+      .select()
+      .single()
+
+    if (error || !data) {
+      return handleError('Kunne ikke lagre prosjektet', error)
+    }
+
+    return NextResponse.json({ ok: true, project: mapProject(data) })
+  } catch (error) {
+    return handleError('Ugyldig forespørsel', error, 400)
   }
 }
 
 export async function PUT(request: Request) {
   try {
     const body = await request.json()
-    const { id, ...updates } = body
-    await ensureFile()
-    const raw = await readFile(PROJECTS_PATH, 'utf-8')
-    const json = JSON.parse(raw)
-    const idx = json.projects.findIndex((p: any) => p.id === id)
-    if (idx === -1) return NextResponse.json({ ok: false, error: 'NOT_FOUND' }, { status: 404 })
-    json.projects[idx] = { ...json.projects[idx], ...updates }
-    await writeFile(PROJECTS_PATH, JSON.stringify(json, null, 2))
-    return NextResponse.json({ ok: true, project: json.projects[idx] })
-  } catch (e) {
-    return NextResponse.json({ ok: false }, { status: 500 })
+    if (!body?.id) {
+      return handleError('ID er påkrevd for oppdatering', undefined, 400)
+    }
+
+    const updates = {
+      title: body.title,
+      artist: body.artist ?? null,
+      description: body.description ?? null,
+      artwork_url: body.artworkUrl,
+      spotify_url: body.spotifyUrl ?? null,
+      website_url: body.websiteUrl ?? null,
+      music_url: body.musicUrl ?? null,
+      tags: Array.isArray(body.tags) ? body.tags : undefined
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from('portfolio_projects')
+      .update(updates)
+      .eq('id', body.id)
+      .select()
+      .single()
+
+    if (error || !data) {
+      return handleError('Kunne ikke oppdatere prosjektet', error)
+    }
+
+    return NextResponse.json({ ok: true, project: mapProject(data) })
+  } catch (error) {
+    return handleError('Ugyldig forespørsel', error, 400)
   }
 }
 
 export async function DELETE(request: Request) {
   try {
     const body = await request.json()
-    const { id } = body
-    await ensureFile()
-    const raw = await readFile(PROJECTS_PATH, 'utf-8')
-    const json = JSON.parse(raw)
-    json.projects = json.projects.filter((p: any) => p.id !== id)
-    await writeFile(PROJECTS_PATH, JSON.stringify(json, null, 2))
+    if (!body?.id) {
+      return handleError('ID er påkrevd for sletting', undefined, 400)
+    }
+
+    const { error } = await supabaseAdmin
+      .from('portfolio_projects')
+      .delete()
+      .eq('id', body.id)
+
+    if (error) {
+      return handleError('Kunne ikke slette prosjektet', error)
+    }
+
     return NextResponse.json({ ok: true })
-  } catch (e) {
-    return NextResponse.json({ ok: false }, { status: 500 })
+  } catch (error) {
+    return handleError('Ugyldig forespørsel', error, 400)
   }
 }
-
-

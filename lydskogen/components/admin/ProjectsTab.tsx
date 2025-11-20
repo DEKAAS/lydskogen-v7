@@ -13,6 +13,7 @@ interface Project {
   websiteUrl?: string;
   musicUrl?: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export default function ProjectsTab() {
@@ -30,6 +31,10 @@ export default function ProjectsTab() {
   const [websiteUrl, setWebsiteUrl] = useState('');
   const [musicUrl, setMusicUrl] = useState('');
   const [loadingSpotify, setLoadingSpotify] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [formMessage, setFormMessage] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [previewError, setPreviewError] = useState(false);
 
   useEffect(() => {
     fetchProjects();
@@ -38,6 +43,7 @@ export default function ProjectsTab() {
   // Fetch Spotify metadata when URL is entered
   const handleSpotifyUrlChange = async (url: string) => {
     setSpotifyUrl(url);
+    setFormError(null);
     
     // Validate Spotify URL
     const spotifyUrlPattern = /^https?:\/\/(open|play)\.spotify\.com\/(track|album|playlist|artist)\/[a-zA-Z0-9]+/;
@@ -53,18 +59,16 @@ export default function ProjectsTab() {
         const metadata = data.metadata;
         
         // Auto-fill form fields
-        if (metadata.title && !title) {
-          setTitle(metadata.title);
-        }
-        if (metadata.artist && !artist) {
-          setArtist(metadata.artist);
-        }
-        if (metadata.thumbnail && !artworkUrl) {
+        if (metadata.title) setTitle((prev) => prev || metadata.title);
+        if (metadata.artist) setArtist((prev) => prev || metadata.artist);
+        if (metadata.thumbnail) {
           setArtworkUrl(metadata.thumbnail);
+          setPreviewError(false);
         }
       }
     } catch (error) {
       console.error('Error fetching Spotify metadata:', error);
+      setFormError('Kunne ikke hente Spotify-data. Kontroller lenken.');
     } finally {
       setLoadingSpotify(false);
     }
@@ -85,6 +89,13 @@ export default function ProjectsTab() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(null);
+    setFormMessage(null);
+
+    if (!title.trim() || !artworkUrl.trim()) {
+      setFormError('Tittel og bilde-URL må fylles ut.');
+      return;
+    }
     
     const newProject = {
       title,
@@ -98,6 +109,7 @@ export default function ProjectsTab() {
     };
 
     try {
+      setSubmitting(true);
       const res = await fetch('/api/projects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -115,11 +127,18 @@ export default function ProjectsTab() {
         setWebsiteUrl('');
         setMusicUrl('');
         setShowForm(false);
+        setPreviewError(false);
+        setFormMessage('Prosjektet ble lagret!');
         fetchProjects();
+      } else {
+        const data = await res.json();
+        setFormError(data?.error || 'Kunne ikke lagre prosjektet.');
       }
     } catch (error) {
       console.error('Error creating project:', error);
-      alert('Kunne ikke legge til prosjekt');
+      setFormError('Kunne ikke legge til prosjekt.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -230,6 +249,25 @@ export default function ProjectsTab() {
                 placeholder="https://..."
               />
             </div>
+            {artworkUrl && (
+              <div>
+                <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
+                  Forhåndsvisning
+                </p>
+                {!previewError ? (
+                  <img
+                    src={artworkUrl}
+                    alt="Artwork preview"
+                    className="w-full rounded-lg border border-white/10 object-cover max-h-60"
+                    onError={() => setPreviewError(true)}
+                  />
+                ) : (
+                  <div className="p-3 text-xs rounded border border-red-500/30 text-red-300">
+                    Kunne ikke laste bildet. Kontroller URL.
+                  </div>
+                )}
+              </div>
+            )}
 
             <div>
               <label className="block text-sm mb-1" style={{ color: 'var(--text-muted)' }}>
@@ -333,16 +371,24 @@ export default function ProjectsTab() {
               </div>
             </div>
 
+            {formError && (
+              <div className="text-sm text-red-400">{formError}</div>
+            )}
+            {formMessage && (
+              <div className="text-sm text-green-400">{formMessage}</div>
+            )}
+
             <button
               type="submit"
-              className="w-full py-2 px-4 rounded text-sm font-medium"
+              disabled={submitting}
+              className="w-full py-2 px-4 rounded text-sm font-medium disabled:opacity-60"
               style={{ 
                 backgroundColor: 'var(--accent-green)', 
                 color: 'white',
                 border: '1px solid var(--accent-green)'
               }}
             >
-              Legg til prosjekt
+              {submitting ? 'Lagrer...' : 'Legg til prosjekt'}
             </button>
           </form>
         </div>
@@ -451,6 +497,14 @@ export default function ProjectsTab() {
                       Musikk
                     </a>
                   )}
+                </div>
+
+                <div className="text-[10px] text-gray-500">
+                  {new Date(project.createdAt).toLocaleDateString('no-NO', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })}
                 </div>
 
                 {/* Delete button */}

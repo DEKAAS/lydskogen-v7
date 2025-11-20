@@ -124,3 +124,17 @@ export interface AnalyticsStats {
     views: number
   }>
 }
+
+export interface PortfolioProject {
+  id: string
+  title: string
+  artist?: string | null
+  description?: string | null
+  artwork_url: string
+  spotify_url?: string | null
+  website_url?: string | null
+  music_url?: string | null
+  tags: string[]
+  created_at: string
+  updated_at: string
+}
