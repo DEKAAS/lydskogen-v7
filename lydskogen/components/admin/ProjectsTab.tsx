@@ -271,12 +271,11 @@ export default function ProjectsTab() {
 
             <div>
               <label className="block text-sm mb-1" style={{ color: 'var(--text-muted)' }}>
-                Beskrivelse *
+                Beskrivelse (valgfritt)
               </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                required
                 rows={3}
                 className="w-full px-3 py-2 rounded text-sm"
                 style={{ 
