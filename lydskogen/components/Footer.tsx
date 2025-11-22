@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import Container from './Container';
 
 export default function Footer() {
@@ -81,6 +82,24 @@ export default function Footer() {
         </div>
         
         <div className="mt-12 pt-8 text-center" style={{borderTop: '1px solid var(--border-dark)'}}>
+          {/* Logo decoration */}
+          <div className="mb-4 flex justify-center">
+            <div
+              className="relative opacity-40"
+              style={{
+                filter: 'drop-shadow(0 4px 16px rgba(200, 230, 208, 0.2))',
+                animation: 'float 4s ease-in-out infinite'
+              }}
+            >
+              <Image
+                src="/images/logo.png"
+                alt="Lydskog Logo"
+                width={80}
+                height={80}
+                className="w-16 h-16 md:w-20 md:h-20 object-contain"
+              />
+            </div>
+          </div>
           <p style={{color: 'var(--text-on-dark)', opacity: 0.6}}>&copy; {currentYear} Lydskog. Alle rettigheter reservert.</p>
         </div>
       </Container>

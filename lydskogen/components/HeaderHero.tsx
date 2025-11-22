@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 export default function HeaderHero() {
   const [mounted, setMounted] = useState(false)
@@ -56,11 +57,45 @@ export default function HeaderHero() {
       {/* Main Hero Content - Centered and Spacious */}
       <div className="flex-1 flex items-center justify-center relative z-10 px-4">
         <div className="text-center max-w-5xl mx-auto">
-          <div>
-            <h1 className="hero-title text-6xl md:text-8xl lg:text-9xl font-extrabold mb-6 tracking-tight relative">
+          <div className="flex flex-col items-center">
+            {/* Logo with animations */}
+            <div 
+              className="mb-6 relative"
+              style={{
+                animation: mounted ? 'fadeInDown 1s ease-out, float 4s ease-in-out infinite' : 'none',
+                animationDelay: '0.2s',
+                animationFillMode: 'both'
+              }}
+            >
+              <div
+                className="relative"
+                style={{
+                  filter: 'drop-shadow(0 8px 32px rgba(200, 230, 208, 0.3))'
+                }}
+              >
+                <Image
+                  src="/images/logo.png"
+                  alt="Lydskog Logo"
+                  width={200}
+                  height={200}
+                  className="w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 object-contain"
+                  priority
+                />
+              </div>
+            </div>
+
+            {/* Brand name below logo */}
+            <h1 
+              className="hero-title text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight relative"
+              style={{
+                animation: mounted ? 'fadeInUp 1s ease-out' : 'none',
+                animationDelay: '0.5s',
+                animationFillMode: 'both'
+              }}
+            >
               {/* Subtil grønn glow */}
               <div
-                className="absolute inset-0 text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight opacity-20 blur-3xl"
+                className="absolute inset-0 text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight opacity-20 blur-3xl"
                 style={{ color: '#5a9068' }}
               >
                 Lydskog

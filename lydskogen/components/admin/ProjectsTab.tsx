@@ -163,51 +163,40 @@ export default function ProjectsTab() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-green-500 pb-4">
         <div>
-          <h2 className="text-2xl font-bold text-white mb-2">Portfolio Prosjekter</h2>
-          <p className="text-gray-400 text-sm">Administrer prosjekter som vises på forsiden</p>
+          <h2 className="text-2xl md:text-3xl font-mono font-bold text-green-500 mb-2">PORTFOLIO PROJECTS</h2>
+          <p className="text-green-600 font-mono text-sm">Manage projects displayed on frontend</p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2 rounded text-sm font-medium"
-          style={{ 
-            backgroundColor: showForm ? 'var(--card-bg)' : 'var(--accent-green)', 
-            color: showForm ? 'var(--text-color)' : 'white',
-            border: '1px solid var(--border-color)'
-          }}
+          className="px-4 py-2 border border-green-500 bg-black text-green-500 font-mono text-sm hover:bg-green-500 hover:text-black"
         >
-          {showForm ? 'Avbryt' : '+ Nytt Prosjekt'}
+          {showForm ? '[CANCEL]' : '[+ NEW PROJECT]'}
         </button>
       </div>
 
       {/* Add Form */}
       {showForm && (
         <div 
-          className="p-6 rounded-lg"
-          style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)' }}
+          className="p-4 border border-green-500 bg-black"
         >
-          <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-color)' }}>
-            Legg til nytt prosjekt
+          <h3 className="text-lg font-mono font-bold mb-4 text-green-500">
+            ADD NEW PROJECT
           </h3>
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm mb-1" style={{ color: 'var(--text-muted)' }}>
-                  Tittel *
+                <label className="block text-xs font-mono font-bold mb-1 text-green-500 uppercase">
+                  Title *
                 </label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   required
-                  className="w-full px-3 py-2 rounded text-sm"
-                  style={{ 
-                    backgroundColor: 'var(--section-bg-2)', 
-                    border: '1px solid var(--border-color)',
-                    color: 'var(--text-color)'
-                  }}
+                  className="w-full px-3 py-2 border border-green-500 bg-black text-green-500 font-mono text-sm placeholder-green-600"
                   placeholder="F.eks: MODAN - Projections"
                 />
               </div>
@@ -221,11 +210,7 @@ export default function ProjectsTab() {
                   value={artist}
                   onChange={(e) => setArtist(e.target.value)}
                   className="w-full px-3 py-2 rounded text-sm"
-                  style={{ 
-                    backgroundColor: 'var(--section-bg-2)', 
-                    border: '1px solid var(--border-color)',
-                    color: 'var(--text-color)'
-                  }}
+                  className="border border-green-500 bg-black text-green-500 font-mono text-sm placeholder-green-600"
                   placeholder="F.eks: MODAN"
                 />
               </div>
@@ -321,11 +306,7 @@ export default function ProjectsTab() {
                     }
                   }}
                   className="w-full px-3 py-2 rounded text-sm"
-                  style={{ 
-                    backgroundColor: 'var(--section-bg-2)', 
-                    border: '1px solid var(--border-color)',
-                    color: 'var(--text-color)'
-                  }}
+                  className="border border-green-500 bg-black text-green-500 font-mono text-sm placeholder-green-600"
                   placeholder="https://open.spotify.com/track/..."
                 />
                 <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
@@ -342,11 +323,7 @@ export default function ProjectsTab() {
                   value={websiteUrl}
                   onChange={(e) => setWebsiteUrl(e.target.value)}
                   className="w-full px-3 py-2 rounded text-sm"
-                  style={{ 
-                    backgroundColor: 'var(--section-bg-2)', 
-                    border: '1px solid var(--border-color)',
-                    color: 'var(--text-color)'
-                  }}
+                  className="border border-green-500 bg-black text-green-500 font-mono text-sm placeholder-green-600"
                   placeholder="https://..."
                 />
               </div>
@@ -360,11 +337,7 @@ export default function ProjectsTab() {
                   value={musicUrl}
                   onChange={(e) => setMusicUrl(e.target.value)}
                   className="w-full px-3 py-2 rounded text-sm"
-                  style={{ 
-                    backgroundColor: 'var(--section-bg-2)', 
-                    border: '1px solid var(--border-color)',
-                    color: 'var(--text-color)'
-                  }}
+                  className="border border-green-500 bg-black text-green-500 font-mono text-sm placeholder-green-600"
                   placeholder="https://..."
                 />
               </div>
@@ -380,14 +353,9 @@ export default function ProjectsTab() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-2 px-4 rounded text-sm font-medium disabled:opacity-60"
-              style={{ 
-                backgroundColor: 'var(--accent-green)', 
-                color: 'white',
-                border: '1px solid var(--accent-green)'
-              }}
+              className="w-full py-2 px-4 border border-green-500 bg-black text-green-500 font-mono text-sm disabled:opacity-60 hover:bg-green-500 hover:text-black"
             >
-              {submitting ? 'Lagrer...' : 'Legg til prosjekt'}
+              {submitting ? '[SAVING...]' : '[ADD PROJECT]'}
             </button>
           </form>
         </div>
@@ -401,7 +369,7 @@ export default function ProjectsTab() {
       ) : projects.length === 0 ? (
         <div 
           className="p-12 rounded-lg text-center"
-          style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)' }}
+          className="border border-green-500 bg-black"
         >
           <p className="text-gray-400">Ingen prosjekter ennå</p>
           <p className="text-gray-500 text-sm mt-2">Klikk &quot;+ Nytt Prosjekt&quot; for å legge til</p>
@@ -412,7 +380,7 @@ export default function ProjectsTab() {
             <div
               key={project.id}
               className="rounded-lg overflow-hidden"
-              style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)' }}
+              className="border border-green-500 bg-black"
             >
               {/* Artwork */}
               <div className="aspect-square relative" style={{ backgroundColor: 'var(--section-bg-2)' }}>
@@ -509,14 +477,9 @@ export default function ProjectsTab() {
                 {/* Delete button */}
                 <button
                   onClick={() => handleDelete(project.id)}
-                  className="w-full py-2 px-3 rounded text-xs"
-                  style={{ 
-                    backgroundColor: 'transparent', 
-                    border: '1px solid rgba(255, 100, 100, 0.3)',
-                    color: '#ff6b6b'
-                  }}
+                  className="w-full py-2 px-3 border border-red-500 bg-black text-red-500 font-mono text-xs hover:bg-red-500 hover:text-black"
                 >
-                  Slett
+                  [DELETE]
                 </button>
               </div>
             </div>

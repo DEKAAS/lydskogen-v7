@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
 import type { AnalyticsStats } from '@/lib/supabase'
 
 export default function OverviewTab() {
@@ -35,147 +34,134 @@ export default function OverviewTab() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 text-center">
-          <div className="animate-spin w-8 h-8 border-2 border-accent-green border-t-transparent rounded-full mx-auto mb-4"></div>
-          <div className="text-white">Laster data...</div>
+        <div className="border border-green-500 p-8 text-center">
+          <div className="text-green-500 font-mono">LOADING...</div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-8">
-      {/* Welcome Header */}
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-white mb-2">
-          Velkommen til Admin Dashboard
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="text-center border-b border-green-500 pb-4">
+        <h2 className="text-2xl md:text-3xl font-mono font-bold text-green-500 mb-2">
+          SYSTEM OVERVIEW
         </h2>
-        <p className="text-gray-400">
-          Oversikt over Lydskog&apos;s ytelse og statistikk
+        <p className="text-green-600 font-mono text-sm">
+          Lydskog Performance Metrics
         </p>
       </div>
 
       {/* Key Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <motion.div 
-          className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition-all duration-300"
-          whileHover={{ scale: 1.02 }}
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm font-medium mb-1">Totale besøk</p>
-              <p className="text-3xl font-bold text-white">{stats?.totalViews.toLocaleString() || '0'}</p>
-              <p className={`text-sm mt-1 ${growthPercentage >= 0 ? 'text-accent-green' : 'text-red-400'}`}>
-                {growthPercentage >= 0 ? '+' : ''}{growthPercentage}% fra forrige uke
-              </p>
-            </div>
-            <div className="text-accent-green text-3xl">📊</div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="border border-green-500 bg-black p-4">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-green-600 text-xs font-mono uppercase">Total Views</p>
+            <span className="text-green-500">📊</span>
           </div>
-        </motion.div>
+          <p className="text-2xl md:text-3xl font-mono font-bold text-green-500 mb-1">
+            {stats?.totalViews.toLocaleString() || '0'}
+          </p>
+          <p className={`text-xs font-mono ${growthPercentage >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+            {growthPercentage >= 0 ? '+' : ''}{growthPercentage}% vs last week
+          </p>
+        </div>
 
-        <motion.div 
-          className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition-all duration-300"
-          whileHover={{ scale: 1.02 }}
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm font-medium mb-1">Unike besøkende</p>
-              <p className="text-3xl font-bold text-white">{stats?.uniqueVisitors.toLocaleString() || '0'}</p>
-              <p className="text-sm text-accent-green/80 mt-1">Unike økter</p>
-            </div>
-            <div className="text-blue-400 text-3xl">👥</div>
+        <div className="border border-green-500 bg-black p-4">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-green-600 text-xs font-mono uppercase">Unique Visitors</p>
+            <span className="text-green-500">👥</span>
           </div>
-        </motion.div>
+          <p className="text-2xl md:text-3xl font-mono font-bold text-green-500 mb-1">
+            {stats?.uniqueVisitors.toLocaleString() || '0'}
+          </p>
+          <p className="text-xs font-mono text-green-600">Unique Sessions</p>
+        </div>
 
-        <motion.div 
-          className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition-all duration-300"
-          whileHover={{ scale: 1.02 }}
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm font-medium mb-1">Økt varighet</p>
-              <p className="text-3xl font-bold text-white">{stats?.avgSessionDuration || 'N/A'}</p>
-              <p className="text-sm text-accent-green/80 mt-1">Gjennomsnitt</p>
-            </div>
-            <div className="text-purple-400 text-3xl">⏱️</div>
+        <div className="border border-green-500 bg-black p-4">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-green-600 text-xs font-mono uppercase">Session Duration</p>
+            <span className="text-green-500">⏱️</span>
           </div>
-        </motion.div>
+          <p className="text-2xl md:text-3xl font-mono font-bold text-green-500 mb-1">
+            {stats?.avgSessionDuration || 'N/A'}
+          </p>
+          <p className="text-xs font-mono text-green-600">Average</p>
+        </div>
 
-        <motion.div 
-          className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition-all duration-300"
-          whileHover={{ scale: 1.02 }}
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm font-medium mb-1">Bounce Rate</p>
-              <p className="text-3xl font-bold text-white">{stats?.bounceRate || 0}%</p>
-              <p className="text-sm text-accent-green/80 mt-1">Engasjement</p>
-            </div>
-            <div className="text-yellow-400 text-3xl">📈</div>
+        <div className="border border-green-500 bg-black p-4">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-green-600 text-xs font-mono uppercase">Bounce Rate</p>
+            <span className="text-green-500">📈</span>
           </div>
-        </motion.div>
+          <p className="text-2xl md:text-3xl font-mono font-bold text-green-500 mb-1">
+            {stats?.bounceRate || 0}%
+          </p>
+          <p className="text-xs font-mono text-green-600">Engagement</p>
+        </div>
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Daily Views Chart */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-2xl">
-          <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-            <div className="w-2 h-2 bg-accent-green rounded-full animate-pulse"></div>
-            Besøksgraf (siste 30 dager)
+        <div className="border border-green-500 bg-black p-4">
+          <h3 className="text-lg font-mono font-bold text-green-500 mb-4 flex items-center gap-2">
+            <span className="w-2 h-2 bg-green-500"></span>
+            VISITS (LAST 30 DAYS)
           </h3>
-          <div className="h-48 flex items-end gap-1 p-4 bg-white/5 rounded-xl border border-white/5">
+          <div className="h-48 flex items-end gap-1 p-4 border border-green-500 bg-black">
             {stats?.dailyViews.map((day, i) => {
               const maxViews = Math.max(...(stats?.dailyViews.map(d => d.views) || [1]))
               const height = maxViews > 0 ? Math.max(8, (day.views / maxViews) * 100) : 0
               return (
                 <div 
                   key={i} 
-                  className="flex-1 flex flex-col items-center group cursor-pointer"
-                  title={`${day.date}: ${day.views} visninger`}
+                  className="flex-1 flex flex-col items-center"
+                  title={`${day.date}: ${day.views} views`}
                 >
                   <div 
                     style={{ height: `${height}%` }} 
-                    className="w-full bg-gradient-to-t from-accent-green to-accent-green/50 rounded-t-sm transition-all duration-200 group-hover:from-accent-green/80 group-hover:to-accent-green/30 min-h-[2px]"
+                    className="w-full bg-green-500 min-h-[2px]"
                   />
                 </div>
               )
             }) || (
-              <div className="flex-1 flex items-center justify-center text-gray-400">
-                Ingen data tilgjengelig
+              <div className="flex-1 flex items-center justify-center text-green-600 font-mono text-sm">
+                NO DATA
               </div>
             )}
           </div>
-          <div className="flex justify-between text-xs text-gray-400 mt-4 px-4">
-            <span>30 dager siden</span>
-            <span className="text-accent-green font-medium">
-              Total: {stats?.dailyViews.reduce((sum, day) => sum + day.views, 0) || 0} visninger
+          <div className="flex justify-between text-xs text-green-600 font-mono mt-4 px-4">
+            <span>30 days ago</span>
+            <span className="text-green-500">
+              Total: {stats?.dailyViews.reduce((sum, day) => sum + day.views, 0) || 0}
             </span>
-            <span>I dag</span>
+            <span>Today</span>
           </div>
         </div>
 
         {/* Top Pages */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-2xl">
-          <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-            <div className="w-2 h-2 bg-accent-green rounded-full animate-pulse"></div>
-            Mest populære sider
+        <div className="border border-green-500 bg-black p-4">
+          <h3 className="text-lg font-mono font-bold text-green-500 mb-4 flex items-center gap-2">
+            <span className="w-2 h-2 bg-green-500"></span>
+            TOP PAGES
           </h3>
-          <div className="space-y-4">
+          <div className="space-y-2">
             {stats?.topPages.map((page, index) => (
-              <div key={index} className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-all duration-200">
+              <div key={index} className="flex justify-between items-center p-2 border border-green-500 bg-black">
                 <div className="flex items-center gap-3">
-                  <span className="text-accent-green font-mono text-sm">#{index + 1}</span>
-                  <span className="text-gray-300">{page.page}</span>
+                  <span className="text-green-500 font-mono text-sm">#{index + 1}</span>
+                  <span className="text-green-400 font-mono text-sm">{page.page}</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-white font-semibold">{page.views}</span>
-                  <span className="text-gray-400 text-sm ml-2">({page.percentage}%)</span>
+                  <span className="text-green-500 font-mono font-bold">{page.views}</span>
+                  <span className="text-green-600 font-mono text-xs ml-2">({page.percentage}%)</span>
                 </div>
               </div>
             )) || (
-              <div className="text-center text-gray-400 py-8">
-                Ingen data tilgjengelig ennå
+              <div className="text-center text-green-600 font-mono py-8">
+                NO DATA AVAILABLE
               </div>
             )}
           </div>
@@ -183,25 +169,22 @@ export default function OverviewTab() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-2xl">
-        <h3 className="text-xl font-semibold text-white mb-6">Hurtighandlinger</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="border border-green-500 bg-black p-4">
+        <h3 className="text-lg font-mono font-bold text-green-500 mb-4">QUICK ACTIONS</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <button 
             onClick={fetchAnalytics}
-            className="p-4 bg-accent-green/20 border border-accent-green/30 text-accent-green rounded-xl hover:bg-accent-green/30 transition-colors font-medium flex items-center gap-3"
+            className="p-3 border border-green-500 bg-black text-green-500 font-mono text-sm hover:bg-green-500 hover:text-black"
           >
-            <span>🔄</span>
-            Oppdater data
+            [REFRESH DATA]
           </button>
           
-          <button className="p-4 bg-blue-600/20 border border-blue-600/30 text-blue-400 rounded-xl hover:bg-blue-600/30 transition-colors font-medium flex items-center gap-3">
-            <span>📊</span>
-            Generer rapport
+          <button className="p-3 border border-green-500 bg-black text-green-500 font-mono text-sm hover:bg-green-500 hover:text-black">
+            [GENERATE REPORT]
           </button>
           
-          <button className="p-4 bg-purple-600/20 border border-purple-600/30 text-purple-400 rounded-xl hover:bg-purple-600/30 transition-colors font-medium flex items-center gap-3">
-            <span>⚙️</span>
-            Innstillinger
+          <button className="p-3 border border-green-500 bg-black text-green-500 font-mono text-sm hover:bg-green-500 hover:text-black">
+            [SETTINGS]
           </button>
         </div>
       </div>

@@ -30,6 +30,7 @@ const customDescriptions: Record<string, string> = {
 
 export default function MusikkproduksjonSeksjon() {
   const [demoTracks, setDemoTracks] = useState<Record<string, DemoTrack[]>>({});
+  const [backgrounds, setBackgrounds] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [orderForm, setOrderForm] = useState({
     name: '',
@@ -42,11 +43,12 @@ export default function MusikkproduksjonSeksjon() {
   const [orderSuccess, setOrderSuccess] = useState(false);
 
   useEffect(() => {
-    const fetchMusic = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('/api/music');
-        const data = await response.json();
-        const tracks: ApiTrack[] = data.music || [];
+        // Fetch music tracks
+        const musicResponse = await fetch('/api/music');
+        const musicData = await musicResponse.json();
+        const tracks: ApiTrack[] = musicData.music || [];
 
         const grouped = tracks.reduce<Record<string, DemoTrack[]>>((acc, track) => {
           const genreKey = track.genre || 'annet';
@@ -62,15 +64,21 @@ export default function MusikkproduksjonSeksjon() {
         }, {});
 
         setDemoTracks(grouped);
+
+        // Fetch background images
+        const bgResponse = await fetch('/api/genres/backgrounds');
+        const bgData = await bgResponse.json();
+        setBackgrounds(bgData.backgrounds || {});
       } catch (error) {
-        console.error('Failed to fetch music tracks', error);
+        console.error('Failed to fetch data', error);
         setDemoTracks({});
+        setBackgrounds({});
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMusic();
+    fetchData();
   }, []);
 
   const genreCards = useMemo(() => genreData.filter((genre) =>
@@ -148,10 +156,13 @@ export default function MusikkproduksjonSeksjon() {
             const demos = (genre.id && demoTracks[genre.id]) || [];
             const topDemos = demos.slice(0, 2);
 
-            // Definer bakgrunnsbilde for Ambient
-            const backgroundImage = genre.id === 'ambient' 
-              ? '/images/ambient.png' 
-              : genre.heroImage || genre.thumbnailImage || null;
+            // Use custom background if available, otherwise fallback to default
+            const customBackground = backgrounds[genre.id];
+            const backgroundImage = customBackground 
+              || (genre.id === 'ambient' ? '/images/ambient.png' : null)
+              || genre.heroImage 
+              || genre.thumbnailImage 
+              || null;
 
             return (
               <div

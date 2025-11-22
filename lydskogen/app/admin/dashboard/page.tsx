@@ -9,7 +9,7 @@ import ProjectsTab from '@/components/admin/ProjectsTab'
 import ContentTab from '@/components/admin/ContentTab'
 import OrdersTab from '@/components/admin/OrdersTab'
 import AnalyticsTab from '@/components/admin/AnalyticsTab'
-import UploadTab from '@/components/admin/UploadTab'
+import MusikkproduksjonTab from '@/components/admin/MusikkproduksjonTab'
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession()
@@ -26,10 +26,9 @@ export default function AdminDashboard() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
-        <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 text-center">
-          <div className="animate-spin w-8 h-8 border-2 border-accent-green border-t-transparent rounded-full mx-auto mb-4"></div>
-          <div className="text-white">Laster dashboard...</div>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="border border-green-500 p-8 text-center">
+          <div className="text-green-500 font-mono">LOADING...</div>
         </div>
       </div>
     )
@@ -51,15 +50,15 @@ export default function AdminDashboard() {
         return <OrdersTab />
       case 'analytics':
         return <AnalyticsTab />
-      case 'upload':
-        return <UploadTab />
+      case 'musikkproduksjon':
+        return <MusikkproduksjonTab />
       default:
         return <OverviewTab />
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+    <div className="min-h-screen bg-black text-green-500">
       <AdminNavbar activeTab={activeTab} onTabChange={setActiveTab} />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
