@@ -45,9 +45,12 @@ export async function POST(request: NextRequest) {
       .from('active_sessions')
       .upsert({
         session_id: sessionId,
+        page_url: pageUrl,
         user_agent: userAgent,
         ip_address: ipAddress,
-        last_activity: now
+        country: country,
+        device_type: deviceType,
+        last_seen: now
       }, {
         onConflict: 'session_id'
       })
@@ -63,7 +66,7 @@ export async function POST(request: NextRequest) {
     await supabaseAdmin
       .from('active_sessions')
       .delete()
-      .lt('last_activity', fiveMinutesAgo)
+      .lt('last_seen', fiveMinutesAgo)
 
     return NextResponse.json({ 
       success: true,

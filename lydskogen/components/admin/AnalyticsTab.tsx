@@ -1,9 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
 import RealTimeAnalytics from '@/components/RealTimeAnalytics'
-import HeatmapAnalytics from '@/components/HeatmapAnalytics'
 import AnalyticsExport from '@/components/AnalyticsExport'
 import type { AnalyticsStats } from '@/lib/supabase'
 
@@ -31,111 +29,122 @@ export default function AnalyticsTab() {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="border border-green-500 p-8 text-center">
+          <div className="text-green-500 font-mono">LOADING ANALYTICS...</div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center border-b border-green-500 pb-4">
         <div>
-          <h2 className="text-2xl font-bold text-white mb-1">Analytics & Statistikk</h2>
-          <p className="text-gray-400 text-sm">Detaljert analyse av brukeratferd og trafikk</p>
+          <h2 className="text-2xl md:text-3xl font-mono font-bold text-green-500 mb-2">
+            ANALYTICS & STATISTIKK
+          </h2>
+          <p className="text-green-600 font-mono text-sm">
+            Detaljert analyse av brukeratferd og trafikk
+          </p>
         </div>
         
         <button 
           onClick={fetchAnalytics}
           disabled={loading}
-          className="px-4 py-2 bg-accent-green/20 border border-accent-green/30 text-accent-green rounded-lg hover:bg-accent-green/30 transition-colors text-sm font-medium disabled:opacity-50 relative overflow-hidden group"
+          className="px-4 py-2 border border-green-500 bg-black text-green-500 font-mono text-sm hover:bg-green-500 hover:text-black disabled:opacity-50"
         >
-          <span className="relative z-10">{loading ? 'Oppdaterer...' : '🔄 Oppdater'}</span>
-          <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+          {loading ? '[UPDATING...]' : '[REFRESH]'}
         </button>
       </div>
 
-      {/* Real-time Analytics - Compact */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2 }}
-      >
+      {/* Real-time Analytics */}
+      <div>
         <RealTimeAnalytics />
-      </motion.div>
+      </div>
 
-      {/* Device & Geographic Stats - Compact */}
+      {/* Device & Geographic Stats */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 rounded-xl">
-          <h3 className="text-base font-semibold text-white mb-3 flex items-center gap-2">
-            <div className="w-2 h-2 bg-accent-green rounded-full animate-pulse"></div>
-            Enhetsstatistikk
+        <div className="border border-green-500 bg-black p-4">
+          <h3 className="text-lg font-mono font-bold text-green-500 mb-4 flex items-center gap-2">
+            <span className="w-2 h-2 bg-green-500"></span>
+            ENHETSSTATISTIKK
           </h3>
           <div className="space-y-2">
             {stats?.deviceStats.map((device, i) => (
-              <div key={i} className="flex items-center justify-between p-2 bg-white/5 rounded-lg">
-                <span className="text-gray-300 text-sm capitalize">{device.device}</span>
+              <div key={i} className="flex items-center justify-between p-2 border border-green-500 bg-black">
+                <span className="text-green-400 font-mono text-sm capitalize">{device.device}</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-white text-sm font-medium">{device.count}</span>
-                  <span className="text-accent-green text-xs">({device.percentage}%)</span>
+                  <span className="text-green-500 font-mono font-bold">{device.count}</span>
+                  <span className="text-green-600 font-mono text-xs">({device.percentage}%)</span>
                 </div>
               </div>
-            )) || <div className="text-gray-400 text-center py-3 text-sm">Ingen data</div>}
+            )) || (
+              <div className="text-green-600 font-mono text-center py-3 text-sm">
+                NO DATA AVAILABLE
+              </div>
+            )}
           </div>
         </div>
         
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 rounded-xl">
-          <h3 className="text-base font-semibold text-white mb-3 flex items-center gap-2">
-            <div className="w-2 h-2 bg-accent-green rounded-full animate-pulse"></div>
-            Geografisk fordeling
+        <div className="border border-green-500 bg-black p-4">
+          <h3 className="text-lg font-mono font-bold text-green-500 mb-4 flex items-center gap-2">
+            <span className="w-2 h-2 bg-green-500"></span>
+            GEOGRAFISK FORDELING
           </h3>
           <div className="space-y-2">
             {stats?.geographicStats.slice(0, 5).map((geo, i) => (
-              <div key={i} className="flex items-center justify-between p-2 bg-white/5 rounded-lg">
-                <span className="text-gray-300 text-sm">{geo.country}</span>
+              <div key={i} className="flex items-center justify-between p-2 border border-green-500 bg-black">
+                <span className="text-green-400 font-mono text-sm">{geo.country}</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-white text-sm font-medium">{geo.count}</span>
-                  <span className="text-accent-green text-xs">({geo.percentage}%)</span>
+                  <span className="text-green-500 font-mono font-bold">{geo.count}</span>
+                  <span className="text-green-600 font-mono text-xs">({geo.percentage}%)</span>
                 </div>
               </div>
-            )) || <div className="text-gray-400 text-center py-3 text-sm">Ingen data</div>}
+            )) || (
+              <div className="text-green-600 font-mono text-center py-3 text-sm">
+                NO DATA AVAILABLE
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Heatmap Analytics - Compact */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2 }}
-      >
-        <HeatmapAnalytics />
-      </motion.div>
-
-      {/* Analytics Export & Event Tracking - Side by side */}
+      {/* Analytics Export & Event Tracking */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Analytics Export */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-        >
+        <div>
           <AnalyticsExport />
-        </motion.div>
+        </div>
 
         {/* Event Tracking */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 rounded-xl">
-          <h3 className="text-base font-semibold text-white mb-3 flex items-center gap-2">
-            <div className="w-2 h-2 bg-accent-green rounded-full animate-pulse"></div>
-            Top Events
+        <div className="border border-green-500 bg-black p-4">
+          <h3 className="text-lg font-mono font-bold text-green-500 mb-4 flex items-center gap-2">
+            <span className="w-2 h-2 bg-green-500"></span>
+            TOP EVENTS
           </h3>
           <div className="space-y-2">
             {stats?.topEvents.map((event, i) => (
-              <div key={i} className="flex items-center justify-between p-2 bg-white/5 rounded-lg">
-                <span className="text-gray-300 text-sm">{event.event}</span>
+              <div key={i} className="flex items-center justify-between p-2 border border-green-500 bg-black">
+                <span className="text-green-400 font-mono text-sm truncate">{event.event}</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-white text-sm font-medium">{event.count}</span>
-                  <span className="text-accent-green text-xs">({event.percentage}%)</span>
+                  <span className="text-green-500 font-mono font-bold">{event.count}</span>
+                  <span className="text-green-600 font-mono text-xs">({event.percentage}%)</span>
                 </div>
               </div>
-            )) || <div className="text-gray-400 text-center py-3 text-sm">Ingen event data</div>}
+            )) || (
+              <div className="text-green-600 font-mono text-center py-3 text-sm">
+                NO EVENT DATA
+              </div>
+            )}
           </div>
         </div>
       </div>
     </div>
+  )
+}
   )
 }

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
 
 export default function AnalyticsExport() {
   const [isExporting, setIsExporting] = useState(false)
@@ -44,32 +43,32 @@ export default function AnalyticsExport() {
   }
 
   return (
-    <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-2xl">
-      <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
-        <div className="w-2 h-2 bg-accent-green rounded-full animate-pulse"></div>
-        Eksporter Analytics
+    <div className="border border-green-500 bg-black p-6">
+      <h3 className="text-xl font-mono font-bold text-green-500 mb-6 flex items-center gap-3">
+        <span className="w-2 h-2 bg-green-500"></span>
+        EKSPORTER ANALYTICS
       </h3>
 
       <div className="space-y-6">
         {/* Period Selection */}
         <div>
-          <label className="block text-gray-300 text-sm font-medium mb-3">
-            Tidsperiode
+          <label className="block text-green-600 font-mono text-sm mb-3">
+            TIDSPERIODE
           </label>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             {[
-              { value: '7', label: '7 dager' },
-              { value: '30', label: '30 dager' },
-              { value: '90', label: '90 dager' },
-              { value: '365', label: '1 år' }
+              { value: '7', label: '7 DAGER' },
+              { value: '30', label: '30 DAGER' },
+              { value: '90', label: '90 DAGER' },
+              { value: '365', label: '1 ÅR' }
             ].map((period) => (
               <button
                 key={period.value}
                 onClick={() => setSelectedPeriod(period.value)}
-                className={`p-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                className={`p-3 border font-mono text-sm ${
                   selectedPeriod === period.value
-                    ? 'bg-accent-green text-black'
-                    : 'bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white'
+                    ? 'bg-green-500 text-black border-green-500'
+                    : 'bg-black text-green-500 border-green-500 hover:bg-green-500 hover:text-black'
                 }`}
               >
                 {period.label}
@@ -80,90 +79,80 @@ export default function AnalyticsExport() {
 
         {/* Format Selection */}
         <div>
-          <label className="block text-gray-300 text-sm font-medium mb-3">
-            Format
+          <label className="block text-green-600 font-mono text-sm mb-3">
+            FORMAT
           </label>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { value: 'csv', label: 'CSV (Excel)', description: 'Perfekt for Excel og dataanalyse' },
-              { value: 'json', label: 'JSON', description: 'Strukturert data for utvikling' }
+              { value: 'csv', label: 'CSV', description: 'Excel & dataanalyse' },
+              { value: 'json', label: 'JSON', description: 'Strukturert data' }
             ].map((format) => (
-              <motion.button
+              <button
                 key={format.value}
                 onClick={() => setSelectedFormat(format.value)}
-                className={`p-4 rounded-xl text-left transition-all duration-200 ${
+                className={`p-4 border text-left font-mono ${
                   selectedFormat === format.value
-                    ? 'bg-accent-green/20 border border-accent-green/30'
-                    : 'bg-white/5 border border-white/10 hover:bg-white/10'
+                    ? 'bg-green-500 text-black border-green-500'
+                    : 'bg-black text-green-500 border-green-500 hover:bg-green-500 hover:text-black'
                 }`}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
               >
-                <div className={`font-medium ${
-                  selectedFormat === format.value ? 'text-accent-green' : 'text-white'
-                }`}>
+                <div className="font-bold text-sm mb-1">
                   {format.label}
                 </div>
-                <div className="text-xs text-gray-400 mt-1">
+                <div className="text-xs text-green-600">
                   {format.description}
                 </div>
-              </motion.button>
+              </button>
             ))}
           </div>
         </div>
 
         {/* Export Preview */}
-        <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-          <h4 className="text-white font-medium mb-3">Eksport inneholder:</h4>
-          <div className="space-y-2 text-sm text-gray-300">
+        <div className="border border-green-500 bg-black p-4">
+          <h4 className="text-green-500 font-mono font-bold mb-3">EKSPORT INNEHOLDER:</h4>
+          <div className="space-y-2 text-sm text-green-400 font-mono">
             <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-accent-green rounded-full"></div>
+              <span className="w-1.5 h-1.5 bg-green-500"></span>
               Sammendrag og nøkkelstatistikk
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-accent-green rounded-full"></div>
+              <span className="w-1.5 h-1.5 bg-green-500"></span>
               Sidevisninger og populære sider
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-accent-green rounded-full"></div>
+              <span className="w-1.5 h-1.5 bg-green-500"></span>
               Enhets- og geografisk statistikk
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-accent-green rounded-full"></div>
+              <span className="w-1.5 h-1.5 bg-green-500"></span>
               Event-tracking og interaksjoner
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-accent-green rounded-full"></div>
+              <span className="w-1.5 h-1.5 bg-green-500"></span>
               Rådata (siste 1000 oppføringer)
             </div>
           </div>
         </div>
 
         {/* Export Button */}
-        <motion.button
+        <button
           onClick={handleExport}
           disabled={isExporting}
-          className="w-full bg-gradient-to-r from-accent-green to-green-600 hover:from-green-500 hover:to-accent-green text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-          whileHover={{ scale: isExporting ? 1 : 1.02 }}
-          whileTap={{ scale: isExporting ? 1 : 0.98 }}
+          className="w-full border border-green-500 bg-black text-green-500 font-mono font-bold py-4 px-6 hover:bg-green-500 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isExporting ? (
             <div className="flex items-center justify-center gap-2">
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              Eksporterer...
+              <span>[EXPORTING...]</span>
             </div>
           ) : (
             <div className="flex items-center justify-center gap-2">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              Eksporter Analytics ({selectedPeriod} dager)
+              <span>[EXPORT]</span> {selectedPeriod} DAGER
             </div>
           )}
-        </motion.button>
+        </button>
 
         {/* Additional Info */}
-        <div className="text-xs text-gray-400 text-center">
+        <div className="text-xs text-green-600 font-mono text-center">
           Alle tider er i norsk tidssone. Data er anonymisert og følger GDPR-retningslinjer.
         </div>
       </div>
