@@ -17,7 +17,7 @@ export default function NatureDecorations() {
       
       {/* Blomst 1 - Top left */}
       <div 
-        className="absolute top-20 left-10 opacity-20"
+        className="absolute top-20 left-10 opacity-12"
         style={{
           transform: 'rotate(-15deg)',
           width: '120px',
@@ -34,7 +34,7 @@ export default function NatureDecorations() {
 
       {/* Blomst 2 - Top right */}
       <div 
-        className="absolute top-32 right-16 opacity-15"
+        className="absolute top-32 right-16 opacity-10"
         style={{
           transform: 'rotate(20deg)',
           width: '100px',
@@ -49,35 +49,10 @@ export default function NatureDecorations() {
         </svg>
       </div>
 
-      {/* Skog-silhuett 1 - Bottom left */}
-      <div 
-        className="absolute bottom-40 left-0 opacity-10"
-        style={{
-          width: '200px',
-          height: '300px',
-        }}
-      >
-        <svg viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M20 300 L20 200 L15 200 L15 180 L25 180 L25 160 L10 160 L10 140 L30 140 L30 120 L5 120 L5 100 L35 100 L35 80 L0 80 L0 60 L40 60 L40 40 L20 40 L20 20 L50 20 L50 0 L70 0 L70 20 L90 20 L90 40 L110 40 L110 60 L130 60 L130 80 L150 80 L150 100 L170 100 L170 120 L190 120 L190 140 L180 140 L180 160 L200 160 L200 300 Z" fill="#4a7c59"/>
-        </svg>
-      </div>
-
-      {/* Skog-silhuett 2 - Bottom right */}
-      <div 
-        className="absolute bottom-32 right-0 opacity-12"
-        style={{
-          width: '180px',
-          height: '280px',
-        }}
-      >
-        <svg viewBox="0 0 180 280" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 280 L0 200 L10 200 L10 180 L5 180 L5 160 L15 160 L15 140 L8 140 L8 120 L20 120 L20 100 L12 100 L12 80 L25 80 L25 60 L18 60 L18 40 L30 40 L30 20 L40 20 L40 0 L60 0 L60 20 L80 20 L80 40 L100 40 L100 60 L120 60 L120 80 L140 80 L140 100 L160 100 L160 120 L180 120 L180 140 L170 140 L170 160 L180 160 L180 280 Z" fill="#4a7c59"/>
-        </svg>
-      </div>
 
       {/* Blomst 3 - Middle left */}
       <div 
-        className="absolute top-1/2 left-20 opacity-18"
+        className="absolute top-1/2 left-20 opacity-10"
         style={{
           transform: 'translateY(-50%) rotate(10deg)',
           width: '80px',
@@ -94,7 +69,7 @@ export default function NatureDecorations() {
 
       {/* Blomst 4 - Middle right */}
       <div 
-        className="absolute top-1/3 right-24 opacity-16"
+        className="absolute top-1/3 right-24 opacity-8"
         style={{
           transform: 'rotate(-25deg)',
           width: '90px',
@@ -111,7 +86,7 @@ export default function NatureDecorations() {
 
       {/* Blad 1 - Top center */}
       <div 
-        className="absolute top-16 left-1/2 opacity-12"
+        className="absolute top-16 left-1/2 opacity-8"
         style={{
           transform: 'translateX(-50%) rotate(45deg)',
           width: '60px',
@@ -126,7 +101,7 @@ export default function NatureDecorations() {
 
       {/* Blad 2 - Bottom center */}
       <div 
-        className="absolute bottom-24 left-1/2 opacity-10"
+        className="absolute bottom-24 left-1/2 opacity-6"
         style={{
           transform: 'translateX(-50%) rotate(-30deg)',
           width: '70px',
