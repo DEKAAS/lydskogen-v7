@@ -42,6 +42,9 @@ export default function MusikkproduksjonTab() {
     try {
       // Fetch demo tracks
       const musicRes = await fetch('/api/music');
+      if (!musicRes.ok) {
+        throw new Error('Failed to fetch music tracks');
+      }
       const musicData = await musicRes.json();
       const tracks: DemoTrack[] = musicData.music || [];
 
@@ -58,10 +61,18 @@ export default function MusikkproduksjonTab() {
 
       // Fetch backgrounds
       const bgRes = await fetch('/api/genres/backgrounds');
-      const bgData = await bgRes.json();
-      setBackgrounds(bgData.backgrounds || {});
+      if (!bgRes.ok) {
+        console.warn('Failed to fetch genre backgrounds');
+        setBackgrounds({});
+      } else {
+        const bgData = await bgRes.json();
+        setBackgrounds(bgData.backgrounds || {});
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
+      // Set empty defaults on error
+      setDemoTracks({});
+      setBackgrounds({});
     } finally {
       setLoading(false);
     }
@@ -201,13 +212,25 @@ export default function MusikkproduksjonTab() {
     }
   };
 
-  const genreCards = genreData.filter(genre => MUSIC_GENRES.includes(genre.id));
+  const genreCards = (genreData && Array.isArray(genreData)) 
+    ? genreData.filter(genre => genre && MUSIC_GENRES.includes(genre.id)) 
+    : [];
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="border border-green-500 p-8">
           <div className="text-green-500 font-mono">LOADING...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!genreCards || genreCards.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="border border-green-500 p-8">
+          <div className="text-green-500 font-mono">ERROR: NO GENRE DATA</div>
         </div>
       </div>
     );
@@ -222,6 +245,7 @@ export default function MusikkproduksjonTab() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {genreCards.map((genre) => {
+          if (!genre || !genre.id) return null;
           const genreId = genre.id;
           const demos = demoTracks[genreId] || [];
           const form = forms[genreId] || { title: '', description: '', file: null };
@@ -240,8 +264,12 @@ export default function MusikkproduksjonTab() {
             >
               {/* Genre Header */}
               <div className="p-4 border-b border-green-500">
-                <h3 className="text-xl font-mono font-bold text-green-500 mb-1">{genre.title.toUpperCase()}</h3>
-                <p className="text-xs text-green-600 font-mono">{genre.shortDescription}</p>
+                <h3 className="text-xl font-mono font-bold text-green-500 mb-1">
+                  {(genre.title || genreId || 'UNKNOWN').toUpperCase()}
+                </h3>
+                <p className="text-xs text-green-600 font-mono">
+                  {genre.shortDescription || 'No description available'}
+                </p>
               </div>
 
               <div className="p-4 space-y-4">
