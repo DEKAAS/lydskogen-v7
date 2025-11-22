@@ -209,8 +209,7 @@ export default function ProjectsTab() {
                   type="text"
                   value={artist}
                   onChange={(e) => setArtist(e.target.value)}
-                  className="w-full px-3 py-2 rounded text-sm"
-                  className="border border-green-500 bg-black text-green-500 font-mono text-sm placeholder-green-600"
+                  className="w-full px-3 py-2 border border-green-500 bg-black text-green-500 font-mono text-sm placeholder-green-600"
                   placeholder="F.eks: MODAN"
                 />
               </div>
@@ -305,8 +304,7 @@ export default function ProjectsTab() {
                       handleSpotifyUrlChange(e.target.value);
                     }
                   }}
-                  className="w-full px-3 py-2 rounded text-sm"
-                  className="border border-green-500 bg-black text-green-500 font-mono text-sm placeholder-green-600"
+                  className="w-full px-3 py-2 border border-green-500 bg-black text-green-500 font-mono text-sm placeholder-green-600"
                   placeholder="https://open.spotify.com/track/..."
                 />
                 <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
@@ -322,8 +320,7 @@ export default function ProjectsTab() {
                   type="text"
                   value={websiteUrl}
                   onChange={(e) => setWebsiteUrl(e.target.value)}
-                  className="w-full px-3 py-2 rounded text-sm"
-                  className="border border-green-500 bg-black text-green-500 font-mono text-sm placeholder-green-600"
+                  className="w-full px-3 py-2 border border-green-500 bg-black text-green-500 font-mono text-sm placeholder-green-600"
                   placeholder="https://..."
                 />
               </div>
@@ -336,8 +333,7 @@ export default function ProjectsTab() {
                   type="text"
                   value={musicUrl}
                   onChange={(e) => setMusicUrl(e.target.value)}
-                  className="w-full px-3 py-2 rounded text-sm"
-                  className="border border-green-500 bg-black text-green-500 font-mono text-sm placeholder-green-600"
+                  className="w-full px-3 py-2 border border-green-500 bg-black text-green-500 font-mono text-sm placeholder-green-600"
                   placeholder="https://..."
                 />
               </div>
@@ -368,8 +364,7 @@ export default function ProjectsTab() {
         </div>
       ) : projects.length === 0 ? (
         <div 
-          className="p-12 rounded-lg text-center"
-          className="border border-green-500 bg-black"
+          className="p-12 text-center border border-green-500 bg-black"
         >
           <p className="text-gray-400">Ingen prosjekter ennå</p>
           <p className="text-gray-500 text-sm mt-2">Klikk &quot;+ Nytt Prosjekt&quot; for å legge til</p>
@@ -379,8 +374,7 @@ export default function ProjectsTab() {
           {projects.map((project) => (
             <div
               key={project.id}
-              className="rounded-lg overflow-hidden"
-              className="border border-green-500 bg-black"
+              className="overflow-hidden border border-green-500 bg-black"
             >
               {/* Artwork */}
               <div className="aspect-square relative" style={{ backgroundColor: 'var(--section-bg-2)' }}>
