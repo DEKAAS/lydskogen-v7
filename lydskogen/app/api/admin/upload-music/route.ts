@@ -20,10 +20,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No file received." }, { status: 400 })
     }
 
-    // Validate file type (audio files)
-    const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/mp3', 'audio/flac', 'audio/aac']
-    if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json({ error: "Invalid file type. Please upload audio files only." }, { status: 400 })
+    // Validate file type (audio files) - more permissive check
+    const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/mp3', 'audio/flac', 'audio/aac', 'audio/wave', 'audio/x-wav', 'audio/x-mpeg']
+    const fileExtension = file.name.toLowerCase().split('.').pop()
+    const allowedExtensions = ['mp3', 'wav', 'flac', 'aac', 'm4a', 'ogg', 'mp4']
+    
+    if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension || '')) {
+      return NextResponse.json({ 
+        error: `Invalid file type. Please upload audio files only. Received: ${file.type || 'unknown'}` 
+      }, { status: 400 })
     }
 
     // Normalize genre to canonical slugs

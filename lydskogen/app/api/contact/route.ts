@@ -40,11 +40,12 @@ export async function POST(req: NextRequest) {
 
     const resend = new Resend(resendApiKey);
     const toEmail = 'lydskog@proton.me';
-    const subject = `Ny henvendelse (${data.source || 'Skjema'}) - ${data.genre || 'Ukjent sjanger'}`;
+    const subject = data.subject || `Ny henvendelse (${data.source || 'Skjema'}) - ${data.type || data.genre || 'Ukjent'}`;
     const text = `
 Navn: ${data.name}
 E-post: ${data.email}
 Telefon: ${data.phone || '-'}
+Type: ${data.type || data.genre || '-'}
 Sjanger: ${data.genre || '-'}
 Valg: ${data.priceOption || data.budget || '-'}
 

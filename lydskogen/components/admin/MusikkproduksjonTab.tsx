@@ -130,9 +130,14 @@ export default function MusikkproduksjonTab() {
         body: formData
       });
 
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Ukjent feil' }));
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
       const result = await response.json();
 
-      if (response.ok) {
+      if (result.message || result.music) {
         setUploadSuccess(prev => ({ ...prev, [genreId]: 'Demo lastet opp!' }));
         setForms(prev => ({
           ...prev,
@@ -140,11 +145,12 @@ export default function MusikkproduksjonTab() {
         }));
         fetchData();
       } else {
-        alert(`Feil: ${result.error || 'Kunne ikke laste opp'}`);
+        throw new Error(result.error || 'Kunne ikke laste opp');
       }
     } catch (error) {
       console.error('Upload error:', error);
-      alert('Det oppstod en feil ved opplasting');
+      const errorMessage = error instanceof Error ? error.message : 'Det oppstod en feil ved opplasting';
+      alert(`Feil: ${errorMessage}`);
     } finally {
       setUploading(prev => ({ ...prev, [genreId]: false }));
     }

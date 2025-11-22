@@ -122,7 +122,9 @@ section {
 .section-divider {
   height: 1px;
   background: var(--border-color);
-  margin: 1.5rem 0;
+  margin: 0;
+  position: relative;
+  z-index: 1;
 }
 
 /* Hero Section - Full Width */
