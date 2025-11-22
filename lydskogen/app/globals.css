@@ -4,16 +4,16 @@
 @tailwind utilities;
 
   :root {
-    /* Naturlig skog-tema - diskrete grønne toner */
-    --primary-bg: #1a1e1b;          /* Mørk skog-grønn */
-    --section-bg-1: #1d2320;        /* Litt lysere skog */
-    --section-bg-2: #212824;        /* Enda lysere skog */
-    --section-bg-3: #252d28;        /* Lyseste skog */
-  --card-bg: #28312b;             /* Kort bakgrunn - grønn */
+    /* Mørkere skog-tema for bedre partikkelstøy-synlighet */
+    --primary-bg: #0f1210;          /* Mørkere skog-grønn */
+    --section-bg-1: #121714;        /* Litt lysere skog */
+    --section-bg-2: #151b17;        /* Enda lysere skog */
+    --section-bg-3: #181f1a;        /* Lyseste skog */
+  --card-bg: #1a231e;             /* Kort bakgrunn - mørkere grønn */
     --text-color: #e8f0ea;          /* Lys tekst med grønn tint */
     --text-muted: #a3b5a8;          /* Dempet grønn tekst */
     --accent-green: #4a7c59;        /* Naturlig skog-grønn */
-    --border-color: #3a4a3e;        /* Grønn border */
+    --border-color: #2a3a2e;        /* Mørkere grønn border */
     --hover-bg: rgba(74, 124, 89, 0.1); /* Grønn hover */
   --earth-brown: #3a2a1f;         /* Varm jordfarge til overganger */
   --earth-brown-light: #4b3526;   /* Lysere brun for gradient */

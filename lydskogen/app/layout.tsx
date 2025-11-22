@@ -5,6 +5,7 @@ import AuthProvider from "@/components/AuthProvider";
 import AnalyticsProvider from "@/components/AnalyticsProvider";
 import { CartProvider } from "@/contexts/CartContext";
 import ParticleOverlay from "@/components/ParticleOverlay";
+import NatureDecorations from "@/components/NatureDecorations";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -49,6 +50,7 @@ export default function RootLayout({
     <html lang="no" className="scroll-smooth">
       <body className={`${inter.variable} font-sans antialiased text-white`}>
         <ParticleOverlay />
+        <NatureDecorations />
         <CartProvider>
           <AuthProvider>
             <AnalyticsProvider>
