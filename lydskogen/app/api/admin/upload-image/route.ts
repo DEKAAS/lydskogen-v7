@@ -74,9 +74,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Failed to save artwork metadata" }, { status: 500 })
     }
 
+    // Transform response to match frontend expectations
+    const transformedArtwork = {
+      id: artworkData.id,
+      title: artworkData.title,
+      category: artworkData.category,
+      price: artworkData.price,
+      imageUrl: artworkData.image_url,
+      description: artworkData.description,
+      tags: artworkData.tags,
+      uploadedAt: artworkData.uploaded_at,
+      isNew: artworkData.is_new,
+      status: artworkData.status
+    }
+
     return NextResponse.json({ 
       message: "Image uploaded successfully",
-      artwork: artworkData
+      artwork: transformedArtwork
     })
 
   } catch (error) {

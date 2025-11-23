@@ -137,12 +137,16 @@ export default function MusikkproduksjonTab() {
 
       const result = await response.json();
 
-      if (result.message || result.music) {
+      if (response.ok && (result.message || result.music)) {
         setUploadSuccess(prev => ({ ...prev, [genreId]: 'Demo lastet opp!' }));
         setForms(prev => ({
           ...prev,
           [genreId]: { title: '', description: '', file: null }
         }));
+        // Clear success message after 3 seconds
+        setTimeout(() => {
+          setUploadSuccess(prev => ({ ...prev, [genreId]: null }));
+        }, 3000);
         fetchData();
       } else {
         throw new Error(result.error || 'Kunne ikke laste opp');
@@ -150,6 +154,7 @@ export default function MusikkproduksjonTab() {
     } catch (error) {
       console.error('Upload error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Det oppstod en feil ved opplasting';
+      setUploadSuccess(prev => ({ ...prev, [genreId]: null }));
       alert(`Feil: ${errorMessage}`);
     } finally {
       setUploading(prev => ({ ...prev, [genreId]: false }));
@@ -188,11 +193,15 @@ export default function MusikkproduksjonTab() {
         });
         fetchData();
       } else {
-        alert(`Feil: ${result.error || 'Kunne ikke laste opp'}`);
+        const errorMsg = result.error || 'Kunne ikke laste opp';
+        setBgUploadSuccess(prev => ({ ...prev, [genreId]: null }));
+        alert(`Feil: ${errorMsg}`);
       }
     } catch (error) {
       console.error('Background upload error:', error);
-      alert('Det oppstod en feil ved opplasting');
+      const errorMessage = error instanceof Error ? error.message : 'Det oppstod en feil ved opplasting';
+      setBgUploadSuccess(prev => ({ ...prev, [genreId]: null }));
+      alert(`Feil: ${errorMessage}`);
     } finally {
       setUploadingBg(prev => ({ ...prev, [genreId]: false }));
     }

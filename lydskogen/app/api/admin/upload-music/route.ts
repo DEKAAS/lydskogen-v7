@@ -44,10 +44,15 @@ export async function POST(request: NextRequest) {
     const timestamp = Date.now()
     const filename = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
 
+    // Convert File to Buffer for Supabase Storage
+    const bytes = await file.arrayBuffer()
+    const buffer = Buffer.from(bytes)
+
     // Upload file to Supabase Storage
     const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
       .from('music-files')
-      .upload(filename, file, {
+      .upload(filename, buffer, {
+        contentType: file.type || 'audio/mpeg',
         cacheControl: '3600',
         upsert: false
       })
@@ -90,9 +95,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Failed to save music metadata" }, { status: 500 })
     }
 
+    // Transform response to match frontend expectations
+    const transformedMusic = {
+      id: musicData.id,
+      title: musicData.title,
+      artist: musicData.artist,
+      genre: musicData.genre,
+      price: musicData.price,
+      audioUrl: musicData.audio_url,
+      description: musicData.description,
+      duration: musicData.duration,
+      bpm: musicData.bpm,
+      key: musicData.key,
+      tags: musicData.tags,
+      uploadedAt: musicData.uploaded_at,
+      isUploaded: musicData.is_uploaded,
+      isNew: musicData.is_new,
+      status: musicData.status
+    }
+
     return NextResponse.json({ 
       message: "Music file uploaded successfully",
-      music: musicData
+      music: transformedMusic
     })
 
   } catch (error) {

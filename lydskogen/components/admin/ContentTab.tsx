@@ -30,6 +30,29 @@ export default function ContentTab() {
   const [musicTracks, setMusicTracks] = useState<MusicTrack[]>([])
   const [artworkItems, setArtworkItems] = useState<ArtworkItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [uploading, setUploading] = useState(false)
+  const [showUploadForm, setShowUploadForm] = useState(false)
+  const [uploadFormData, setUploadFormData] = useState({
+    title: '',
+    artist: '',
+    description: '',
+    price: '450',
+    genre: 'ambient',
+    status: 'available',
+    duration: '',
+    bpm: '',
+    key: '',
+    tags: '',
+    file: null as File | null
+  })
+  const [artworkFormData, setArtworkFormData] = useState({
+    title: '',
+    description: '',
+    price: '200',
+    category: 'gallery',
+    tags: '',
+    file: null as File | null
+  })
 
   useEffect(() => {
     fetchContent()
@@ -89,6 +112,110 @@ export default function ContentTab() {
     }
   }
 
+  const handleMusicUpload = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!uploadFormData.file || !uploadFormData.title.trim()) {
+      alert('Tittel og fil er påkrevd')
+      return
+    }
+
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', uploadFormData.file)
+      formData.append('title', uploadFormData.title)
+      formData.append('artist', uploadFormData.artist || 'Lydskog')
+      formData.append('description', uploadFormData.description)
+      formData.append('price', uploadFormData.price)
+      formData.append('genre', uploadFormData.genre)
+      formData.append('status', uploadFormData.status)
+      formData.append('duration', uploadFormData.duration)
+      formData.append('bpm', uploadFormData.bpm)
+      formData.append('key', uploadFormData.key)
+      formData.append('tags', uploadFormData.tags)
+
+      const response = await fetch('/api/admin/upload-music', {
+        method: 'POST',
+        body: formData
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        alert('Musikk lastet opp!')
+        setShowUploadForm(false)
+        setUploadFormData({
+          title: '',
+          artist: '',
+          description: '',
+          price: '450',
+          genre: 'ambient',
+          status: 'available',
+          duration: '',
+          bpm: '',
+          key: '',
+          tags: '',
+          file: null
+        })
+        fetchContent()
+      } else {
+        alert(`Feil: ${result.error || 'Kunne ikke laste opp'}`)
+      }
+    } catch (error) {
+      console.error('Upload error:', error)
+      alert('Det oppstod en feil ved opplasting')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleArtworkUpload = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!artworkFormData.file || !artworkFormData.title.trim()) {
+      alert('Tittel og fil er påkrevd')
+      return
+    }
+
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', artworkFormData.file)
+      formData.append('title', artworkFormData.title)
+      formData.append('description', artworkFormData.description)
+      formData.append('price', artworkFormData.price)
+      formData.append('category', artworkFormData.category)
+      formData.append('tags', artworkFormData.tags)
+
+      const response = await fetch('/api/admin/upload-image', {
+        method: 'POST',
+        body: formData
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        alert('Artwork lastet opp!')
+        setShowUploadForm(false)
+        setArtworkFormData({
+          title: '',
+          description: '',
+          price: '200',
+          category: 'gallery',
+          tags: '',
+          file: null
+        })
+        fetchContent()
+      } else {
+        alert(`Feil: ${result.error || 'Kunne ikke laste opp'}`)
+      }
+    } catch (error) {
+      console.error('Upload error:', error)
+      alert('Det oppstod en feil ved opplasting')
+    } finally {
+      setUploading(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -134,6 +261,175 @@ export default function ContentTab() {
         </div>
       </div>
 
+      {/* Upload Form */}
+      {showUploadForm && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 mb-6"
+        >
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold text-white">
+              Last opp {activeSubTab === 'music' ? 'Musikk' : 'Artwork'}
+            </h3>
+            <button
+              onClick={() => setShowUploadForm(false)}
+              className="text-gray-400 hover:text-white"
+            >
+              ✕
+            </button>
+          </div>
+          
+          {activeSubTab === 'music' ? (
+            <form onSubmit={handleMusicUpload} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-gray-300 mb-2">Tittel *</label>
+                  <input
+                    type="text"
+                    value={uploadFormData.title}
+                    onChange={(e) => setUploadFormData({...uploadFormData, title: e.target.value})}
+                    className="w-full p-3 bg-black/50 text-white rounded border border-white/20"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Artist</label>
+                  <input
+                    type="text"
+                    value={uploadFormData.artist}
+                    onChange={(e) => setUploadFormData({...uploadFormData, artist: e.target.value})}
+                    placeholder="Lydskog"
+                    className="w-full p-3 bg-black/50 text-white rounded border border-white/20"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Sjanger</label>
+                  <select
+                    value={uploadFormData.genre}
+                    onChange={(e) => setUploadFormData({...uploadFormData, genre: e.target.value})}
+                    className="w-full p-3 bg-black/50 text-white rounded border border-white/20"
+                  >
+                    <option value="ambient">Ambient</option>
+                    <option value="hiphop">Hip-Hop</option>
+                    <option value="lofi">Lo-Fi</option>
+                    <option value="soundscape">Soundscape</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Pris (NOK)</label>
+                  <input
+                    type="number"
+                    value={uploadFormData.price}
+                    onChange={(e) => setUploadFormData({...uploadFormData, price: e.target.value})}
+                    className="w-full p-3 bg-black/50 text-white rounded border border-white/20"
+                    min="0"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-gray-300 mb-2">Beskrivelse</label>
+                <textarea
+                  value={uploadFormData.description}
+                  onChange={(e) => setUploadFormData({...uploadFormData, description: e.target.value})}
+                  rows={3}
+                  className="w-full p-3 bg-black/50 text-white rounded border border-white/20"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-300 mb-2">Velg lydfil *</label>
+                <input
+                  type="file"
+                  accept="audio/*"
+                  onChange={(e) => setUploadFormData({...uploadFormData, file: e.target.files?.[0] || null})}
+                  className="w-full p-3 bg-black/50 text-white rounded border border-white/20"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={uploading}
+                className="w-full bg-accent-green text-base-dark font-semibold py-3 rounded hover:bg-accent-green/80 disabled:opacity-50"
+              >
+                {uploading ? 'Laster opp...' : 'Last opp musikk'}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleArtworkUpload} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-gray-300 mb-2">Tittel *</label>
+                  <input
+                    type="text"
+                    value={artworkFormData.title}
+                    onChange={(e) => setArtworkFormData({...artworkFormData, title: e.target.value})}
+                    className="w-full p-3 bg-black/50 text-white rounded border border-white/20"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Pris (NOK)</label>
+                  <input
+                    type="number"
+                    value={artworkFormData.price}
+                    onChange={(e) => setArtworkFormData({...artworkFormData, price: e.target.value})}
+                    className="w-full p-3 bg-black/50 text-white rounded border border-white/20"
+                    min="0"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Kategori</label>
+                  <select
+                    value={artworkFormData.category}
+                    onChange={(e) => setArtworkFormData({...artworkFormData, category: e.target.value})}
+                    className="w-full p-3 bg-black/50 text-white rounded border border-white/20"
+                  >
+                    <option value="gallery">Galleri</option>
+                    <option value="custom">Skreddersydd</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Tags (komma-separert)</label>
+                  <input
+                    type="text"
+                    value={artworkFormData.tags}
+                    onChange={(e) => setArtworkFormData({...artworkFormData, tags: e.target.value})}
+                    placeholder="natura, abstract, premium"
+                    className="w-full p-3 bg-black/50 text-white rounded border border-white/20"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-gray-300 mb-2">Beskrivelse</label>
+                <textarea
+                  value={artworkFormData.description}
+                  onChange={(e) => setArtworkFormData({...artworkFormData, description: e.target.value})}
+                  rows={3}
+                  className="w-full p-3 bg-black/50 text-white rounded border border-white/20"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-300 mb-2">Velg bildefil *</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setArtworkFormData({...artworkFormData, file: e.target.files?.[0] || null})}
+                  className="w-full p-3 bg-black/50 text-white rounded border border-white/20"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={uploading}
+                className="w-full bg-accent-green text-base-dark font-semibold py-3 rounded hover:bg-accent-green/80 disabled:opacity-50"
+              >
+                {uploading ? 'Laster opp...' : 'Last opp artwork'}
+              </button>
+            </form>
+          )}
+        </motion.div>
+      )}
+
       {/* Content */}
       <AnimatePresence mode="wait">
         {activeSubTab === 'music' ? (
@@ -145,8 +441,14 @@ export default function ContentTab() {
             transition={{ duration: 0.3 }}
             className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden"
           >
-            <div className="p-6 border-b border-white/10">
+            <div className="p-6 border-b border-white/10 flex justify-between items-center">
               <h3 className="text-xl font-semibold text-white">Musikk Tracks</h3>
+              <button
+                onClick={() => setShowUploadForm(!showUploadForm)}
+                className="px-4 py-2 bg-accent-green text-base-dark font-semibold rounded hover:bg-accent-green/80"
+              >
+                {showUploadForm ? 'Avbryt' : '+ Last opp musikk'}
+              </button>
             </div>
             
             <div className="overflow-x-auto">
@@ -219,8 +521,14 @@ export default function ContentTab() {
             transition={{ duration: 0.3 }}
             className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden"
           >
-            <div className="p-6 border-b border-white/10">
+            <div className="p-6 border-b border-white/10 flex justify-between items-center">
               <h3 className="text-xl font-semibold text-white">Artwork Items</h3>
+              <button
+                onClick={() => setShowUploadForm(!showUploadForm)}
+                className="px-4 py-2 bg-accent-green text-base-dark font-semibold rounded hover:bg-accent-green/80"
+              >
+                {showUploadForm ? 'Avbryt' : '+ Last opp artwork'}
+              </button>
             </div>
             
             <div className="overflow-x-auto">
