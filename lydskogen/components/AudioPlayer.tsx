@@ -15,7 +15,8 @@ export default function AudioPlayer({
   title, 
   src, 
   duration = '0:00',
-  bgClass = 'bg-gradient-to-br from-slate-800/20 to-gray-800/20',
+  // Mer definert grønn, med subtil gradient – kan overstyres via props
+  bgClass = 'bg-gradient-to-br from-emerald-900/70 via-slate-900/80 to-emerald-700/40 shadow-[0_0_35px_rgba(16,185,129,0.35)]',
   accentColor = 'rgb(16, 185, 129)' // default to accent-green
 }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -98,12 +99,16 @@ export default function AudioPlayer({
 
   return (
     <motion.div 
-      className={`p-4 rounded-lg border border-white/10 backdrop-blur-sm ${bgClass}`}
+      className={`relative overflow-hidden p-4 rounded-xl border border-emerald-500/40 backdrop-blur-sm ${bgClass}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       whileHover={{ scale: 1.02 }}
     >
+      {/* Subtil "støy"/lys-lekkasje overlay for mer liv i flaten */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-25 mix-blend-soft-light bg-[radial-gradient(circle_at_0_0,#ffffff22,transparent_55%),radial-gradient(circle_at_100%_100%,#22c55e33,transparent_60%)]"
+      />
       <audio ref={audioRef} src={src} preload="metadata" />
       
       {/* Title */}

@@ -1,19 +1,76 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+// Validate environment variables
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Missing required Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY')
+}
+
+if (!supabaseServiceKey) {
+  console.error('Missing required Supabase environment variable: SUPABASE_SERVICE_ROLE_KEY')
+}
+
+// Helper function to safely create client
+function createSupabaseClient(url: string | undefined, key: string | undefined, options?: any) {
+  if (!url || !key) {
+    throw new Error('Supabase URL and key are required')
+  }
+  return createClient(url, key, options)
+}
 
 // Client for frontend (browser)
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = (supabaseUrl && supabaseAnonKey)
+  ? createSupabaseClient(supabaseUrl, supabaseAnonKey)
+  : (() => {
+      console.error('⚠️ Supabase client not initialized - missing environment variables')
+      // Return a mock client that will fail gracefully
+      return {
+        from: () => ({
+          select: () => ({ data: null, error: { message: 'Supabase not configured' } }),
+          insert: () => ({ data: null, error: { message: 'Supabase not configured' } }),
+          update: () => ({ data: null, error: { message: 'Supabase not configured' } }),
+          delete: () => ({ data: null, error: { message: 'Supabase not configured' } })
+        }),
+        storage: {
+          from: () => ({
+            upload: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
+            getPublicUrl: () => ({ data: { publicUrl: '' } }),
+            remove: () => Promise.resolve({ data: null, error: null })
+          })
+        }
+      } as any
+    })()
 
 // Admin client for server-side operations (has elevated permissions)
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
-  }
-})
+export const supabaseAdmin = (supabaseUrl && supabaseServiceKey)
+  ? createSupabaseClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    })
+  : (() => {
+      console.error('⚠️ Supabase admin client not initialized - missing environment variables')
+      // Return a mock client that will fail gracefully
+      return {
+        from: () => ({
+          select: () => ({ data: null, error: { message: 'Supabase not configured' } }),
+          insert: () => ({ data: null, error: { message: 'Supabase not configured' } }),
+          update: () => ({ data: null, error: { message: 'Supabase not configured' } }),
+          delete: () => ({ data: null, error: { message: 'Supabase not configured' } })
+        }),
+        storage: {
+          from: () => ({
+            upload: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
+            getPublicUrl: () => ({ data: { publicUrl: '' } }),
+            remove: () => Promise.resolve({ data: null, error: null })
+          })
+        }
+      } as any
+    })()
 
 // Types for our database tables
 export interface MusicTrack {

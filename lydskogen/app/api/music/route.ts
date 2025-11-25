@@ -15,7 +15,7 @@ export async function GET() {
     }
 
     // Transform database format to frontend format
-    const transformedMusic = musicTracks.map(track => ({
+    const transformedMusic = musicTracks.map((track: any) => ({
       id: track.id,
       title: track.title,
       artist: track.artist,

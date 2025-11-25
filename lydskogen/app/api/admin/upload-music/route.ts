@@ -59,7 +59,20 @@ export async function POST(request: NextRequest) {
 
     if (uploadError) {
       console.error('Supabase upload error:', uploadError)
-      return NextResponse.json({ error: "Failed to upload file to storage" }, { status: 500 })
+
+      // Gi tydelig beskjed hvis filen er for stor
+      const statusCode = (uploadError as any).statusCode || (uploadError as any).status
+      if (statusCode === '413' || statusCode === 413) {
+        return NextResponse.json(
+          { error: 'Filen er for stor. Prøv en komprimert versjon (for eksempel MP3) eller en kortere fil.' },
+          { status: 413 }
+        )
+      }
+
+      return NextResponse.json(
+        { error: 'Kunne ikke laste opp fil til lagring. Prøv igjen eller kontakt utvikler.' },
+        { status: 500 }
+      )
     }
 
     // Get public URL for the uploaded file
@@ -89,10 +102,19 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (dbError) {
-      console.error('Database error:', dbError)
+      console.error('Database error details:', {
+        message: dbError.message,
+        details: dbError.details,
+        hint: dbError.hint,
+        code: dbError.code
+      })
       // Try to clean up uploaded file
       await supabaseAdmin.storage.from('music-files').remove([filename])
-      return NextResponse.json({ error: "Failed to save music metadata" }, { status: 500 })
+      return NextResponse.json({ 
+        error: "Failed to save music metadata",
+        details: dbError.message || 'Unknown database error',
+        code: dbError.code
+      }, { status: 500 })
     }
 
     // Transform response to match frontend expectations
@@ -121,6 +143,10 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error("Error uploading music file:", error)
-    return NextResponse.json({ error: "Error uploading music file" }, { status: 500 })
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+    return NextResponse.json({ 
+      error: "Error uploading music file",
+      details: errorMessage
+    }, { status: 500 })
   }
 }
