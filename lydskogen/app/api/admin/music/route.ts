@@ -14,7 +14,7 @@ export async function GET() {
     }
 
     // Transform database format to frontend format
-    const transformedMusic = musicTracks.map(track => ({
+    const transformedMusic = musicTracks.map((track: any) => ({
       id: track.id,
       title: track.title,
       artist: track.artist,
@@ -105,7 +105,7 @@ export async function POST(request: Request) {
     }
 
     // Transform frontend format to database format
-    const dbTracks = musicTracks.map(track => ({
+    const dbTracks = musicTracks.map((track: any) => ({
       title: track.title,
       artist: track.artist,
       genre: track.genre,
@@ -132,7 +132,7 @@ export async function POST(request: Request) {
     }
 
     // Transform response
-    const transformedTracks = data.map(track => ({
+    const transformedTracks = data.map((track: any) => ({
       id: track.id,
       title: track.title,
       artist: track.artist,
