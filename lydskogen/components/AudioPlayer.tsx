@@ -11,13 +11,14 @@ interface AudioPlayerProps {
   accentColor?: string;
 }
 
-export default function AudioPlayer({ 
-  title, 
-  src, 
+export default function AudioPlayer({
+  title,
+  src,
   duration = '0:00',
-  // Mer definert grønn, med subtil gradient – kan overstyres via props
-  bgClass = 'bg-gradient-to-br from-emerald-900/70 via-slate-900/80 to-emerald-700/40 shadow-[0_0_35px_rgba(16,185,129,0.35)]',
-  accentColor = 'rgb(16, 185, 129)' // default to accent-green
+  // Rolig, jordnær standardbakgrunn – kan overstyres via props
+  bgClass = 'bg-stone-900/85',
+  // Dempet aksentfarge som fortsatt er tydelig, men ikke knæsj
+  accentColor = 'rgb(148, 163, 184)',
 }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -99,20 +100,16 @@ export default function AudioPlayer({
 
   return (
     <motion.div 
-      className={`relative overflow-hidden p-4 rounded-xl border border-emerald-500/40 backdrop-blur-sm ${bgClass}`}
-      initial={{ opacity: 0, y: 20 }}
+      className={`p-4 rounded-xl border border-stone-700/70 ${bgClass}`}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      whileHover={{ scale: 1.02 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      whileHover={{ translateY: -2 }}
     >
-      {/* Subtil "støy"/lys-lekkasje overlay for mer liv i flaten */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-25 mix-blend-soft-light bg-[radial-gradient(circle_at_0_0,#ffffff22,transparent_55%),radial-gradient(circle_at_100%_100%,#22c55e33,transparent_60%)]"
-      />
       <audio ref={audioRef} src={src} preload="metadata" />
       
       {/* Title */}
-      <h3 className="text-white font-medium mb-3 text-sm md:text-base">
+      <h3 className="text-stone-50 font-medium mb-3 text-sm md:text-base tracking-tight">
         {title}
       </h3>
       
@@ -122,9 +119,9 @@ export default function AudioPlayer({
         <motion.button
           onClick={togglePlayPause}
           disabled={isLoading}
-          className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ backgroundColor: accentColor }}
-          whileTap={{ scale: 0.95 }}
+          whileTap={{ scale: 0.96 }}
         >
           {isLoading ? (
             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -145,7 +142,7 @@ export default function AudioPlayer({
         {/* Progress Bar */}
         <div className="flex-1">
           <div 
-            className="w-full h-2 bg-white/20 rounded-full cursor-pointer relative overflow-hidden"
+            className="w-full h-1.5 bg-stone-800 rounded-full cursor-pointer relative overflow-hidden"
             onClick={handleProgressClick}
           >
             <motion.div
@@ -153,12 +150,12 @@ export default function AudioPlayer({
               style={{ backgroundColor: accentColor }}
               initial={{ width: 0 }}
               animate={{ width: `${progressPercentage}%` }}
-              transition={{ duration: 0.1 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
             />
           </div>
           
           {/* Time Display */}
-          <div className="flex justify-between text-xs text-gray-300 mt-1">
+          <div className="flex justify-between text-xs text-stone-300 mt-1">
             <span>{formatTime(currentTime)}</span>
             <span>{totalDuration > 0 ? formatTime(totalDuration) : duration}</span>
           </div>

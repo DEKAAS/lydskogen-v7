@@ -17,7 +17,7 @@ export async function GET() {
     }
 
     // Transform database format to frontend format
-    const transformedArtwork = artworkItems.map(item => ({
+    const transformedArtwork = artworkItems.map((item: any) => ({
       id: item.id,
       title: item.title,
       category: item.category,
@@ -103,7 +103,7 @@ export async function POST(request: Request) {
     }
 
     // Transform frontend format to database format
-    const dbArtwork = artworkItems.map(item => ({
+    const dbArtwork = artworkItems.map((item: any) => ({
       title: item.title,
       category: item.category,
       price: item.price,
@@ -125,7 +125,7 @@ export async function POST(request: Request) {
     }
 
     // Transform response
-    const transformedArtwork = data.map(item => ({
+    const transformedArtwork = data.map((item: any) => ({
       id: item.id,
       title: item.title,
       category: item.category,
