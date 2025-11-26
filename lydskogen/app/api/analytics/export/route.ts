@@ -34,13 +34,13 @@ export async function GET(request: NextRequest) {
         .gte('last_seen', new Date(Date.now() - 60 * 60 * 1000).toISOString()) // Last hour
     ])
 
-    const pageViews = pageViewsResult.data || []
-    const events = eventsResult.data || []
-    const activeSessions = activeSessionsResult.data || []
+    const pageViews = (pageViewsResult.data || []) as any[]
+    const events = (eventsResult.data || []) as any[]
+    const activeSessions = (activeSessionsResult.data || []) as any[]
 
     // Calculate summary statistics
     const totalViews = pageViews.length
-    const uniqueVisitors = new Set(pageViews.map(v => v.session_id)).size
+    const uniqueVisitors = new Set(pageViews.map((v: any) => v.session_id)).size
     const totalEvents = events.length
     const activeVisitors = activeSessions.length
 
