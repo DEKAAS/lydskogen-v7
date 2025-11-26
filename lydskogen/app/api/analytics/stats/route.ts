@@ -4,6 +4,26 @@ import type { AnalyticsStats } from '@/lib/supabase'
 
 export async function GET() {
   try {
+    if (!supabaseAdmin) {
+      console.error('Supabase admin client not initialized - check environment variables')
+      return NextResponse.json({ 
+        stats: {
+          totalViews: 0,
+          uniqueVisitors: 0,
+          avgSessionDuration: '0:00',
+          bounceRate: 0,
+          activeVisitors: 0,
+          topPages: [],
+          dailyViews: [],
+          deviceStats: [],
+          geographicStats: [],
+          topEvents: [],
+          referrerStats: [],
+          hourlyViews: []
+        }
+      })
+    }
+
     const now = new Date()
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
@@ -20,7 +40,9 @@ export async function GET() {
       .select('ip_address')
       .gte('created_at', thirtyDaysAgo.toISOString())
 
-    const uniqueVisitors = new Set(uniqueVisitorsData?.map(v => v.ip_address) || []).size
+    const uniqueVisitors = new Set(
+      (uniqueVisitorsData || []).map((v: any) => v.ip_address)
+    ).size
 
     // Get views from last week for comparison
     const { count: lastWeekViews } = await supabaseAdmin
