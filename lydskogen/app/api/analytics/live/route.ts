@@ -33,7 +33,7 @@ export async function GET() {
 
     // Get top pages being viewed right now
     const currentPages: Record<string, number> = {}
-    activeSessions?.forEach(session => {
+    activeSessions?.forEach((session: any) => {
       const page = session.page_url || '/'
       currentPages[page] = (currentPages[page] || 0) + 1
     })
