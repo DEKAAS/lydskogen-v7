@@ -1,14 +1,21 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Space_Mono } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/components/AuthProvider";
 import AnalyticsProvider from "@/components/AnalyticsProvider";
 import { CartProvider } from "@/contexts/CartContext";
 import ParticleOverlay from "@/components/ParticleOverlay";
+import NoiseOverlay from "@/components/NoiseOverlay";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+});
+
+const spaceMono = Space_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -47,7 +54,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="no" className="scroll-smooth">
-      <body className={`${inter.variable} font-sans antialiased text-white`}>
+      <body className={`${inter.variable} ${spaceMono.variable} font-sans antialiased text-white`}>
+        <NoiseOverlay />
         <ParticleOverlay />
         <CartProvider>
           <AuthProvider>

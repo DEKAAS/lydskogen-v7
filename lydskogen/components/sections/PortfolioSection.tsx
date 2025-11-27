@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
-interface PortfolioProject {
+interface Project {
   id: string;
   title: string;
   artist?: string;
@@ -12,10 +13,11 @@ interface PortfolioProject {
   tags?: string[];
   spotifyUrl?: string;
   websiteUrl?: string;
+  createdAt?: string;
 }
 
-export default function PortfolioSection() {
-  const [projects, setProjects] = useState<PortfolioProject[]>([]);
+export default function ProjectsSection() {
+  const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -33,128 +35,102 @@ export default function PortfolioSection() {
 
   if (isLoading) {
     return (
-      <section className="py-12" style={{ backgroundColor: 'var(--section-bg-1)' }}>
-        <div className="container mx-auto px-4">
-          <div className="text-center py-8">
-            <p style={{ color: 'var(--text-muted)' }}>Laster...</p>
-          </div>
-        </div>
-      </section>
+      <div className="py-24 bg-base-dark text-center font-mono text-gray-500">
+        [LOADING_ARCHIVE...]
+      </div>
     );
   }
 
-  if (projects.length === 0) {
-    return (
-      <section className="py-12" style={{ backgroundColor: 'var(--section-bg-1)' }}>
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-color)' }}>Portfolio</h2>
-            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Tidligere prosjekter</p>
-          </div>
-          <div className="text-center py-12">
-            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Kommer snart</p>
-            <p className="text-xs mt-2" style={{ color: 'var(--text-muted)', opacity: 0.6 }}>Kom tilbake senere</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  if (projects.length === 0) return null;
 
   return (
-    <section className="py-12" style={{ backgroundColor: 'var(--section-bg-1)' }}>
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-color)' }}>Portfolio</h2>
-          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Tidligere prosjekter</p>
+    <section id="portfolio" className="bg-base-dark min-h-screen relative border-t border-white/10">
+      {/* Section Header - Technical Style */}
+      <div className="sticky top-0 z-30 bg-base-dark/95 backdrop-blur-sm border-b border-white/10">
+        <div className="max-w-[1600px] mx-auto px-4 md:px-12 py-4 flex justify-between items-center">
+          <h2 className="font-mono text-lg md:text-2xl text-white font-bold tracking-tighter">
+            [02] PROSJEKTER
+          </h2>
+          <div className="hidden md:flex gap-4 text-xs font-mono text-gray-500">
+            <span>TOTAL_ENTRIES: {projects.length.toString().padStart(2, '0')}</span>
+            <span>STATUS: ONLINE</span>
+          </div>
         </div>
+      </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-w-6xl mx-auto">
-          {projects.map((project) => (
-            <div
+      {/* Projects Grid - Technical Archive Style */}
+      <div className="max-w-[1600px] mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {projects.map((project, index) => (
+            <motion.div
               key={project.id}
-              className="rounded overflow-hidden"
-              style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)' }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className="group relative border-b md:border-r border-white/10 bg-base-dark hover:bg-white/5 transition-colors duration-300"
             >
-              {/* Artwork */}
-              <div className="aspect-square relative group" style={{ backgroundColor: 'var(--section-bg-2)' }}>
-                {project.artworkUrl ? (
-                  <img 
-                    src={project.artworkUrl} 
-                    alt={project.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="flex items-center justify-center h-full">
-                    <span className="text-3xl" style={{ color: 'var(--text-muted)', opacity: 0.3 }}>
-                      {project.title.charAt(0)}
-                    </span>
-                  </div>
-                )}
-                
-                {/* Spotify Play Button Overlay */}
-                {project.spotifyUrl && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    <a
-                      href={project.spotifyUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-12 h-12 rounded-full bg-[#1DB954] flex items-center justify-center hover:bg-[#1ed760] transition-colors duration-200 shadow-lg"
-                      style={{ transform: 'scale(1)' }}
-                    >
-                      <svg className="w-6 h-6 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                      </svg>
-                    </a>
-                  </div>
-                )}
-                
-                {/* Other Links */}
-                {(project.musicUrl || project.websiteUrl) && !project.spotifyUrl && (
-                  <div className="absolute top-1 right-1 flex gap-1">
+              {/* Image Container */}
+              <div className="aspect-square relative overflow-hidden p-4">
+                <div className="w-full h-full relative grayscale group-hover:grayscale-0 transition-all duration-500 ease-out">
+                  {project.artworkUrl ? (
+                    <img 
+                      src={project.artworkUrl} 
+                      alt={project.title}
+                      className="w-full h-full object-cover border border-white/10"
+                    />
+                  ) : (
+                    <div className="w-full h-full border border-white/10 flex items-center justify-center bg-white/5">
+                      <span className="font-mono text-4xl text-white/20">{project.title[0]}</span>
+                    </div>
+                  )}
+                  
+                  {/* Technical Overlays */}
+                  <div className="absolute top-2 right-2 flex flex-col gap-1 items-end opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {project.spotifyUrl && (
+                      <a href={project.spotifyUrl} target="_blank" rel="noreferrer" className="bg-[#1DB954] text-black px-2 py-1 text-[10px] font-mono font-bold hover:bg-white transition-colors">
+                        SPOTIFY_LINK ↗
+                      </a>
+                    )}
                     {project.websiteUrl && (
-                      <a
-                        href={project.websiteUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-1.5 rounded-full text-xs"
-                        style={{ backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', border: '1px solid var(--border-color)' }}
-                      >
-                        →
+                      <a href={project.websiteUrl} target="_blank" rel="noreferrer" className="bg-white text-black px-2 py-1 text-[10px] font-mono font-bold hover:bg-gray-200 transition-colors">
+                        WEB_LINK ↗
                       </a>
                     )}
                   </div>
-                )}
+                </div>
               </div>
 
-              {/* Info */}
-              <div className="p-2">
-                <h3 className="text-xs font-semibold truncate mb-0.5" style={{ color: 'var(--text-color)' }}>
-                  {project.title}
-                </h3>
-                {project.artist && (
-                  <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>
-                    {project.artist}
-                  </p>
-                )}
-                {project.tags && project.tags.length > 0 && (
-                  <div className="flex gap-1 mt-1 flex-wrap">
-                    {project.tags.slice(0, 2).map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-xs px-1.5 py-0.5 rounded"
-                        style={{ 
-                          backgroundColor: 'var(--section-bg-2)', 
-                          color: 'var(--text-muted)', 
-                          border: '1px solid var(--border-color)' 
-                        }}
-                      >
-                        {tag}
+              {/* Metadata Footer - Receipt Style */}
+              <div className="p-4 pt-0 flex flex-col gap-2">
+                <div className="flex justify-between items-start border-t border-white/10 pt-3">
+                  <h3 className="text-white font-mono text-sm font-bold uppercase truncate pr-4">
+                    {project.title}
+                  </h3>
+                  <span className="text-accent-green font-mono text-xs">
+                    {index.toString().padStart(3, '0')}
+                  </span>
+                </div>
+                
+                <div className="flex justify-between items-end">
+                  <div className="flex flex-col gap-0.5">
+                    {project.artist && (
+                      <span className="text-gray-400 font-mono text-xs uppercase">
+                        ARTIST: {project.artist}
                       </span>
-                    ))}
+                    )}
+                    {project.tags && project.tags.length > 0 && (
+                      <span className="text-gray-500 font-mono text-[10px] uppercase">
+                        TYPE: {project.tags[0]}
+                      </span>
+                    )}
                   </div>
-                )}
+                  
+                  {/* Interactive Indicator */}
+                  <div className="w-2 h-2 bg-gray-800 group-hover:bg-accent-green rounded-full transition-colors duration-300" />
+                </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

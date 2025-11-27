@@ -2,151 +2,134 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 export default function HeaderHero() {
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => { setMounted(true) }, [])
+  const [tagline, setTagline] = useState('Laster...');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    fetch('/api/content')
+      .then(res => res.json())
+      .then(data => {
+        if (data.hero_tagline) setTagline(data.hero_tagline);
+      })
+      .catch(err => console.error('Error fetching tagline:', err));
+  }, []);
+
+  // Split tagline into words for staggered animation
+  const words = tagline.split(' ');
+
   return (
-    <section id="hero" className="hero-section relative h-screen flex flex-col overflow-hidden" style={{
-      backgroundImage: 'url(/images/hero.jpg)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundAttachment: 'fixed',
-      marginTop: 0,
-      paddingTop: 0
-    }}>
-      {/* Subtle overlay */}
-      <div className="absolute inset-0 pointer-events-none" style={{ background: 'rgba(0,0,0,0.4)' }} />
-
-      {/* Full-width Navigation - Top of screen */}
-      <nav 
-        className="relative z-30 w-full px-6 py-5 flex justify-center items-center"
-        style={{ 
-          backgroundColor: 'rgba(0, 0, 0, 0.25)', 
-          backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          marginTop: 0
+    <section id="hero" className="hero-section relative h-screen flex flex-col overflow-hidden bg-base-dark">
+      {/* Background Image with darkening */}
+      <div 
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: 'url(/images/hero.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.6
         }}
-      >
-        <div className="flex justify-center items-center space-x-6 max-w-6xl w-full mx-auto">
-          <Link 
-            href="#artist" 
-            className="nav-link-hero text-base font-medium px-4 py-2 rounded-lg transition-all hover:bg-white/10 flex items-center justify-center" 
-            style={{color: 'rgba(255, 255, 255, 0.95)'}}
-          >
-            Tjenester
-          </Link>
-          <Link 
-            href="#om" 
-            className="nav-link-hero text-base font-medium px-4 py-2 rounded-lg transition-all hover:bg-white/10 flex items-center justify-center" 
-            style={{color: 'rgba(255, 255, 255, 0.95)'}}
-          >
-            Om
-          </Link>
-          <Link 
-            href="#contact" 
-            className="nav-link-hero text-base font-medium px-4 py-2 rounded-lg transition-all hover:bg-white/10 flex items-center justify-center" 
-            style={{color: 'rgba(255, 255, 255, 0.95)'}}
-          >
-            Kontakt
-          </Link>
-        </div>
-      </nav>
+      />
+      
+      {/* Gradient Overlay for text readability */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-base-dark/80 via-base-dark/40 to-base-dark/90" />
 
-      {/* Main Hero Content - Centered and Spacious */}
-      <div className="flex-1 flex items-center justify-center relative z-10 px-4">
-        <div className="text-center max-w-5xl mx-auto">
-          <div className="flex flex-col items-center">
-            {/* Logo with animations */}
-            <div 
-              className="mb-6 relative"
-              style={{
-                animation: mounted ? 'fadeInDown 1s ease-out, float 4s ease-in-out infinite' : 'none',
-                animationDelay: '0.2s',
-                animationFillMode: 'both'
-              }}
+      {/* Content Container */}
+      <div className="relative z-10 flex-1 flex flex-col p-6 md:p-12 max-w-[1600px] mx-auto w-full">
+        
+        {/* Header Row: Title Left, Nav Right */}
+        <div className="flex justify-between items-start">
+          
+          {/* Brand Title (Top Left) */}
+          <div className="flex flex-col">
+            <motion.h1 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="text-4xl md:text-7xl lg:text-8xl font-mono font-bold tracking-tighter text-white"
+              style={{ textShadow: '0 4px 30px rgba(0,0,0,0.5)' }}
             >
-              <div
-                className="relative"
-                style={{
-                  filter: 'drop-shadow(0 8px 32px rgba(200, 230, 208, 0.3))'
-                }}
-              >
-                <Image
-                  src="/images/logo.png"
-                  alt="Lydskog Logo"
-                  width={200}
-                  height={200}
-                  className="w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 object-contain"
-                  priority
-                />
-              </div>
-            </div>
-
-            {/* Brand name below logo */}
-            <h1 
-              className="hero-title text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight relative"
-              style={{
-                animation: mounted ? 'fadeInUp 1s ease-out' : 'none',
-                animationDelay: '0.5s',
-                animationFillMode: 'both'
-              }}
-            >
-              {/* Subtil grønn glow */}
-              <div
-                className="absolute inset-0 text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight opacity-20 blur-3xl"
-                style={{ color: '#5a9068' }}
-              >
-                Lydskog
-              </div>
+              LYDSKOG
+            </motion.h1>
             
-              {/* Main text - naturlig grønn */}
-              <div className="relative z-10">
-                <span
-                  style={{ 
-                    color: '#c8e6d0',
-                    fontWeight: 800,
-                    letterSpacing: '0.03em',
-                    textShadow: '0 4px 20px rgba(90, 144, 104, 0.3)'
-                  }}
-                >
-                  Lydskog
-                </span>
-              </div>
-            </h1>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 0.8 }}
+              className="mt-2 flex items-center gap-2 text-accent-green font-mono text-xs md:text-sm tracking-widest uppercase"
+            >
+              <span className="w-2 h-2 bg-accent-green rounded-full animate-pulse" />
+              <span>Professional Audio Studio</span>
+            </motion.div>
           </div>
 
-          <div className="space-y-4">
-            <p 
-              className="text-2xl md:text-3xl lg:text-4xl mb-4 max-w-3xl mx-auto leading-relaxed font-light"
-              style={{color: 'rgba(255, 255, 255, 0.95)'}}
+          {/* Navigation (Top Right) */}
+          <nav className="hidden md:flex flex-col items-end gap-2 font-mono text-sm">
+            <Link href="#artist" className="text-gray-300 hover:text-white hover:underline decoration-accent-green underline-offset-4 transition-all">
+              [01] TJENESTER
+            </Link>
+            <Link href="#portfolio" className="text-gray-300 hover:text-white hover:underline decoration-accent-green underline-offset-4 transition-all">
+              [02] PROSJEKTER
+            </Link>
+            <Link href="#om" className="text-gray-300 hover:text-white hover:underline decoration-accent-green underline-offset-4 transition-all">
+              [03] OM OSS
+            </Link>
+            <Link href="#contact" className="text-gray-300 hover:text-white hover:underline decoration-accent-green underline-offset-4 transition-all">
+              [04] KONTAKT
+            </Link>
+          </nav>
+        </div>
+
+        {/* Dynamic Tagline (Middle Left) */}
+        <div className="mt-24 md:mt-48 max-w-2xl">
+          <div className="text-lg md:text-3xl lg:text-4xl font-light leading-relaxed text-gray-200">
+            {mounted && words.map((word, i) => (
+              <motion.span
+                key={i}
+                initial={{ opacity: 0, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, filter: 'blur(0px)' }}
+                transition={{ 
+                  delay: 1 + (i * 0.05), 
+                  duration: 0.8,
+                  ease: "easeOut"
+                }}
+                className="inline-block mr-2 md:mr-3"
+              >
+                {word}
+              </motion.span>
+            ))}
+          </div>
+          
+          <motion.div 
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: '100px' }}
+            transition={{ delay: 2, duration: 1 }}
+            className="h-1 bg-accent-green mt-8"
+          />
+        </div>
+
+        {/* Bottom Info */}
+        <div className="mt-auto flex justify-between items-end text-xs md:text-sm font-mono text-gray-500">
+          <div>
+            <p>EST. 2023</p>
+            <p>OSLO, NORWAY</p>
+          </div>
+          <div className="flex flex-col items-end">
+            <p>SCROLL TO EXPLORE</p>
+            <motion.div 
+              animate={{ y: [0, 10, 0] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="mt-2"
             >
-             
-            </p>
-            <p 
-              className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed"
-              style={{opacity: 0.85}}
-            >
-              
-            </p>
+              ↓
+            </motion.div>
           </div>
         </div>
-      </div>
 
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
-        <div className="flex flex-col items-center">
-          <svg 
-            className="w-6 h-6 text-white/50" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7" />
-          </svg>
-        </div>
       </div>
     </section>
   );
-} 
+}

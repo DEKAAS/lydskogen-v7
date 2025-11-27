@@ -45,6 +45,12 @@ const navItems = [
     label: 'Musikkproduksjon', 
     icon: '🎵',
     description: 'Last opp demo-låter per sjanger'
+  },
+  { 
+    id: 'settings', 
+    label: 'Innstillinger', 
+    icon: '⚙️',
+    description: 'Sideinnstillinger og innhold'
   }
 ]
 

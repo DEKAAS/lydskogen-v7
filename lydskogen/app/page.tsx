@@ -1,5 +1,5 @@
 import HeaderHero from '@/components/HeaderHero';
-import PortfolioSection from '@/components/sections/PortfolioSection';
+import ProjectsSection from '@/components/sections/PortfolioSection';
 import VerticalSections from '@/components/VerticalSections';
 import AboutSection from '@/components/sections/AboutSection';
 import ContactSection from '@/components/sections/ContactSection';
@@ -12,8 +12,8 @@ export default function Home() {
       {/* Header Hero Section */}
       <HeaderHero />
 
-      {/* Portfolio Section - Recent Work */}
-      <PortfolioSection />
+      {/* Projects Section (formerly Portfolio) */}
+      <ProjectsSection />
 
       {/* Vertical Sections Layout */}
       <VerticalSections />

@@ -10,6 +10,7 @@ import ContentTab from '@/components/admin/ContentTab'
 import OrdersTab from '@/components/admin/OrdersTab'
 import AnalyticsTab from '@/components/admin/AnalyticsTab'
 import MusikkproduksjonTab from '@/components/admin/MusikkproduksjonTab'
+import SettingsTab from '@/components/admin/SettingsTab'
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession()
@@ -52,6 +53,8 @@ export default function AdminDashboard() {
         return <AnalyticsTab />
       case 'musikkproduksjon':
         return <MusikkproduksjonTab />
+      case 'settings':
+        return <SettingsTab />
       default:
         return <OverviewTab />
     }
