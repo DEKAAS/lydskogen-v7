@@ -14,7 +14,7 @@ export async function GET() {
 
     // Transform to Record<genre_id, background_url>
     const backgroundsMap: Record<string, string> = {}
-    backgrounds.forEach(bg => {
+    backgrounds.forEach((bg: any) => {
       backgroundsMap[bg.genre_id] = bg.background_image_url
     })
 

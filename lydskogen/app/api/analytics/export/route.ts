@@ -45,27 +45,27 @@ export async function GET(request: NextRequest) {
     const activeVisitors = activeSessions.length
 
     // Page statistics
-    const pageStats = pageViews.reduce((acc: Record<string, number>, view) => {
+    const pageStats = pageViews.reduce((acc: Record<string, number>, view: any) => {
       acc[view.page_url] = (acc[view.page_url] || 0) + 1
       return acc
     }, {})
 
     // Device statistics
-    const deviceStats = pageViews.reduce((acc: Record<string, number>, view) => {
+    const deviceStats = pageViews.reduce((acc: Record<string, number>, view: any) => {
       const device = view.device_type || 'Unknown'
       acc[device] = (acc[device] || 0) + 1
       return acc
     }, {})
 
     // Geographic statistics
-    const geoStats = pageViews.reduce((acc: Record<string, number>, view) => {
+    const geoStats = pageViews.reduce((acc: Record<string, number>, view: any) => {
       const country = view.country || 'Unknown'
       acc[country] = (acc[country] || 0) + 1
       return acc
     }, {})
 
     // Event statistics
-    const eventStats = events.reduce((acc: Record<string, number>, event) => {
+    const eventStats = events.reduce((acc: Record<string, number>, event: any) => {
       acc[event.event_name] = (acc[event.event_name] || 0) + 1
       return acc
     }, {})
@@ -165,7 +165,7 @@ export async function GET(request: NextRequest) {
     // Recent page views
     csvRows.push('NYLIGE SIDEVISNINGER (siste 100)')
     csvRows.push('Dato,Tid,Side,Land,Enhet,Nettleser')
-    pageViews.slice(0, 100).forEach(view => {
+    pageViews.slice(0, 100).forEach((view: any) => {
       const date = new Date(view.created_at)
       csvRows.push(`${date.toLocaleDateString('no-NO')},${date.toLocaleTimeString('no-NO')},"${view.page_url}",${view.country || 'Unknown'},${view.device_type || 'Unknown'},${view.browser || 'Unknown'}`)
     })
