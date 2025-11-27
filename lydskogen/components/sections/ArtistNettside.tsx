@@ -45,7 +45,7 @@ export default function ArtistNettsideSection() {
   };
 
   return (
-    <section id="artist" className="py-24 bg-base-dark relative overflow-hidden border-b border-white/5">
+    <section id="artist" className="py-24 bg-base-dark relative overflow-hidden">
       <div className="container mx-auto px-6 md:px-12 max-w-[1600px]">
         
         {/* Section Label */}

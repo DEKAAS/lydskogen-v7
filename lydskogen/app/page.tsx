@@ -5,21 +5,30 @@ import AboutSection from '@/components/sections/AboutSection';
 import ContactSection from '@/components/sections/ContactSection';
 import Footer from '@/components/Footer';
 import HomeButton from '@/components/HomeButton';
+import SectionDivider from '@/components/SectionDivider';
 
 export default function Home() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-base-dark text-white">
       {/* Header Hero Section */}
       <HeaderHero />
+
+      <SectionDivider />
 
       {/* Projects Section (formerly Portfolio) */}
       <ProjectsSection />
 
+      <SectionDivider />
+
       {/* Vertical Sections Layout */}
       <VerticalSections />
 
+      <SectionDivider />
+
       {/* About Section */}
       <AboutSection />
+
+      <SectionDivider />
 
       {/* Contact Section */}
       <ContactSection />
