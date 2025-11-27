@@ -46,7 +46,7 @@ export default function ProjectsSection() {
   return (
     <section id="portfolio" className="bg-gradient-to-b from-[#000000] to-[#050605] min-h-screen relative">
       {/* Section Header - Technical Style */}
-      <div className="sticky top-0 z-30 bg-base-dark/95 backdrop-blur-sm border-b border-white/10">
+      <div className="sticky top-0 z-30 bg-base-dark/95 backdrop-blur-sm">
         <div className="max-w-[1600px] mx-auto px-4 md:px-12 py-4 flex justify-between items-center">
           <h2 className="font-mono text-lg md:text-2xl text-white font-bold tracking-tighter">
             [02] PROSJEKTER
