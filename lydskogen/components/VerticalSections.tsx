@@ -8,16 +8,12 @@ export default function VerticalSections() {
   return (
     <div>
       {/* Artist-nettside Section */}
-      <div style={{backgroundColor: 'var(--section-bg-1)'}}>
-        <ArtistNettsideSection />
-      </div>
-      <div className="section-divider" />
+      <ArtistNettsideSection />
       
       {/* Miksing Section */}
       <div style={{backgroundColor: 'var(--section-bg-2)'}}>
         <MiksingSeksjon />
       </div>
-      <div className="section-divider" />
       
       {/* Musikkproduksjon Section */}
       <div style={{backgroundColor: 'var(--section-bg-3)'}}>

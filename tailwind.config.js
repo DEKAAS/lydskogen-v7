@@ -12,9 +12,11 @@ module.exports = {
         'secondary-dark': '#1c1f1f',
         'tertiary-dark': '#181b1b',
         'accent-green': '#2BF574',
+        'accent-warm': '#848C72',
       },
       fontFamily: {
-        sans: ['Manrope', 'sans-serif'],
+        sans: ['var(--font-inter)', 'sans-serif'],
+        mono: ['var(--font-mono)', 'monospace'],
       },
       backgroundImage: {
         'gradient-ambient': 'linear-gradient(to bottom, #1c1f1f, #202426)',
