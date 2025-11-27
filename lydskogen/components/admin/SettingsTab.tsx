@@ -63,7 +63,7 @@ export default function SettingsTab() {
         <div className="space-y-4">
           <div>
             <label className="block text-gray-300 mb-2 font-medium">Tagline / Undertittel</label>
-            <p className="text-sm text-gray-500 mb-2">Teksten som vises under "LYDSKOG" på forsiden.</p>
+            <p className="text-sm text-gray-500 mb-2">Teksten som vises under &quot;LYDSKOG&quot; på forsiden.</p>
             <textarea
               value={content['hero_tagline'] || ''}
               onChange={(e) => setContent(prev => ({ ...prev, 'hero_tagline': e.target.value }))}
