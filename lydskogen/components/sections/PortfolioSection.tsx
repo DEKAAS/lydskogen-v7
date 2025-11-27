@@ -87,11 +87,11 @@ export default function ProjectsSection() {
                     </div>
                   )}
                   
-                  {/* Dark overlay that fades out on hover */}
+                  {/* Dark overlay that fades out on hover - POINTER EVENTS NONE */}
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500 pointer-events-none z-10" />
 
                   {/* Technical Overlays - High Z-Index & Explicit Pointer Events */}
-                  <div className="absolute top-2 right-2 z-30 flex flex-col gap-2 items-end opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute top-2 right-2 z-30 flex flex-col gap-2 items-end opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-auto">
                     {project.spotifyUrl && (
                       <a 
                         href={project.spotifyUrl} 
