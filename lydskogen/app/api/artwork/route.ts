@@ -14,7 +14,7 @@ export async function GET() {
     }
 
     // Transform database format to frontend format
-    const transformedArtwork = artworkItems.map(item => ({
+    const transformedArtwork = (artworkItems ?? []).map((item: any) => ({
       id: item.id,
       title: item.title,
       category: item.category,
