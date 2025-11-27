@@ -72,28 +72,43 @@ export default function ProjectsSection() {
             >
               {/* Image Container */}
               <div className="aspect-square relative overflow-hidden p-4">
-                <div className="w-full h-full relative grayscale group-hover:grayscale-0 transition-all duration-500 ease-out">
+                <div className="w-full h-full relative transition-all duration-500 ease-out">
+                  {/* Grayscale layer that fades out on hover */}
+                  <div className="absolute inset-0 z-10 bg-base-dark/20 grayscale group-hover:grayscale-0 group-hover:bg-transparent transition-all duration-500 pointer-events-none" />
+                  
                   {project.artworkUrl ? (
                     <img 
                       src={project.artworkUrl} 
                       alt={project.title}
-                      className="w-full h-full object-cover border border-white/10"
+                      className="w-full h-full object-cover border border-white/10 relative z-0"
                     />
                   ) : (
-                    <div className="w-full h-full border border-white/10 flex items-center justify-center bg-white/5">
+                    <div className="w-full h-full border border-white/10 flex items-center justify-center bg-white/5 relative z-0">
                       <span className="font-mono text-4xl text-white/20">{project.title[0]}</span>
                     </div>
                   )}
                   
-                  {/* Technical Overlays */}
-                  <div className="absolute top-2 right-2 flex flex-col gap-1 items-end opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  {/* Technical Overlays - High Z-Index */}
+                  <div className="absolute top-2 right-2 z-20 flex flex-col gap-1 items-end opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-auto">
                     {project.spotifyUrl && (
-                      <a href={project.spotifyUrl} target="_blank" rel="noreferrer" className="bg-[#1DB954] text-black px-2 py-1 text-[10px] font-mono font-bold hover:bg-white transition-colors">
+                      <a 
+                        href={project.spotifyUrl} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="bg-[#1DB954] text-black px-2 py-1 text-[10px] font-mono font-bold hover:bg-white hover:scale-105 transition-all shadow-lg cursor-pointer block"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         SPOTIFY_LINK ↗
                       </a>
                     )}
                     {project.websiteUrl && (
-                      <a href={project.websiteUrl} target="_blank" rel="noreferrer" className="bg-white text-black px-2 py-1 text-[10px] font-mono font-bold hover:bg-gray-200 transition-colors">
+                      <a 
+                        href={project.websiteUrl} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="bg-white text-black px-2 py-1 text-[10px] font-mono font-bold hover:bg-gray-200 hover:scale-105 transition-all shadow-lg cursor-pointer block"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         WEB_LINK ↗
                       </a>
                     )}
