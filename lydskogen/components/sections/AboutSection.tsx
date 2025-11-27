@@ -9,7 +9,7 @@ export default function AboutSection() {
       className="py-16"
       id="om"
       style={{
-        background: 'linear-gradient(180deg, var(--primary-bg) 0%, rgba(34,37,33,0.98) 65%, rgba(58,42,31,0.45) 100%)'
+        backgroundColor: '#050605'
       }}
     >
       <div className="container mx-auto px-4 max-w-6xl">

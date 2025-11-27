@@ -34,8 +34,8 @@ export default function HeaderHero() {
         }}
       />
       
-      {/* Gradient Overlay for text readability */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-base-dark/80 via-base-dark/40 to-base-dark/90" />
+      {/* Gradient Overlay for text readability and bottom transition */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-base-dark/80 via-base-dark/40 to-[#000000]" />
 
       {/* Content Container */}
       <div className="relative z-10 flex-1 flex flex-col p-6 md:p-12 max-w-[1600px] mx-auto w-full">
@@ -62,7 +62,7 @@ export default function HeaderHero() {
               className="mt-2 flex items-center gap-2 text-accent-green font-mono text-xs md:text-sm tracking-widest uppercase"
             >
               <span className="w-2 h-2 bg-accent-green rounded-full animate-pulse" />
-              <span>Professional Audio Studio</span>
+              <span>Fokus på lyd og bilde</span>
             </motion.div>
           </div>
 
@@ -114,7 +114,7 @@ export default function HeaderHero() {
         {/* Bottom Info */}
         <div className="mt-auto flex justify-between items-end text-xs md:text-sm font-mono text-gray-500">
           <div>
-            <p>EST. 2023</p>
+            <p>EST. 2025</p>
             <p>OSLO, NORWAY</p>
           </div>
           <div className="flex flex-col items-end">

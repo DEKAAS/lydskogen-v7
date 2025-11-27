@@ -82,7 +82,7 @@ export default function ContactSection() {
       className="py-16"
       id="contact"
       style={{
-        background: 'linear-gradient(180deg, rgba(58,42,31,0.35) 0%, var(--section-bg-1) 40%, var(--section-bg-2) 100%)'
+        backgroundColor: '#050605'
       }}
     >
       <div className="container mx-auto px-4 max-w-4xl">

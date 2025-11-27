@@ -12,12 +12,15 @@ export default function NoiseOverlay() {
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[9999]" style={{ opacity, transition: 'opacity 1s ease-out' }}>
-      {/* Warm tint layer - Subtle Sepia/Green Tone */}
+      {/* 
+        Uniform Warm Overlay
+        - Removed the "Cool Blue" top gradient.
+        - Now uses a subtle warm green tint everywhere to maintain organic consistency.
+      */}
       <div 
         className="absolute inset-0 mix-blend-soft-light"
         style={{ 
-          backgroundColor: '#848C72',
-          opacity: 0.15
+          backgroundColor: 'rgba(101, 115, 79, 0.15)' // #65734F with low opacity
         }}
       />
       

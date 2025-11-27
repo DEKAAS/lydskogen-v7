@@ -9,11 +9,14 @@ import SectionDivider from '@/components/SectionDivider';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-base-dark text-white">
+    <div className="min-h-screen bg-[#050605] text-white">
       {/* Header Hero Section */}
       <HeaderHero />
 
-      <SectionDivider />
+      {/* 
+        Divider REMOVED for natural fade.
+        Hero fades to black -> Projects starts at black.
+      */}
 
       {/* Projects Section (formerly Portfolio) */}
       <ProjectsSection />
@@ -34,7 +37,7 @@ export default function Home() {
       <ContactSection />
 
       {/* Footer */}
-      <div style={{backgroundColor: 'var(--primary-bg)'}}>
+      <div style={{backgroundColor: '#050605'}}>
         <Footer />
       </div>
 

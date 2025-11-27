@@ -44,7 +44,7 @@ export default function ProjectsSection() {
   if (projects.length === 0) return null;
 
   return (
-    <section id="portfolio" className="bg-base-dark min-h-screen relative border-t border-white/10">
+    <section id="portfolio" className="bg-gradient-to-b from-[#000000] to-[#050605] min-h-screen relative">
       {/* Section Header - Technical Style */}
       <div className="sticky top-0 z-30 bg-base-dark/95 backdrop-blur-sm border-b border-white/10">
         <div className="max-w-[1600px] mx-auto px-4 md:px-12 py-4 flex justify-between items-center">
