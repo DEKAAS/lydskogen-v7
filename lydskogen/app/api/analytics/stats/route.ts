@@ -63,7 +63,7 @@ export async function GET() {
       .select('page_url')
       .gte('created_at', thirtyDaysAgo.toISOString())
 
-    const pageCounts = (topPagesData || []).reduce((acc: Record<string, number>, view) => {
+    const pageCounts = (topPagesData || []).reduce((acc: Record<string, number>, view: any) => {
       acc[view.page_url] = (acc[view.page_url] || 0) + 1
       return acc
     }, {})
@@ -84,7 +84,7 @@ export async function GET() {
       .gte('created_at', thirtyDaysAgo.toISOString())
       .order('created_at', { ascending: true })
 
-    const dailyViewsMap = (dailyViewsData || []).reduce((acc: Record<string, number>, view) => {
+    const dailyViewsMap = (dailyViewsData || []).reduce((acc: Record<string, number>, view: any) => {
       const date = new Date(view.created_at).toISOString().split('T')[0]
       acc[date] = (acc[date] || 0) + 1
       return acc
@@ -105,7 +105,7 @@ export async function GET() {
       .select('device_type')
       .gte('created_at', thirtyDaysAgo.toISOString())
 
-    const deviceCounts = (deviceData || []).reduce((acc: Record<string, number>, view) => {
+    const deviceCounts = (deviceData || []).reduce((acc: Record<string, number>, view: any) => {
       const device = view.device_type || 'Unknown'
       acc[device] = (acc[device] || 0) + 1
       return acc
@@ -123,7 +123,7 @@ export async function GET() {
       .select('country')
       .gte('created_at', thirtyDaysAgo.toISOString())
 
-    const geoCounts = (geoData || []).reduce((acc: Record<string, number>, view) => {
+    const geoCounts = (geoData || []).reduce((acc: Record<string, number>, view: any) => {
       const country = view.country || 'Unknown'
       acc[country] = (acc[country] || 0) + 1
       return acc
@@ -157,7 +157,7 @@ export async function GET() {
       .select('event_name')
       .gte('created_at', thirtyDaysAgo.toISOString())
 
-    const eventCounts = (eventsData || []).reduce((acc: Record<string, number>, event) => {
+    const eventCounts = (eventsData || []).reduce((acc: Record<string, number>, event: any) => {
       acc[event.event_name] = (acc[event.event_name] || 0) + 1
       return acc
     }, {})
@@ -178,7 +178,7 @@ export async function GET() {
       .gte('created_at', thirtyDaysAgo.toISOString())
       .not('referrer', 'is', null)
 
-    const referrerCounts = (referrerData || []).reduce((acc: Record<string, number>, view) => {
+    const referrerCounts = (referrerData || []).reduce((acc: Record<string, number>, view: any) => {
       const domain = view.referrer ? new URL(view.referrer).hostname : 'Direct'
       acc[domain] = (acc[domain] || 0) + 1
       return acc
@@ -202,7 +202,7 @@ export async function GET() {
       .select('created_at')
       .gte('created_at', startOfDay)
 
-    const hourlyViewsMap = (hourlyData || []).reduce((acc: Record<number, number>, view) => {
+    const hourlyViewsMap = (hourlyData || []).reduce((acc: Record<number, number>, view: any) => {
       const hour = new Date(view.created_at).getHours()
       acc[hour] = (acc[hour] || 0) + 1
       return acc
