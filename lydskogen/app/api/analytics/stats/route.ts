@@ -26,7 +26,7 @@ export async function GET() {
       .select('session_id')
       .gte('created_at', fiveMinutesAgo.toISOString());
     
-    const uniqueActive = new Set(recentSessions?.map(s => s.session_id)).size;
+    const uniqueActive = new Set((recentSessions || []).map((s: any) => s.session_id)).size;
 
     // 2. Total Views (30 days)
     const { count: totalViews } = await supabaseAdmin
