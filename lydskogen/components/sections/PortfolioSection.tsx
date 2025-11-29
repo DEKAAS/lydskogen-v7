@@ -21,11 +21,22 @@ interface Project {
   musicUrl?: string;
   description: string;
   tags?: string[];
+  credits?: string[];
   spotifyUrl?: string;
   websiteUrl?: string;
   youtubeUrl?: string;
   createdAt?: string;
 }
+
+// Credit labels for display
+const CREDIT_LABELS: Record<string, string> = {
+  mixed: 'Mixed',
+  produced: 'Produced',
+  mastered: 'Mastered',
+  artwork: 'Artwork',
+  sound_design: 'Sound Design',
+  composed: 'Composed',
+};
 
 // Helper to extract YouTube video ID from various URL formats
 function getYouTubeVideoId(url: string): string | null {
@@ -250,6 +261,23 @@ export default function ProjectsSection() {
                                 <span className="text-gray-300">{project.tags?.[0] || 'N/A'}</span>
                               </div>
                            </div>
+
+                           {/* Credits - By Lydskog */}
+                           {project.credits && project.credits.length > 0 && (
+                             <div className="pt-4 border-t border-white/10">
+                               <span className="block text-[10px] font-mono uppercase tracking-widest text-gray-700 mb-3">By Lydskog</span>
+                               <div className="flex flex-wrap gap-2">
+                                 {project.credits.map((credit) => (
+                                   <span 
+                                     key={credit}
+                                     className="text-[10px] font-mono px-2 py-1 bg-accent-green/10 text-accent-green border border-accent-green/20 rounded"
+                                   >
+                                     {CREDIT_LABELS[credit] || credit}
+                                   </span>
+                                 ))}
+                               </div>
+                             </div>
+                           )}
                         </div>
 
                         {/* Right: Content, Description & Media */}

@@ -20,26 +20,40 @@ const spaceMono = Space_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Lydskog - Profesjonell lyd- og designtjenester",
+    default: "Lydskog",
     template: "%s | Lydskog"
   },
-  description: "Profesjonell musikkproduksjon, miksing & mastering, visuell design og helhetlige prosjekter for artister og skapere.",
-  keywords: ["musikkproduksjon", "miksing", "mastering", "albumcover", "artist", "lyddesign", "ambient", "hip-hop", "lo-fi"],
+  description: "Velkommen til Lydskog for soundscaping, artwork og behandling av lyd.",
+  keywords: ["musikkproduksjon", "miksing", "mastering", "albumcover", "artist", "lyddesign", "ambient", "soundscape", "artwork"],
   authors: [{ name: "Lydskog" }],
   creator: "Lydskog",
   publisher: "Lydskog",
   metadataBase: new URL("https://lydskog.no"),
+  icons: {
+    icon: "/images/logo.png",
+    shortcut: "/images/logo.png",
+    apple: "/images/logo.png",
+  },
   openGraph: {
     type: "website",
     locale: "no_NO",
     siteName: "Lydskog",
-    title: "Lydskog - Profesjonell lyd- og designtjenester", 
-    description: "Profesjonell musikkproduksjon, miksing & mastering, visuell design og helhetlige prosjekter for artister og skapere.",
+    title: "Lydskog", 
+    description: "Velkommen til Lydskog for soundscaping, artwork og behandling av lyd.",
+    images: [
+      {
+        url: "/images/logo.png",
+        width: 1024,
+        height: 1024,
+        alt: "Lydskog Logo",
+      },
+    ],
   },
   twitter: {
-    card: "summary_large_image",
-    title: "Lydskog - Profesjonell lyd- og designtjenester",
-    description: "Profesjonell musikkproduksjon, miksing & mastering, visuell design og helhetlige prosjekter for artister og skapere.",
+    card: "summary",
+    title: "Lydskog",
+    description: "Velkommen til Lydskog for soundscaping, artwork og behandling av lyd.",
+    images: ["/images/logo.png"],
   },
   robots: {
     index: true,

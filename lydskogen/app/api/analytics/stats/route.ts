@@ -11,34 +11,32 @@ export async function GET() {
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
     const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000)
 
-    // 1. Live Visitors (last 5 mins)
-    // using session_id to count active users
-    const { count: activeVisitors } = await supabaseAdmin
-      .from('site_visits')
-      .select('session_id', { count: 'exact', head: true })
-      .gte('created_at', fiveMinutesAgo.toISOString())
-    // Note: This is a rough estimate of "active" (hits in last 5m). 
-    // Distinct sessions would be better but simple count is okay for MVP or use distinct.
-    
-    // Distinct sessions in last 5 mins for better accuracy
+    // Filter: Only real visitors (not bots)
+    // Note: is_bot column may not exist yet, so we handle gracefully
+    const botFilter = { is_bot: false }
+
+    // 1. Live Visitors (last 5 mins) - excluding bots
     const { data: recentSessions } = await supabaseAdmin
       .from('site_visits')
       .select('session_id')
-      .gte('created_at', fiveMinutesAgo.toISOString());
+      .gte('created_at', fiveMinutesAgo.toISOString())
+      .or('is_bot.is.null,is_bot.eq.false')
     
     const uniqueActive = new Set((recentSessions || []).map((s: any) => s.session_id)).size;
 
-    // 2. Total Views (30 days)
+    // 2. Total Views (30 days) - excluding bots
     const { count: totalViews } = await supabaseAdmin
       .from('site_visits')
       .select('*', { count: 'exact', head: true })
       .gte('created_at', thirtyDaysAgo.toISOString())
+      .or('is_bot.is.null,is_bot.eq.false')
 
-    // 3. Daily Views (Last 30 days)
+    // 3. Daily Views (Last 30 days) - excluding bots
     const { data: dailyData } = await supabaseAdmin
       .from('site_visits')
       .select('created_at')
       .gte('created_at', thirtyDaysAgo.toISOString())
+      .or('is_bot.is.null,is_bot.eq.false')
       .order('created_at', { ascending: true })
 
     const dailyViewsMap = (dailyData || []).reduce((acc: Record<string, number>, view: any) => {
@@ -56,18 +54,19 @@ export async function GET() {
       })
     }
 
-    // 4. Recent Visits Log (IP, Location, Time)
+    // 4. Recent Visits Log - show ALL (including bots) so admin can see everything
     const { data: recentVisits } = await supabaseAdmin
       .from('site_visits')
-      .select('ip_address, city, country, created_at, page_path, device_type')
+      .select('ip_address, city, country, created_at, page_path, device_type, is_bot')
       .order('created_at', { ascending: false })
       .limit(50)
 
-    // 5. Device Stats
+    // 5. Device Stats - excluding bots
     const { data: deviceData } = await supabaseAdmin
       .from('site_visits')
       .select('device_type')
       .gte('created_at', thirtyDaysAgo.toISOString())
+      .or('is_bot.is.null,is_bot.eq.false')
 
     const deviceCounts = (deviceData || []).reduce((acc: Record<string, number>, view: any) => {
       const device = view.device_type || 'Unknown'
@@ -81,11 +80,12 @@ export async function GET() {
       percentage: Math.round(((count as number) / (totalViews || 1)) * 100)
     }))
 
-    // 6. Geo Stats
+    // 6. Geo Stats - excluding bots
     const { data: geoData } = await supabaseAdmin
       .from('site_visits')
       .select('country')
       .gte('created_at', thirtyDaysAgo.toISOString())
+      .or('is_bot.is.null,is_bot.eq.false')
 
     const geoCounts = (geoData || []).reduce((acc: Record<string, number>, view: any) => {
       const country = view.country || 'Unknown'
@@ -102,15 +102,23 @@ export async function GET() {
         percentage: Math.round(((count as number) / (totalViews || 1)) * 100)
       }))
 
+    // 7. Login Attempts (security log)
+    const { data: loginAttempts } = await supabaseAdmin
+      .from('login_attempts')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(20)
+
     return NextResponse.json({
       stats: {
         activeVisitors: uniqueActive,
         totalViews,
         dailyViews,
-        recentVisits, // New field
+        recentVisits,
         deviceStats,
         geographicStats,
-        // Legacy fields placeholders to avoid breaking frontend immediately if it expects them
+        loginAttempts: loginAttempts || [],
+        // Legacy fields
         uniqueVisitors: 0,
         avgSessionDuration: '0:00',
         bounceRate: 0,

@@ -12,6 +12,7 @@ interface PortfolioProjectRow {
   music_url: string | null
   youtube_url: string | null
   tags: string[] | null
+  credits: string[] | null
   created_at: string
   updated_at: string
 }
@@ -27,6 +28,7 @@ const mapProject = (row: PortfolioProjectRow) => ({
   musicUrl: row.music_url ?? undefined,
   youtubeUrl: row.youtube_url ?? undefined,
   tags: row.tags ?? [],
+  credits: row.credits ?? [],
   createdAt: row.created_at,
   updatedAt: row.updated_at
 })
@@ -77,7 +79,8 @@ export async function POST(request: Request) {
         website_url: body.websiteUrl || null,
         music_url: body.musicUrl || null,
         youtube_url: body.youtubeUrl || null,
-        tags: Array.isArray(body.tags) ? body.tags : []
+        tags: Array.isArray(body.tags) ? body.tags : [],
+        credits: Array.isArray(body.credits) ? body.credits : []
       })
       .select()
       .single()
@@ -108,7 +111,8 @@ export async function PUT(request: Request) {
       website_url: body.websiteUrl ?? null,
       music_url: body.musicUrl ?? null,
       youtube_url: body.youtubeUrl ?? null,
-      tags: Array.isArray(body.tags) ? body.tags : undefined
+      tags: Array.isArray(body.tags) ? body.tags : undefined,
+      credits: Array.isArray(body.credits) ? body.credits : undefined
     }
 
     const { data, error } = await supabaseAdmin

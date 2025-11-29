@@ -9,6 +9,7 @@ interface Project {
   artworkUrl: string;
   description: string;
   tags?: string[];
+  credits?: string[];
   spotifyUrl?: string;
   websiteUrl?: string;
   youtubeUrl?: string;
@@ -16,6 +17,16 @@ interface Project {
   createdAt: string;
   updatedAt?: string;
 }
+
+// Available credit options
+const CREDIT_OPTIONS = [
+  { id: 'mixed', label: 'Mixed' },
+  { id: 'produced', label: 'Produced' },
+  { id: 'mastered', label: 'Mastered' },
+  { id: 'artwork', label: 'Artwork' },
+  { id: 'sound_design', label: 'Sound Design' },
+  { id: 'composed', label: 'Composed' },
+];
 
 // Helper to extract YouTube video ID
 function getYouTubeVideoId(url: string): string | null {
@@ -35,6 +46,7 @@ export default function ProjectsTab() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
   
   // Form state
   const [title, setTitle] = useState('');
@@ -42,6 +54,7 @@ export default function ProjectsTab() {
   const [artworkUrl, setArtworkUrl] = useState('');
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState('');
+  const [credits, setCredits] = useState<string[]>([]);
   const [spotifyUrl, setSpotifyUrl] = useState('');
   const [websiteUrl, setWebsiteUrl] = useState('');
   const [youtubeUrl, setYoutubeUrl] = useState('');
@@ -53,6 +66,14 @@ export default function ProjectsTab() {
   const [submitting, setSubmitting] = useState(false);
   const [previewError, setPreviewError] = useState(false);
   const [youtubeThumbnail, setYoutubeThumbnail] = useState<string | null>(null);
+
+  const toggleCredit = (creditId: string) => {
+    setCredits(prev => 
+      prev.includes(creditId) 
+        ? prev.filter(c => c !== creditId)
+        : [...prev, creditId]
+    );
+  };
 
   useEffect(() => {
     fetchProjects();
@@ -72,9 +93,9 @@ export default function ProjectsTab() {
       if (response.ok) {
         const data = await response.json();
         const metadata = data.metadata;
-        if (metadata.title) setTitle((prev) => prev || metadata.title);
-        if (metadata.artist) setArtist((prev) => prev || metadata.artist);
-        if (metadata.thumbnail) {
+        if (metadata.title && !title) setTitle(metadata.title);
+        if (metadata.artist && !artist) setArtist(metadata.artist);
+        if (metadata.thumbnail && !artworkUrl) {
           setArtworkUrl(metadata.thumbnail);
           setPreviewError(false);
         }
@@ -96,11 +117,9 @@ export default function ProjectsTab() {
 
     setLoadingYoutube(true);
     try {
-      // Use YouTube's thumbnail URL directly (no API key needed)
       const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
       setYoutubeThumbnail(thumbnailUrl);
       
-      // Optionally set as artwork if none exists
       if (!artworkUrl) {
         setArtworkUrl(thumbnailUrl);
         setPreviewError(false);
@@ -131,13 +150,41 @@ export default function ProjectsTab() {
     setArtworkUrl('');
     setDescription('');
     setTags('');
+    setCredits([]);
     setSpotifyUrl('');
     setWebsiteUrl('');
     setYoutubeUrl('');
     setMusicUrl('');
     setShowForm(false);
+    setEditingProject(null);
     setPreviewError(false);
     setYoutubeThumbnail(null);
+    setFormError(null);
+    setFormMessage(null);
+  };
+
+  const startEditing = (project: Project) => {
+    setEditingProject(project);
+    setTitle(project.title);
+    setArtist(project.artist || '');
+    setArtworkUrl(project.artworkUrl);
+    setDescription(project.description || '');
+    setTags(project.tags?.join(', ') || '');
+    setCredits(project.credits || []);
+    setSpotifyUrl(project.spotifyUrl || '');
+    setWebsiteUrl(project.websiteUrl || '');
+    setYoutubeUrl(project.youtubeUrl || '');
+    setMusicUrl(project.musicUrl || '');
+    setShowForm(true);
+    setPreviewError(false);
+    
+    // Set YouTube thumbnail if URL exists
+    if (project.youtubeUrl) {
+      const videoId = getYouTubeVideoId(project.youtubeUrl);
+      if (videoId) {
+        setYoutubeThumbnail(`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`);
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -150,12 +197,14 @@ export default function ProjectsTab() {
       return;
     }
     
-    const newProject = {
+    const projectData = {
+      id: editingProject?.id,
       title,
       artist: artist || undefined,
       artworkUrl,
       description,
       tags: tags.split(',').map(t => t.trim()).filter(Boolean),
+      credits: credits.length > 0 ? credits : undefined,
       spotifyUrl: spotifyUrl || undefined,
       websiteUrl: websiteUrl || undefined,
       youtubeUrl: youtubeUrl || undefined,
@@ -165,22 +214,22 @@ export default function ProjectsTab() {
     try {
       setSubmitting(true);
       const res = await fetch('/api/projects', {
-        method: 'POST',
+        method: editingProject ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newProject)
+        body: JSON.stringify(projectData)
       });
 
       if (res.ok) {
         resetForm();
-        setFormMessage('Prosjektet ble lagret!');
+        setFormMessage(editingProject ? 'Prosjektet ble oppdatert!' : 'Prosjektet ble lagret!');
         fetchProjects();
       } else {
         const data = await res.json();
         setFormError(data?.error || 'Kunne ikke lagre prosjektet.');
       }
     } catch (error) {
-      console.error('Error creating project:', error);
-      setFormError('Kunne ikke legge til prosjekt.');
+      console.error('Error saving project:', error);
+      setFormError('Kunne ikke lagre prosjekt.');
     } finally {
       setSubmitting(false);
     }
@@ -213,7 +262,13 @@ export default function ProjectsTab() {
           <p className="text-gray-500 text-sm">Administrer prosjekter som vises på forsiden</p>
         </div>
         <button
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => {
+            if (showForm) {
+              resetForm();
+            } else {
+              setShowForm(true);
+            }
+          }}
           className={`px-5 py-2.5 rounded-md text-sm font-medium transition-all ${
             showForm 
               ? 'bg-white/10 text-white border border-white/20' 
@@ -224,10 +279,19 @@ export default function ProjectsTab() {
         </button>
       </div>
 
-      {/* Add Form */}
+      {/* Success Message (outside form) */}
+      {formMessage && !showForm && (
+        <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-md text-green-400 text-sm">
+          {formMessage}
+        </div>
+      )}
+
+      {/* Add/Edit Form */}
       {showForm && (
         <div className="bg-[#111] rounded-lg border border-white/10 p-6 space-y-6">
-          <h3 className="text-lg font-medium text-white">Legg til nytt prosjekt</h3>
+          <h3 className="text-lg font-medium text-white">
+            {editingProject ? `Rediger: ${editingProject.title}` : 'Legg til nytt prosjekt'}
+          </h3>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Info */}
@@ -317,6 +381,44 @@ export default function ProjectsTab() {
               />
             </div>
 
+            {/* Credits Section */}
+            <div className="border-t border-white/10 pt-6">
+              <h4 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3">Kreditering - By Lydskog</h4>
+              <p className="text-xs text-gray-500 mb-4">Velg hva Lydskog bidro med på dette prosjektet</p>
+              
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {CREDIT_OPTIONS.map((option) => (
+                  <label
+                    key={option.id}
+                    className={`flex items-center gap-3 p-3 rounded-md border cursor-pointer transition-all ${
+                      credits.includes(option.id)
+                        ? 'bg-blue-500/20 border-blue-500/50 text-white'
+                        : 'bg-[#0a0a0a] border-white/10 text-gray-400 hover:border-white/20'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={credits.includes(option.id)}
+                      onChange={() => toggleCredit(option.id)}
+                      className="sr-only"
+                    />
+                    <div className={`w-5 h-5 rounded border flex items-center justify-center ${
+                      credits.includes(option.id)
+                        ? 'bg-blue-500 border-blue-500'
+                        : 'border-white/20'
+                    }`}>
+                      {credits.includes(option.id) && (
+                        <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                    <span className="text-sm">{option.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
             {/* Media Links Section */}
             <div className="border-t border-white/10 pt-6">
               <h4 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">Medielenker</h4>
@@ -404,13 +506,24 @@ export default function ProjectsTab() {
             )}
 
             {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-            >
-              {submitting ? 'Lagrer...' : 'Legg til prosjekt'}
-            </button>
+            <div className="flex gap-3">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="flex-1 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                {submitting ? 'Lagrer...' : editingProject ? 'Lagre endringer' : 'Legg til prosjekt'}
+              </button>
+              {editingProject && (
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="px-6 py-3 bg-white/10 text-white font-medium rounded-md hover:bg-white/20 transition-all"
+                >
+                  Avbryt
+                </button>
+              )}
+            </div>
           </form>
         </div>
       )}
@@ -480,11 +593,25 @@ export default function ProjectsTab() {
                   </div>
                 )}
 
+                {/* Credits */}
+                {project.credits && project.credits.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {project.credits.map((credit) => (
+                      <span
+                        key={credit}
+                        className="text-xs px-2 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                      >
+                        {CREDIT_OPTIONS.find(c => c.id === credit)?.label || credit}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
                 {/* Links */}
                 <div className="flex flex-wrap gap-2 pt-2">
-                  {(project as any).youtubeUrl && (
+                  {project.youtubeUrl && (
                     <a 
-                      href={(project as any).youtubeUrl} 
+                      href={project.youtubeUrl} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-xs px-2 py-1 rounded bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
@@ -518,12 +645,20 @@ export default function ProjectsTab() {
                   <span className="text-xs text-gray-600">
                     {new Date(project.createdAt).toLocaleDateString('no-NO')}
                   </span>
-                  <button
-                    onClick={() => handleDelete(project.id)}
-                    className="text-xs px-3 py-1.5 rounded bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
-                  >
-                    Slett
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => startEditing(project)}
+                      className="text-xs px-3 py-1.5 rounded bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-colors"
+                    >
+                      Rediger
+                    </button>
+                    <button
+                      onClick={() => handleDelete(project.id)}
+                      className="text-xs px-3 py-1.5 rounded bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                    >
+                      Slett
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
