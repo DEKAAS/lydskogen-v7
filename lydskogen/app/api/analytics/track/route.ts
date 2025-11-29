@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     
     const pagePath = path || pageUrl; // Support both
     
-    const headersList = headers();
+    const headersList = await headers();
     
     // Get IP from headers (works on Vercel)
     const ip = headersList.get('x-forwarded-for') || 'unknown';
