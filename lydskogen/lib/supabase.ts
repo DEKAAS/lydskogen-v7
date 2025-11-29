@@ -180,6 +180,14 @@ export interface AnalyticsStats {
     hour: number
     views: number
   }>
+  recentVisits?: Array<{
+    ip_address: string
+    city?: string
+    country?: string
+    created_at: string
+    page_path: string
+    device_type?: string
+  }>
 }
 
 export interface PortfolioProject {

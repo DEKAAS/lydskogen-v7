@@ -29,3 +29,4 @@ VALUES
   ('hero_tagline', 'Når vi lytter til naturen, åpner den for detaljer vi ellers ville gått forbi. De samme nyansene prøver vi å fange i kunsten', 'hero', 'Hovedtekst under tittelen på forsiden')
 ON CONFLICT (key) DO NOTHING;
 
+

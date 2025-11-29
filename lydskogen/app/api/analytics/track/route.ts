@@ -1,97 +1,52 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
-import { v4 as uuidv4 } from 'uuid'
+import { NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabase';
+import { headers } from 'next/headers';
 
-function getDeviceType(userAgent: string): 'desktop' | 'mobile' | 'tablet' {
-  const ua = userAgent.toLowerCase()
-  
-  if (/mobile|android|iphone/.test(ua)) return 'mobile'
-  if (/tablet|ipad/.test(ua)) return 'tablet'
-  return 'desktop'
-}
-
-function getBrowser(userAgent: string): string {
-  const ua = userAgent.toLowerCase()
-  
-  if (ua.includes('chrome')) return 'Chrome'
-  if (ua.includes('firefox')) return 'Firefox'
-  if (ua.includes('safari') && !ua.includes('chrome')) return 'Safari'
-  if (ua.includes('edge')) return 'Edge'
-  if (ua.includes('opera')) return 'Opera'
-  return 'Unknown'
-}
-
-function getClientIP(request: NextRequest): string {
-  // Try different headers for IP address
-  return (
-    request.headers.get('x-forwarded-for')?.split(',')[0] ||
-    request.headers.get('x-real-ip') ||
-    request.headers.get('x-client-ip') ||
-    'unknown'
-  )
-}
-
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const { pageUrl, referrer, sessionId } = await request.json()
+    const body = await request.json();
+    // Handle both schemas (legacy useAnalytics vs new tracker)
+    const { path, pageUrl, referrer, sessionId, deviceType } = body;
     
-    if (!pageUrl) {
-      return NextResponse.json({ error: 'Page URL is required' }, { status: 400 })
+    const pagePath = path || pageUrl; // Support both
+    
+    const headersList = headers();
+    
+    // Get IP from headers (works on Vercel)
+    const ip = headersList.get('x-forwarded-for') || 'unknown';
+    const userAgent = headersList.get('user-agent') || 'unknown';
+    
+    // Optional: Geo lookup (vercel headers often have this)
+    const country = headersList.get('x-vercel-ip-country') || 'Unknown';
+    const city = headersList.get('x-vercel-ip-city') || 'Unknown';
+    
+    // Determine device type if not provided
+    let detectedDevice = deviceType;
+    if (!detectedDevice && userAgent) {
+        detectedDevice = /Mobi|Android/i.test(userAgent) ? 'mobile' : 'desktop';
     }
 
-    const userAgent = request.headers.get('user-agent') || ''
-    const ipAddress = getClientIP(request)
-    const deviceType = getDeviceType(userAgent)
-    const browser = getBrowser(userAgent)
-
-    // Generate session ID if not provided
-    const finalSessionId = sessionId || uuidv4()
-
-    // Try to get geographical info (simplified - in production you'd use a geo IP service)
-    let country = 'Unknown'
-    let city = 'Unknown'
-    
-    // For development, we'll set some mock geo data based on IP
-    if (ipAddress.startsWith('192.168.') || ipAddress === 'localhost' || ipAddress === '127.0.0.1') {
-      country = 'Norway'
-      city = 'Oslo'
-    }
-
-    // Insert page view into database
-    const { data, error } = await supabaseAdmin
-      .from('page_views')
+    const { error } = await supabaseAdmin
+      .from('site_visits')
       .insert({
-        page_url: pageUrl,
-        referrer: referrer || null,
+        page_path: pagePath,
+        referrer,
+        session_id: sessionId,
+        ip_address: ip,
         user_agent: userAgent,
-        ip_address: ipAddress,
-        session_id: finalSessionId,
         country,
         city,
-        device_type: deviceType,
-        browser
-      })
-      .select()
+        device_type: detectedDevice
+      });
 
     if (error) {
-      console.error('Error tracking page view:', error)
-      return NextResponse.json({ error: 'Failed to track page view' }, { status: 500 })
+      console.error('Error tracking visit:', error);
+      return NextResponse.json({ error: 'Track failed' }, { status: 500 });
     }
 
-    return NextResponse.json({ 
-      success: true, 
-      sessionId: finalSessionId,
-      tracked: {
-        pageUrl,
-        deviceType,
-        browser,
-        country,
-        city
-      }
-    })
-
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error in analytics tracking:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Server error tracking:', error);
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
   }
 }

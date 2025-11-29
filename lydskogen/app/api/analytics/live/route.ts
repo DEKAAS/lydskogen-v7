@@ -3,38 +3,31 @@ import { supabaseAdmin } from '@/lib/supabase'
 
 export async function GET() {
   try {
-    // Get active visitors (sessions active in last 5 minutes)
+    // Get active visitors (hits in last 5 minutes)
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString()
-    
-    const { count: activeVisitors } = await supabaseAdmin
-      .from('active_sessions')
-      .select('*', { count: 'exact', head: true })
-      .gte('last_seen', fiveMinutesAgo)
-
-    // Get current active sessions with details
-    const { data: activeSessions } = await supabaseAdmin
-      .from('active_sessions')
-      .select('*')
-      .gte('last_seen', fiveMinutesAgo)
-      .order('last_seen', { ascending: false })
-
-    // Get page views in the last hour
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+
+    // 1. Active Visitors Count (approximate via hits)
+    const { count: activeVisitors } = await supabaseAdmin
+      .from('site_visits')
+      .select('*', { count: 'exact', head: true })
+      .gte('created_at', fiveMinutesAgo)
+      
+    // 2. Recent Views (Last Hour)
     const { count: recentViews } = await supabaseAdmin
-      .from('page_views')
+      .from('site_visits')
       .select('*', { count: 'exact', head: true })
       .gte('created_at', oneHourAgo)
 
-    // Get events in the last hour
-    const { count: recentEvents } = await supabaseAdmin
-      .from('analytics_events')
-      .select('*', { count: 'exact', head: true })
-      .gte('created_at', oneHourAgo)
+    // 3. Get distinct active pages (Top Current Pages)
+    const { data: activeHits } = await supabaseAdmin
+      .from('site_visits')
+      .select('page_path')
+      .gte('created_at', fiveMinutesAgo)
 
-    // Get top pages being viewed right now
     const currentPages: Record<string, number> = {}
-    activeSessions?.forEach((session: any) => {
-      const page = session.page_url || '/'
+    activeHits?.forEach((hit: any) => {
+      const page = hit.page_path || '/'
       currentPages[page] = (currentPages[page] || 0) + 1
     })
 
@@ -46,21 +39,19 @@ export async function GET() {
         viewers: count as number
       }))
 
-    // Get real-time events from last 5 minutes
-    const { data: recentEventsList } = await supabaseAdmin
-      .from('analytics_events')
-      .select('*')
-      .gte('created_at', fiveMinutesAgo)
-      .order('created_at', { ascending: false })
-      .limit(10)
+    // 4. Mock data for events/sessions since we simplified the architecture
+    // In a real scenario, we'd join with an events table or query it separately
+    const recentEvents = 0;
+    const recentEventsList: any[] = [];
+    const activeSessions: any[] = []; 
 
     return NextResponse.json({
       activeVisitors: activeVisitors || 0,
       recentViews: recentViews || 0,
-      recentEvents: recentEvents || 0,
+      recentEvents: recentEvents,
       topCurrentPages,
-      activeSessions: activeSessions || [],
-      recentEventsList: recentEventsList || [],
+      activeSessions: activeSessions,
+      recentEventsList: recentEventsList,
       timestamp: new Date().toISOString()
     })
 

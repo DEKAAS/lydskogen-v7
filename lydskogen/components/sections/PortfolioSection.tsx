@@ -35,7 +35,7 @@ export default function ProjectsSection() {
 
   if (isLoading) {
     return (
-      <div className="py-24 bg-base-dark text-center font-mono text-gray-500">
+      <div className="py-24 bg-[#050605] text-center font-mono text-gray-500">
         [LOADING_ARCHIVE...]
       </div>
     );
@@ -44,10 +44,10 @@ export default function ProjectsSection() {
   if (projects.length === 0) return null;
 
   return (
-    <section id="portfolio" className="bg-gradient-to-b from-[#000000] to-[#050605] min-h-screen relative">
+    <section id="projects" className="bg-[#050605] min-h-screen relative pb-0">
       {/* Section Header - Technical Style */}
-      <div className="sticky top-0 z-30 bg-base-dark/95 backdrop-blur-sm">
-        <div className="max-w-[1600px] mx-auto px-4 md:px-12 py-4 flex justify-between items-center">
+      <div className="sticky top-0 z-30 bg-[#050605]/95 backdrop-blur-sm border-b border-white/5">
+        <div className="max-w-[1600px] mx-auto px-6 md:px-12 py-4 flex justify-between items-center">
           <h2 className="font-mono text-lg md:text-2xl text-white font-bold tracking-tighter">
             [02] PROSJEKTER
           </h2>
@@ -58,97 +58,95 @@ export default function ProjectsSection() {
         </div>
       </div>
 
-      {/* Projects Grid - Technical Archive Style */}
-      <div className="max-w-[1600px] mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {/* Projects Tracklist - Technical Archive Style */}
+      <div className="max-w-[1600px] mx-auto px-6 md:px-12 pt-8">
+        
+        {/* Table Header */}
+        <div className="grid grid-cols-12 gap-4 text-[10px] font-mono text-gray-500 uppercase tracking-widest border-b border-white/10 pb-2 mb-4 px-2">
+          <div className="col-span-1">ID</div>
+          <div className="col-span-7 md:col-span-4">TITLE</div>
+          <div className="col-span-2 hidden md:block">ARTIST</div>
+          <div className="col-span-2 hidden md:block">TYPE</div>
+          <div className="col-span-4 md:col-span-3 text-right">LINKS</div>
+        </div>
+
+        {/* Rows */}
+        <div className="space-y-1">
           {projects.map((project, index) => (
             <motion.div
               key={project.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="group relative border-b md:border-r border-white/10 bg-base-dark hover:bg-white/5 transition-colors duration-300"
+              transition={{ delay: index * 0.05 }}
+              className="group relative grid grid-cols-12 gap-4 items-center p-3 border-b border-white/5 hover:bg-white/5 transition-colors duration-200 rounded-sm"
             >
-              {/* Image Container */}
-              <div className="aspect-square relative overflow-hidden p-4">
-                <div className="w-full h-full relative">
-                  
-                  {/* Image with direct grayscale filter */}
-                  {project.artworkUrl ? (
-                    <img 
-                      src={project.artworkUrl} 
-                      alt={project.title}
-                      className="w-full h-full object-cover border border-white/10 relative z-0 grayscale group-hover:grayscale-0 transition-all duration-500 ease-out"
-                    />
-                  ) : (
-                    <div className="w-full h-full border border-white/10 flex items-center justify-center bg-white/5 relative z-0 grayscale group-hover:grayscale-0 transition-all duration-500">
-                      <span className="font-mono text-4xl text-white/20">{project.title[0]}</span>
-                    </div>
-                  )}
-                  
-                  {/* Dark overlay that fades out on hover - POINTER EVENTS NONE */}
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500 pointer-events-none z-10" />
-
-                  {/* Technical Overlays - High Z-Index & Explicit Pointer Events */}
-                  <div className="absolute top-2 right-2 z-30 flex flex-col gap-2 items-end opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-auto">
-                    {project.spotifyUrl && (
-                      <a 
-                        href={project.spotifyUrl} 
-                        target="_blank" 
-                        rel="noreferrer" 
-                        className="bg-[#1DB954] text-black px-3 py-1.5 text-[10px] font-mono font-bold hover:bg-white hover:scale-105 transition-all shadow-lg cursor-pointer pointer-events-auto flex items-center gap-1"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <span>SPOTIFY</span>
-                        <span>↗</span>
-                      </a>
-                    )}
-                    {project.websiteUrl && (
-                      <a 
-                        href={project.websiteUrl} 
-                        target="_blank" 
-                        rel="noreferrer" 
-                        className="bg-white text-black px-3 py-1.5 text-[10px] font-mono font-bold hover:bg-gray-200 hover:scale-105 transition-all shadow-lg cursor-pointer pointer-events-auto flex items-center gap-1"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <span>WEB</span>
-                        <span>↗</span>
-                      </a>
-                    )}
-                  </div>
-                </div>
+              {/* ID Column */}
+              <div className="col-span-1 font-mono text-xs text-gray-600 group-hover:text-accent-green transition-colors">
+                {index.toString().padStart(3, '0')}
               </div>
 
-              {/* Metadata Footer - Receipt Style */}
-              <div className="p-4 pt-0 flex flex-col gap-2">
-                <div className="flex justify-between items-start border-t border-white/10 pt-3">
-                  <h3 className="text-white font-mono text-sm font-bold uppercase truncate pr-4">
-                    {project.title}
-                  </h3>
-                  <span className="text-accent-green font-mono text-xs">
-                    {index.toString().padStart(3, '0')}
+              {/* Title Column (with Artwork thumbnail on hover?) */}
+              <div className="col-span-7 md:col-span-4 flex items-center gap-4">
+                {/* Thumbnail - Visible on Desktop Hover or Mobile Default? Let's keep it minimal list first */}
+                <div className="w-8 h-8 bg-white/10 overflow-hidden rounded-sm relative group-hover:scale-105 transition-transform">
+                    {project.artworkUrl ? (
+                        <img src={project.artworkUrl} alt={project.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[8px] text-gray-500">N/A</div>
+                    )}
+                </div>
+                <span className="font-mono text-sm text-white font-bold group-hover:text-accent-green transition-colors truncate">
+                  {project.title}
+                </span>
+              </div>
+
+              {/* Artist Column */}
+              <div className="col-span-2 hidden md:block font-mono text-xs text-gray-400 truncate">
+                {project.artist || '-'}
+              </div>
+
+              {/* Type Column */}
+              <div className="col-span-2 hidden md:block">
+                {project.tags && project.tags.length > 0 ? (
+                  <span className="inline-block px-2 py-0.5 border border-white/10 rounded-full text-[9px] font-mono text-gray-500 uppercase">
+                    {project.tags[0]}
                   </span>
-                </div>
-                
-                <div className="flex justify-between items-end">
-                  <div className="flex flex-col gap-0.5">
-                    {project.artist && (
-                      <span className="text-gray-400 font-mono text-xs uppercase">
-                        ARTIST: {project.artist}
-                      </span>
-                    )}
-                    {project.tags && project.tags.length > 0 && (
-                      <span className="text-gray-500 font-mono text-[10px] uppercase">
-                        TYPE: {project.tags[0]}
-                      </span>
-                    )}
-                  </div>
-                  
-                  {/* Interactive Indicator */}
-                  <div className="w-2 h-2 bg-gray-800 group-hover:bg-accent-green rounded-full transition-colors duration-300" />
-                </div>
+                ) : (
+                  <span className="text-gray-600 text-[10px]">-</span>
+                )}
               </div>
+
+              {/* Links Column */}
+              <div className="col-span-4 md:col-span-3 flex justify-end gap-2">
+                {project.spotifyUrl && (
+                  <a 
+                    href={project.spotifyUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1.5 bg-[#1DB954]/10 text-[#1DB954] border border-[#1DB954]/20 hover:bg-[#1DB954] hover:text-black rounded text-[10px] font-mono font-bold transition-all flex items-center gap-1"
+                    title="Open in Spotify"
+                  >
+                    <span className="hidden md:inline">SPOTIFY</span>
+                    <span className="md:hidden">SP</span>
+                    <span>↗</span>
+                  </a>
+                )}
+                {project.websiteUrl && (
+                  <a 
+                    href={project.websiteUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1.5 bg-white/5 text-gray-300 border border-white/10 hover:bg-white hover:text-black rounded text-[10px] font-mono font-bold transition-all flex items-center gap-1"
+                    title="Visit Website"
+                  >
+                    <span className="hidden md:inline">WEB</span>
+                    <span className="md:hidden">WB</span>
+                    <span>↗</span>
+                  </a>
+                )}
+              </div>
+
             </motion.div>
           ))}
         </div>

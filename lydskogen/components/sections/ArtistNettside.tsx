@@ -26,7 +26,7 @@ export default function ArtistNettsideSection() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -102,11 +102,15 @@ export default function ArtistNettsideSection() {
               </div>
               <div className="flex justify-between border-b border-white/5 py-3">
                 <span className="text-gray-500">ETABLERING</span>
-                <span className="text-accent-green font-bold">700 NOK</span>
+                <span className="text-accent-green font-bold">
+                  {activeTab === 'linktree' ? '500 NOK' : '1000 NOK'}
+                </span>
               </div>
               <div className="flex justify-between py-3">
                 <span className="text-gray-500">MÅNEDLIG</span>
-                <span className="text-white">99 NOK</span>
+                <span className="text-white">
+                  {activeTab === 'linktree' ? '60 NOK' : '200 NOK'}
+                </span>
               </div>
             </div>
 

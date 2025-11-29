@@ -56,25 +56,39 @@ export default function ContactSection() {
     return Object.keys(newErrors).length === 0;
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validate()) return;
     
     setIsSubmitting(true);
     
-    // In MVP, we'll use mailto link
-    // In future versions, this would be replaced with a real API call
-    setTimeout(() => {
-      window.location.href = `mailto:lydskog@proton.me?subject=Kontakt fra ${formData.name}&body=${formData.message}%0D%0A%0D%0AFra: ${formData.name}%0D%0AE-post: ${formData.email}`;
-      
+    // Use real API call
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          source: 'Kontaktseksjon'
+        })
+      });
+
+      if (response.ok) {
+        setSubmitSuccess(true);
+        setFormData({ name: '', email: '', message: '' });
+        setTimeout(() => setSubmitSuccess(false), 5000);
+      } else {
+        alert('Det oppstod en feil ved sending av e-post. Vennligst prøv igjen senere.');
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+      alert('Det oppstod en feil ved sending av e-post.');
+    } finally {
       setIsSubmitting(false);
-      setSubmitSuccess(true);
-      setFormData({ name: '', email: '', message: '' });
-      
-      // Reset success message after 5 seconds
-      setTimeout(() => setSubmitSuccess(false), 5000);
-    }, 1000);
+    }
   };
 
   return (

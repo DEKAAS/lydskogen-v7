@@ -58,7 +58,7 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error('Error updating content:', error);
-      return NextResponse.json({ error: 'Failed to update content' }, { status: 500 });
+      return NextResponse.json({ error: error.message || 'Failed to update content' }, { status: 500 });
     }
 
     return NextResponse.json(data);
@@ -67,4 +67,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
 

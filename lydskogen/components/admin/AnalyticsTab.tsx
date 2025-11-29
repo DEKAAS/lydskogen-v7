@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import RealTimeAnalytics from '@/components/RealTimeAnalytics'
 import AnalyticsExport from '@/components/AnalyticsExport'
+import RecentVisitsTable from '@/components/admin/RecentVisitsTable'
 import type { AnalyticsStats } from '@/lib/supabase'
 
 export default function AnalyticsTab() {
@@ -64,6 +65,11 @@ export default function AnalyticsTab() {
       {/* Real-time Analytics */}
       <div>
         <RealTimeAnalytics />
+      </div>
+
+      {/* Recent Visits Log */}
+      <div className="mt-8">
+        <RecentVisitsTable visits={stats?.recentVisits || []} />
       </div>
 
       {/* Device & Geographic Stats */}

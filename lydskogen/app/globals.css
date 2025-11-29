@@ -5,10 +5,10 @@
 
   :root {
     /* Mørkere skog-tema for bedre partikkelstøy-synlighet */
-    --primary-bg: #0f1210;          /* Mørkere skog-grønn */
-    --section-bg-1: #121714;        /* Litt lysere skog */
-    --section-bg-2: #151b17;        /* Enda lysere skog */
-    --section-bg-3: #181f1a;        /* Lyseste skog */
+    --primary-bg: #050605;          /* Matcher Tailwind base-dark */
+    --section-bg-1: #0a0c0a;        /* Litt lysere skog */
+    --section-bg-2: #0f1210;        /* Enda lysere skog */
+    --section-bg-3: #151b17;        /* Lyseste skog */
   --card-bg: #1a231e;             /* Kort bakgrunn - mørkere grønn */
     --text-color: #e8f0ea;          /* Lys tekst med grønn tint */
     --text-muted: #a3b5a8;          /* Dempet grønn tekst */

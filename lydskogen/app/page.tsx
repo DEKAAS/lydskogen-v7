@@ -1,6 +1,8 @@
 import HeaderHero from '@/components/HeaderHero';
 import ProjectsSection from '@/components/sections/PortfolioSection';
-import VerticalSections from '@/components/VerticalSections';
+import AudioDemosSection from '@/components/sections/AudioDemosSection';
+import ArtistNettsideSection from '@/components/sections/ArtistNettside';
+import MiksingSeksjon from '@/components/sections/MiksingSeksjon';
 import AboutSection from '@/components/sections/AboutSection';
 import ContactSection from '@/components/sections/ContactSection';
 import Footer from '@/components/Footer';
@@ -13,18 +15,21 @@ export default function Home() {
       {/* Header Hero Section */}
       <HeaderHero />
 
-      {/* 
-        Divider REMOVED for natural fade.
-        Hero fades to black -> Projects starts at black.
-      */}
-
-      {/* Projects Section (formerly Portfolio) */}
+      {/* Projects Section */}
       <ProjectsSection />
+      
+      {/* Audio Demos (Moved here per request) */}
+      <AudioDemosSection />
 
-      <SectionDivider />
+      <SectionDivider variant="pulse" />
 
-      {/* Vertical Sections Layout */}
-      <VerticalSections />
+      {/* Services: Artist / Linktree */}
+      <ArtistNettsideSection />
+
+      <SectionDivider variant="data-stream" />
+
+      {/* Services: Miksing */}
+      <MiksingSeksjon />
 
       <SectionDivider />
 

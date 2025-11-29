@@ -6,6 +6,7 @@ export default function SettingsTab() {
   const [content, setContent] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     fetchContent();
@@ -35,12 +36,16 @@ export default function SettingsTab() {
       if (res.ok) {
         const data = await res.json();
         setContent(prev => ({ ...prev, [key]: value }));
+        setSuccess(key);
+        setTimeout(() => setSuccess(null), 3000);
       } else {
-        alert('Feil ved lagring');
+        const errorData = await res.json().catch(() => ({}));
+        console.error('Save error details:', errorData);
+        alert(`Feil ved lagring: ${errorData.error || 'Ukjent feil'} (Sjekk om databasetabellen 'site_content' eksisterer)`);
       }
     } catch (error) {
       console.error('Error saving content:', error);
-      alert('Feil ved lagring');
+      alert('Feil ved lagring: Kunne ikke koble til serveren');
     } finally {
       setSaving(null);
     }
@@ -78,10 +83,14 @@ export default function SettingsTab() {
                   'hero', 
                   'Hovedtekst under tittelen på forsiden'
                 )}
-                disabled={saving === 'hero_tagline'}
-                className="px-4 py-2 bg-accent-green text-base-dark font-semibold rounded hover:bg-accent-green/80 disabled:opacity-50 transition-colors"
+                disabled={saving === 'hero_tagline' || success === 'hero_tagline'}
+                className={`px-4 py-2 font-semibold rounded transition-all ${
+                  success === 'hero_tagline' 
+                    ? 'bg-green-600 text-white'
+                    : 'bg-accent-green text-base-dark hover:bg-accent-green/80'
+                } disabled:opacity-50`}
               >
-                {saving === 'hero_tagline' ? 'Lagrer...' : 'Lagre endringer'}
+                {saving === 'hero_tagline' ? 'Lagrer...' : success === 'hero_tagline' ? 'Lagret!' : 'Lagre endringer'}
               </button>
             </div>
           </div>
