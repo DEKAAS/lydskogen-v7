@@ -17,6 +17,7 @@
     "clsx": "^2.1.1",
     "framer-motion": "^12.16.0",
     "jose": "^6.0.12",
+    "lucide-react": "^0.468.0",
     "multer": "^2.0.2",
     "next": "15.3.3",
     "next-auth": "^4.24.11",

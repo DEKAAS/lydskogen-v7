@@ -6,8 +6,6 @@ import { useEffect, useState } from "react"
 import AdminNavbar from '@/components/AdminNavbar'
 import OverviewTab from '@/components/admin/OverviewTab'
 import ProjectsTab from '@/components/admin/ProjectsTab'
-import ContentTab from '@/components/admin/ContentTab'
-import OrdersTab from '@/components/admin/OrdersTab'
 import AnalyticsTab from '@/components/admin/AnalyticsTab'
 import MusikkproduksjonTab from '@/components/admin/MusikkproduksjonTab'
 import SettingsTab from '@/components/admin/SettingsTab'
@@ -27,10 +25,8 @@ export default function AdminDashboard() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="border border-green-500 p-8 text-center">
-          <div className="text-green-500 font-mono">LOADING...</div>
-        </div>
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+        <div className="text-gray-500">Laster...</div>
       </div>
     )
   }
@@ -45,10 +41,6 @@ export default function AdminDashboard() {
         return <OverviewTab />
       case 'projects':
         return <ProjectsTab />
-      case 'content':
-        return <ContentTab />
-      case 'orders':
-        return <OrdersTab />
       case 'analytics':
         return <AnalyticsTab />
       case 'musikkproduksjon':
@@ -61,7 +53,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-green-500">
+    <div className="min-h-screen bg-[#050505] text-white">
       <AdminNavbar activeTab={activeTab} onTabChange={setActiveTab} />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

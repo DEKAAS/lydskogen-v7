@@ -12,11 +12,6 @@ interface DemoTrack {
   duration?: string;
 }
 
-interface GenreBackground {
-  genre_id: string;
-  background_image_url: string;
-}
-
 const MUSIC_GENRES = ['ambient', 'hiphop', 'lofi', 'soundscape'];
 
 export default function MusikkproduksjonTab() {
@@ -28,7 +23,6 @@ export default function MusikkproduksjonTab() {
   const [uploadSuccess, setUploadSuccess] = useState<Record<string, string | null>>({});
   const [bgUploadSuccess, setBgUploadSuccess] = useState<Record<string, string | null>>({});
   
-  // Form state per genre
   const [forms, setForms] = useState<Record<string, { title: string; description: string; file: File | null }>>({});
   const [bgFiles, setBgFiles] = useState<Record<string, File | null>>({});
   const [bgPreviews, setBgPreviews] = useState<Record<string, string>>({});
@@ -40,56 +34,28 @@ export default function MusikkproduksjonTab() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      // Fetch demo tracks
-      try {
-        const musicRes = await fetch('/api/music');
-        if (!musicRes.ok) {
-          console.warn('Failed to fetch music tracks:', musicRes.status, musicRes.statusText);
-          setDemoTracks({});
-        } else {
-          try {
-            const musicData = await musicRes.json();
-            const tracks: DemoTrack[] = musicData.music || [];
-
-            const grouped = tracks.reduce<Record<string, DemoTrack[]>>((acc, track) => {
-              const genreKey = track.genre || 'annet';
-              if (MUSIC_GENRES.includes(genreKey)) {
-                if (!acc[genreKey]) acc[genreKey] = [];
-                acc[genreKey].push(track);
-              }
-              return acc;
-            }, {});
-
-            setDemoTracks(grouped);
-          } catch (parseError) {
-            console.error('Error parsing music data:', parseError);
-            setDemoTracks({});
+      const musicRes = await fetch('/api/music');
+      if (musicRes.ok) {
+        const musicData = await musicRes.json();
+        const tracks: DemoTrack[] = musicData.music || [];
+        const grouped = tracks.reduce<Record<string, DemoTrack[]>>((acc, track) => {
+          const genreKey = track.genre || 'annet';
+          if (MUSIC_GENRES.includes(genreKey)) {
+            if (!acc[genreKey]) acc[genreKey] = [];
+            acc[genreKey].push(track);
           }
-        }
-      } catch (musicError) {
-        console.error('Error fetching music tracks:', musicError);
-        setDemoTracks({});
+          return acc;
+        }, {});
+        setDemoTracks(grouped);
       }
 
-      // Fetch backgrounds
-      try {
-        const bgRes = await fetch('/api/genres/backgrounds');
-        if (!bgRes.ok) {
-          console.warn('Failed to fetch genre backgrounds:', bgRes.status, bgRes.statusText);
-          setBackgrounds({});
-        } else {
-          const bgData = await bgRes.json();
-          setBackgrounds(bgData.backgrounds || {});
-        }
-      } catch (bgError) {
-        console.error('Error fetching backgrounds:', bgError);
-        setBackgrounds({});
+      const bgRes = await fetch('/api/genres/backgrounds');
+      if (bgRes.ok) {
+        const bgData = await bgRes.json();
+        setBackgrounds(bgData.backgrounds || {});
       }
     } catch (error) {
       console.error('Error fetching data:', error);
-      // Set empty defaults on error
-      setDemoTracks({});
-      setBackgrounds({});
     } finally {
       setLoading(false);
     }
@@ -98,10 +64,7 @@ export default function MusikkproduksjonTab() {
   const handleFileChange = (genreId: string, file: File | null) => {
     setForms(prev => ({
       ...prev,
-      [genreId]: {
-        ...(prev[genreId] || { title: '', description: '', file: null }),
-        file
-      }
+      [genreId]: { ...(prev[genreId] || { title: '', description: '', file: null }), file }
     }));
   };
 
@@ -114,20 +77,13 @@ export default function MusikkproduksjonTab() {
       };
       reader.readAsDataURL(file);
     } else {
-      setBgPreviews(prev => {
-        const newPreviews = { ...prev };
-        delete newPreviews[genreId];
-        return newPreviews;
-      });
+      setBgPreviews(prev => { const n = { ...prev }; delete n[genreId]; return n; });
     }
   };
 
   const handleDemoUpload = async (genreId: string) => {
-    // Sørg for at vi alltid har et form-objekt med default-verdier
     const form = forms[genreId] || { title: '', description: '', file: null };
-    const title = (form.title || '').trim();
-
-    if (!form.file || !title) {
+    if (!form.file || !form.title?.trim()) {
       alert('Tittel og fil er påkrevd');
       return;
     }
@@ -145,44 +101,19 @@ export default function MusikkproduksjonTab() {
       formData.append('status', 'available');
       formData.append('artist', 'Lydskog');
 
-      const response = await fetch('/api/admin/upload-music', {
-        method: 'POST',
-        body: formData
-      });
+      const response = await fetch('/api/admin/upload-music', { method: 'POST', body: formData });
+      const result = await response.json();
 
-      // Parse JSON response
-      let result: any;
-      try {
-        result = await response.json();
-      } catch (parseError) {
-        console.error('Failed to parse JSON response:', parseError);
-        throw new Error('Kunne ikke lese server-respons');
-      }
-
-      if (!response.ok) {
-        const errorMsg = result.details || result.error || `HTTP ${response.status}: ${response.statusText}`;
-        throw new Error(errorMsg);
-      }
-
-      if (result.message || result.music) {
-        setUploadSuccess(prev => ({ ...prev, [genreId]: 'Demo lastet opp!' }));
-        setForms(prev => ({
-          ...prev,
-          [genreId]: { title: '', description: '', file: null }
-        }));
-        // Clear success message after 3 seconds
-        setTimeout(() => {
-          setUploadSuccess(prev => ({ ...prev, [genreId]: null }));
-        }, 3000);
+      if (response.ok && (result.message || result.music)) {
+        setUploadSuccess(prev => ({ ...prev, [genreId]: 'Lastet opp!' }));
+        setForms(prev => ({ ...prev, [genreId]: { title: '', description: '', file: null } }));
+        setTimeout(() => setUploadSuccess(prev => ({ ...prev, [genreId]: null })), 3000);
         fetchData();
       } else {
         throw new Error(result.error || 'Kunne ikke laste opp');
       }
     } catch (error) {
-      console.error('Upload error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Det oppstod en feil ved opplasting';
-      setUploadSuccess(prev => ({ ...prev, [genreId]: null }));
-      alert(`Feil: ${errorMessage}`);
+      alert(`Feil: ${error instanceof Error ? error.message : 'Ukjent feil'}`);
     } finally {
       setUploading(prev => ({ ...prev, [genreId]: false }));
     }
@@ -190,10 +121,7 @@ export default function MusikkproduksjonTab() {
 
   const handleBgUpload = async (genreId: string) => {
     const file = bgFiles[genreId];
-    if (!file) {
-      alert('Velg et bilde først');
-      return;
-    }
+    if (!file) return;
 
     setUploadingBg(prev => ({ ...prev, [genreId]: true }));
     setBgUploadSuccess(prev => ({ ...prev, [genreId]: null }));
@@ -203,95 +131,32 @@ export default function MusikkproduksjonTab() {
       formData.append('file', file);
       formData.append('genreId', genreId);
 
-      const response = await fetch('/api/admin/upload-genre-background', {
-        method: 'POST',
-        body: formData
-      });
+      const response = await fetch('/api/admin/upload-genre-background', { method: 'POST', body: formData });
+      const result = await response.json();
 
-      // Check if response is JSON
-      const contentType = response.headers.get('content-type');
-      let result: any;
-      
-      if (!contentType || !contentType.includes('application/json')) {
-        const text = await response.text();
-        console.error('Non-JSON response:', text.substring(0, 200));
-        setBgUploadSuccess(prev => ({ ...prev, [genreId]: null }));
-        alert(`Feil: Server returnerte ugyldig respons. Sjekk konsollen for detaljer.`);
-        return;
-      }
-
-      // Parse JSON response
-      try {
-        result = await response.json();
-      } catch (parseError) {
-        console.error('Failed to parse JSON response:', parseError);
-        setBgUploadSuccess(prev => ({ ...prev, [genreId]: null }));
-        alert(`Feil: Kunne ikke lese server-respons.`);
-        return;
-      }
-
-      if (!response.ok) {
-        const errorMsg = result.details || result.error || `HTTP ${response.status}: ${response.statusText}`;
-        setBgUploadSuccess(prev => ({ ...prev, [genreId]: null }));
-        alert(`Feil: ${errorMsg}`);
-        return;
-      }
-
-      if (result.message || result.background) {
-        setBgUploadSuccess(prev => ({ ...prev, [genreId]: 'Bakgrunnsbilde lastet opp!' }));
+      if (response.ok) {
+        setBgUploadSuccess(prev => ({ ...prev, [genreId]: 'Lastet opp!' }));
         setBgFiles(prev => ({ ...prev, [genreId]: null }));
-        setBgPreviews(prev => {
-          const newPreviews = { ...prev };
-          delete newPreviews[genreId];
-          return newPreviews;
-        });
-        // Clear success message after 3 seconds
-        setTimeout(() => {
-          setBgUploadSuccess(prev => ({ ...prev, [genreId]: null }));
-        }, 3000);
+        setBgPreviews(prev => { const n = { ...prev }; delete n[genreId]; return n; });
+        setTimeout(() => setBgUploadSuccess(prev => ({ ...prev, [genreId]: null })), 3000);
         fetchData();
       } else {
-        const errorMsg = result.error || 'Kunne ikke laste opp';
-        setBgUploadSuccess(prev => ({ ...prev, [genreId]: null }));
-        alert(`Feil: ${errorMsg}`);
+        alert(`Feil: ${result.error || 'Kunne ikke laste opp'}`);
       }
     } catch (error) {
-      console.error('Background upload error:', error);
-      let errorMessage = 'Det oppstod en feil ved opplasting';
-      if (error instanceof SyntaxError && error.message.includes('JSON')) {
-        errorMessage = 'Server returnerte ugyldig respons. Sjekk at API-ruten fungerer.';
-      } else if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-      setBgUploadSuccess(prev => ({ ...prev, [genreId]: null }));
-      alert(`Feil: ${errorMessage}`);
+      alert(`Feil: ${error instanceof Error ? error.message : 'Ukjent feil'}`);
     } finally {
       setUploadingBg(prev => ({ ...prev, [genreId]: false }));
     }
   };
 
-  const handleDeleteDemo = async (trackId: string, genreId: string) => {
-    if (!confirm('Er du sikker på at du vil slette denne demo-låten?')) return;
-
+  const handleDeleteDemo = async (trackId: string) => {
+    if (!confirm('Slette denne demoen?')) return;
     try {
-      const response = await fetch(`/api/admin/music?id=${trackId}`, {
-        method: 'DELETE'
-      });
-
-      if (response.ok) {
-        fetchData();
-      } else {
-        try {
-          const errorData = await response.json();
-          alert(`Kunne ikke slette demo-låten: ${errorData.error || 'Ukjent feil'}`);
-        } catch (parseError) {
-          alert(`Kunne ikke slette demo-låten: HTTP ${response.status}`);
-        }
-      }
+      const response = await fetch(`/api/admin/music?id=${trackId}`, { method: 'DELETE' });
+      if (response.ok) fetchData();
     } catch (error) {
       console.error('Delete error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Det oppstod en feil ved sletting';
-      alert(`Feil: ${errorMessage}`);
     }
   };
 
@@ -301,38 +166,24 @@ export default function MusikkproduksjonTab() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="border border-green-500 p-8">
-          <div className="text-green-500 font-mono">LOADING...</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!genreCards || genreCards.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="border border-green-500 p-8">
-          <div className="text-green-500 font-mono">ERROR: NO GENRE DATA</div>
-        </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-gray-500">Laster...</div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="text-center border-b border-green-800 pb-4 bg-black/60">
-        <h2 className="text-2xl md:text-3xl font-mono font-bold text-green-400 mb-2 tracking-wide">
-          MUSIKKPRODUKSJON · DEMOS
-        </h2>
-        <p className="text-green-600/80 font-mono text-sm">
-          Last opp demoer og bakgrunner per sjanger
-        </p>
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="pb-6 border-b border-white/10">
+        <h2 className="text-2xl font-semibold text-white mb-1">Musikkproduksjon</h2>
+        <p className="text-gray-500 text-sm">Last opp demoer og bakgrunnsbilder per sjanger</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {/* Genre Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {genreCards.map((genre) => {
-          if (!genre || !genre.id) return null;
+          if (!genre?.id) return null;
           const genreId = genre.id;
           const demos = demoTracks[genreId] || [];
           const form = forms[genreId] || { title: '', description: '', file: null };
@@ -345,46 +196,30 @@ export default function MusikkproduksjonTab() {
           const bgSuccessMsg = bgUploadSuccess[genreId];
 
           return (
-            <div
-              key={genreId}
-              className="border border-green-800/70 bg-black/80 shadow-[0_0_25px_rgba(0,255,140,0.1)]"
-            >
+            <div key={genreId} className="bg-[#111] rounded-lg border border-white/10 overflow-hidden">
               {/* Genre Header */}
-              <div className="p-4 border-b border-green-800 bg-black/70">
-                <h3 className="text-xl font-mono font-bold text-green-300 mb-1 tracking-wide">
-                  {(genre.title || genreId || 'UNKNOWN').toUpperCase()}
+              <div className="p-4 border-b border-white/10 bg-[#0a0a0a]">
+                <h3 className="text-lg font-medium text-white capitalize">
+                  {genre.title || genreId}
                 </h3>
-                <p className="text-xs text-green-500/80 font-mono">
-                  {genre.shortDescription || 'No description available'}
+                <p className="text-xs text-gray-500 mt-1">
+                  {genre.shortDescription || 'Ingen beskrivelse'}
                 </p>
               </div>
 
-              <div className="p-4 space-y-4">
-                {/* Background Image Upload */}
+              <div className="p-4 space-y-6">
+                {/* Background Section */}
                 <div>
-                  <label className="block text-xs font-mono font-bold text-green-400 mb-2 uppercase tracking-wide">
-                    Background Image
+                  <label className="block text-sm font-medium text-gray-300 mb-3">
+                    Bakgrunnsbilde
                   </label>
                   
-                  {currentBg && (
-                    <div className="mb-3 border border-green-900 overflow-hidden">
+                  {(currentBg || bgPreview) && (
+                    <div className="mb-3 rounded-md overflow-hidden border border-white/10">
                       <img
-                        src={currentBg}
-                        alt={`${genre.title} bakgrunn`}
-                        className="w-full h-32 object-cover"
-                      />
-                    </div>
-                  )}
-
-                  {bgPreview && (
-                    <div className="mb-3 border border-green-900 overflow-hidden">
-                      <p className="text-xs text-green-500 font-mono mb-2 p-2 bg-black/80 border-b border-green-900">
-                        PREVIEW:
-                      </p>
-                      <img
-                        src={bgPreview}
-                        alt="Forhåndsvisning"
-                        className="w-full h-32 object-cover"
+                        src={bgPreview || currentBg}
+                        alt="Bakgrunn"
+                        className="w-full h-24 object-cover"
                       />
                     </div>
                   )}
@@ -392,61 +227,57 @@ export default function MusikkproduksjonTab() {
                   <div className="flex gap-2">
                     <input
                       type="file"
-                      accept="image/jpeg,image/png,image/webp"
+                      accept="image/*"
                       onChange={(e) => handleBgFileChange(genreId, e.target.files?.[0] || null)}
                       className="hidden"
                       id={`bg-${genreId}`}
                     />
                     <label
                       htmlFor={`bg-${genreId}`}
-                      className="flex-1 px-3 py-2 border border-green-700 bg-black/80 text-green-400 font-mono text-xs cursor-pointer text-center hover:bg-green-500 hover:text-black transition"
+                      className="flex-1 px-3 py-2 bg-[#0a0a0a] border border-white/10 rounded-md text-gray-400 text-sm text-center cursor-pointer hover:border-white/20 transition-all"
                     >
-                      {bgFile ? '[CHANGE]' : '[SELECT]'}
+                      {bgFile ? bgFile.name : 'Velg bilde'}
                     </label>
                     {bgFile && (
                       <button
                         onClick={() => handleBgUpload(genreId)}
                         disabled={isUploadingBg}
-                        className="px-3 py-2 border border-green-700 bg-black/80 text-green-400 font-mono text-xs disabled:opacity-40 hover:bg-green-500 hover:text-black transition"
+                        className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:opacity-50 transition-all"
                       >
-                        {isUploadingBg ? '[UPLOADING...]' : '[UPLOAD]'}
+                        {isUploadingBg ? 'Laster...' : 'Last opp'}
                       </button>
                     )}
                   </div>
-                  {bgSuccessMsg && (
-                    <p className="text-xs mt-2 text-green-400 font-mono">
-                      {bgSuccessMsg}
-                    </p>
-                  )}
+                  {bgSuccessMsg && <p className="text-xs text-green-400 mt-2">{bgSuccessMsg}</p>}
                 </div>
 
-                {/* Demo Upload Form */}
-                <div>
-                  <label className="block text-xs font-mono font-bold text-green-400 mb-2 uppercase tracking-wide">
-                    Upload Demo Track
+                {/* Demo Upload Section */}
+                <div className="border-t border-white/10 pt-6">
+                  <label className="block text-sm font-medium text-gray-300 mb-3">
+                    Last opp demo
                   </label>
                   
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <input
                       type="text"
-                      placeholder="TITLE *"
+                      placeholder="Tittel"
                       value={form.title || ''}
                       onChange={(e) => setForms(prev => ({
                         ...prev,
                         [genreId]: { ...(prev[genreId] || { description: '', file: null }), title: e.target.value }
                       }))}
-                      className="w-full px-3 py-2 border border-green-700 bg-black/80 text-green-100 font-mono text-sm placeholder-green-700"
+                      className="w-full px-3 py-2 bg-[#0a0a0a] border border-white/10 rounded-md text-white text-sm placeholder-gray-600 focus:border-blue-500 outline-none transition-all"
                     />
                     
                     <textarea
-                      placeholder="DESCRIPTION (OPTIONAL)"
-                      value={form.description}
+                      placeholder="Beskrivelse (valgfritt)"
+                      value={form.description || ''}
                       onChange={(e) => setForms(prev => ({
                         ...prev,
-                        [genreId]: { ...prev[genreId] || { title: '', file: null }, description: e.target.value }
+                        [genreId]: { ...(prev[genreId] || { title: '', file: null }), description: e.target.value }
                       }))}
                       rows={2}
-                      className="w-full px-3 py-2 border border-green-700 bg-black/80 text-green-100 font-mono text-sm resize-none placeholder-green-700"
+                      className="w-full px-3 py-2 bg-[#0a0a0a] border border-white/10 rounded-md text-white text-sm placeholder-gray-600 focus:border-blue-500 outline-none resize-none transition-all"
                     />
 
                     <div className="flex gap-2">
@@ -459,60 +290,54 @@ export default function MusikkproduksjonTab() {
                       />
                       <label
                         htmlFor={`file-${genreId}`}
-                        className="flex-1 px-3 py-2 border border-green-700 bg-black/80 text-green-100 font-mono text-xs cursor-pointer text-center hover:bg-green-500 hover:text-black transition"
+                        className="flex-1 px-3 py-2 bg-[#0a0a0a] border border-white/10 rounded-md text-gray-400 text-sm text-center cursor-pointer hover:border-white/20 transition-all truncate"
                       >
-                        {form.file ? form.file.name.toUpperCase() : '[SELECT FILE]'}
+                        {form.file ? form.file.name : 'Velg lydfil'}
                       </label>
                       <button
                         onClick={() => handleDemoUpload(genreId)}
-                        // Bruk trygg trimming slik at vi aldri kaller trim() på undefined
-                        disabled={
-                          isUploading ||
-                          !form.file ||
-                          !(form.title && (form.title as string).trim())
-                        }
-                        className="px-3 py-2 border border-green-700 bg-black/80 text-green-100 font-mono text-xs disabled:opacity-40 hover:bg-green-500 hover:text-black transition"
+                        disabled={isUploading || !form.file || !form.title?.trim()}
+                        className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                       >
-                        {isUploading ? '[UPLOADING...]' : '[UPLOAD]'}
+                        {isUploading ? 'Laster...' : 'Last opp'}
                       </button>
                     </div>
                     
-                    {successMsg && (
-                      <p className="text-xs text-green-400 font-mono">
-                        {successMsg}
-                      </p>
-                    )}
+                    {successMsg && <p className="text-xs text-green-400">{successMsg}</p>}
                   </div>
                 </div>
 
                 {/* Demo List */}
-                <div>
-                  <label className="block text-xs font-mono font-bold text-green-400 mb-2 uppercase tracking-wide">
-                    Demos ({demos.length})
-                  </label>
+                <div className="border-t border-white/10 pt-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-sm font-medium text-gray-300">
+                      Demoer
+                    </label>
+                    <span className="text-xs text-gray-600">{demos.length} spor</span>
+                  </div>
                   
                   {demos.length === 0 ? (
-                    <div className="text-xs text-green-600 font-mono text-center py-4 border border-green-800 bg-black/70">
-                      NO DEMOS
+                    <div className="text-sm text-gray-600 text-center py-6 border border-dashed border-white/10 rounded-md">
+                      Ingen demoer
                     </div>
                   ) : (
                     <div className="space-y-2">
                       {demos.map((demo) => (
                         <div
                           key={demo.id}
-                          className="flex items-center justify-between p-2 border border-green-800 bg-black/80"
+                          className="flex items-center justify-between p-3 bg-[#0a0a0a] border border-white/10 rounded-md"
                         >
-                          <div className="flex-1">
-                            <p className="text-sm font-mono font-bold text-green-300">{demo.title.toUpperCase()}</p>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-white truncate">{demo.title}</p>
                             {demo.description && (
-                              <p className="text-xs text-green-500 font-mono mt-1">{demo.description}</p>
+                              <p className="text-xs text-gray-500 mt-0.5 truncate">{demo.description}</p>
                             )}
                           </div>
                           <button
-                            onClick={() => handleDeleteDemo(demo.id, genreId)}
-                            className="px-2 py-1 border border-red-500 bg-black text-red-500 font-mono text-xs hover:bg-red-500 hover:text-black"
+                            onClick={() => handleDeleteDemo(demo.id)}
+                            className="ml-3 px-3 py-1.5 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded transition-colors"
                           >
-                            [DELETE]
+                            Slett
                           </button>
                         </div>
                       ))}
@@ -527,4 +352,3 @@ export default function MusikkproduksjonTab() {
     </div>
   );
 }
-

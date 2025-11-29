@@ -11,9 +11,24 @@ interface Project {
   tags?: string[];
   spotifyUrl?: string;
   websiteUrl?: string;
+  youtubeUrl?: string;
   musicUrl?: string;
   createdAt: string;
   updatedAt?: string;
+}
+
+// Helper to extract YouTube video ID
+function getYouTubeVideoId(url: string): string | null {
+  if (!url) return null;
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\s?]+)/,
+    /youtube\.com\/watch\?.*v=([^&\s]+)/
+  ];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  return null;
 }
 
 export default function ProjectsTab() {
@@ -29,12 +44,15 @@ export default function ProjectsTab() {
   const [tags, setTags] = useState('');
   const [spotifyUrl, setSpotifyUrl] = useState('');
   const [websiteUrl, setWebsiteUrl] = useState('');
+  const [youtubeUrl, setYoutubeUrl] = useState('');
   const [musicUrl, setMusicUrl] = useState('');
   const [loadingSpotify, setLoadingSpotify] = useState(false);
+  const [loadingYoutube, setLoadingYoutube] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [formMessage, setFormMessage] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [previewError, setPreviewError] = useState(false);
+  const [youtubeThumbnail, setYoutubeThumbnail] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProjects();
@@ -45,11 +63,8 @@ export default function ProjectsTab() {
     setSpotifyUrl(url);
     setFormError(null);
     
-    // Validate Spotify URL
     const spotifyUrlPattern = /^https?:\/\/(open|play)\.spotify\.com\/(track|album|playlist|artist)\/[a-zA-Z0-9]+/;
-    if (!spotifyUrlPattern.test(url)) {
-      return; // Not a valid Spotify URL yet
-    }
+    if (!spotifyUrlPattern.test(url)) return;
 
     setLoadingSpotify(true);
     try {
@@ -57,8 +72,6 @@ export default function ProjectsTab() {
       if (response.ok) {
         const data = await response.json();
         const metadata = data.metadata;
-        
-        // Auto-fill form fields
         if (metadata.title) setTitle((prev) => prev || metadata.title);
         if (metadata.artist) setArtist((prev) => prev || metadata.artist);
         if (metadata.thumbnail) {
@@ -68,9 +81,34 @@ export default function ProjectsTab() {
       }
     } catch (error) {
       console.error('Error fetching Spotify metadata:', error);
-      setFormError('Kunne ikke hente Spotify-data. Kontroller lenken.');
     } finally {
       setLoadingSpotify(false);
+    }
+  };
+
+  // Fetch YouTube thumbnail when URL is entered
+  const handleYoutubeUrlChange = async (url: string) => {
+    setYoutubeUrl(url);
+    setYoutubeThumbnail(null);
+    
+    const videoId = getYouTubeVideoId(url);
+    if (!videoId) return;
+
+    setLoadingYoutube(true);
+    try {
+      // Use YouTube's thumbnail URL directly (no API key needed)
+      const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+      setYoutubeThumbnail(thumbnailUrl);
+      
+      // Optionally set as artwork if none exists
+      if (!artworkUrl) {
+        setArtworkUrl(thumbnailUrl);
+        setPreviewError(false);
+      }
+    } catch (error) {
+      console.error('Error fetching YouTube thumbnail:', error);
+    } finally {
+      setLoadingYoutube(false);
     }
   };
 
@@ -85,6 +123,21 @@ export default function ProjectsTab() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const resetForm = () => {
+    setTitle('');
+    setArtist('');
+    setArtworkUrl('');
+    setDescription('');
+    setTags('');
+    setSpotifyUrl('');
+    setWebsiteUrl('');
+    setYoutubeUrl('');
+    setMusicUrl('');
+    setShowForm(false);
+    setPreviewError(false);
+    setYoutubeThumbnail(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -105,6 +158,7 @@ export default function ProjectsTab() {
       tags: tags.split(',').map(t => t.trim()).filter(Boolean),
       spotifyUrl: spotifyUrl || undefined,
       websiteUrl: websiteUrl || undefined,
+      youtubeUrl: youtubeUrl || undefined,
       musicUrl: musicUrl || undefined,
     };
 
@@ -117,17 +171,7 @@ export default function ProjectsTab() {
       });
 
       if (res.ok) {
-        // Reset form
-        setTitle('');
-        setArtist('');
-        setArtworkUrl('');
-        setDescription('');
-        setTags('');
-        setSpotifyUrl('');
-        setWebsiteUrl('');
-        setMusicUrl('');
-        setShowForm(false);
-        setPreviewError(false);
+        resetForm();
         setFormMessage('Prosjektet ble lagret!');
         fetchProjects();
       } else {
@@ -161,197 +205,211 @@ export default function ProjectsTab() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-green-500 pb-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-white/10">
         <div>
-          <h2 className="text-2xl md:text-3xl font-mono font-bold text-green-500 mb-2">PORTFOLIO PROJECTS</h2>
-          <p className="text-green-600 font-mono text-sm">Manage projects displayed on frontend</p>
+          <h2 className="text-2xl font-semibold text-white mb-1">Prosjekter</h2>
+          <p className="text-gray-500 text-sm">Administrer prosjekter som vises på forsiden</p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2 border border-green-500 bg-black text-green-500 font-mono text-sm hover:bg-green-500 hover:text-black"
+          className={`px-5 py-2.5 rounded-md text-sm font-medium transition-all ${
+            showForm 
+              ? 'bg-white/10 text-white border border-white/20' 
+              : 'bg-blue-600 text-white hover:bg-blue-700'
+          }`}
         >
-          {showForm ? '[CANCEL]' : '[+ NEW PROJECT]'}
+          {showForm ? 'Avbryt' : '+ Nytt prosjekt'}
         </button>
       </div>
 
       {/* Add Form */}
       {showForm && (
-        <div 
-          className="p-4 border border-green-500 bg-black"
-        >
-          <h3 className="text-lg font-mono font-bold mb-4 text-green-500">
-            ADD NEW PROJECT
-          </h3>
+        <div className="bg-[#111] rounded-lg border border-white/10 p-6 space-y-6">
+          <h3 className="text-lg font-medium text-white">Legg til nytt prosjekt</h3>
           
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Basic Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-mono font-bold mb-1 text-green-500 uppercase">
-                  Title *
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Tittel <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   required
-                  className="w-full px-3 py-2 border border-green-500 bg-black text-green-500 font-mono text-sm placeholder-green-600"
-                  placeholder="F.eks: MODAN - Projections"
+                  className="w-full px-4 py-3 bg-[#0a0a0a] border border-white/10 rounded-md text-white placeholder-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+                  placeholder="Prosjektnavn"
                 />
               </div>
 
               <div>
-                <label className="block text-sm mb-1" style={{ color: 'var(--text-muted)' }}>
-                  Artist (valgfritt)
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Artist
                 </label>
                 <input
                   type="text"
                   value={artist}
                   onChange={(e) => setArtist(e.target.value)}
-                  className="w-full px-3 py-2 border border-green-500 bg-black text-green-500 font-mono text-sm placeholder-green-600"
-                  placeholder="F.eks: MODAN"
+                  className="w-full px-4 py-3 bg-[#0a0a0a] border border-white/10 rounded-md text-white placeholder-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+                  placeholder="Artistnavn"
                 />
               </div>
             </div>
 
+            {/* Artwork URL */}
             <div>
-              <label className="block text-sm mb-1" style={{ color: 'var(--text-muted)' }}>
-                Bilde URL *
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Bilde URL <span className="text-red-400">*</span>
               </label>
               <input
                 type="text"
                 value={artworkUrl}
-                onChange={(e) => setArtworkUrl(e.target.value)}
+                onChange={(e) => { setArtworkUrl(e.target.value); setPreviewError(false); }}
                 required
-                className="w-full px-3 py-2 rounded text-sm"
-                style={{ 
-                  backgroundColor: 'var(--section-bg-2)', 
-                  border: '1px solid var(--border-color)',
-                  color: 'var(--text-color)'
-                }}
-                placeholder="https://..."
+                className="w-full px-4 py-3 bg-[#0a0a0a] border border-white/10 rounded-md text-white placeholder-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+                placeholder="https://example.com/image.jpg"
               />
+              {artworkUrl && (
+                <div className="mt-3">
+                  {!previewError ? (
+                    <img
+                      src={artworkUrl}
+                      alt="Preview"
+                      className="w-32 h-32 object-cover rounded-md border border-white/10"
+                      onError={() => setPreviewError(true)}
+                    />
+                  ) : (
+                    <div className="text-red-400 text-sm">Kunne ikke laste bildet</div>
+                  )}
+                </div>
+              )}
             </div>
-            {artworkUrl && (
-              <div>
-                <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
-                  Forhåndsvisning
-                </p>
-                {!previewError ? (
-                  <img
-                    src={artworkUrl}
-                    alt="Artwork preview"
-                    className="w-full rounded-lg border border-white/10 object-cover max-h-60"
-                    onError={() => setPreviewError(true)}
-                  />
-                ) : (
-                  <div className="p-3 text-xs rounded border border-red-500/30 text-red-300">
-                    Kunne ikke laste bildet. Kontroller URL.
-                  </div>
-                )}
-              </div>
-            )}
 
+            {/* Description */}
             <div>
-              <label className="block text-sm mb-1" style={{ color: 'var(--text-muted)' }}>
-                Beskrivelse (valgfritt)
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Beskrivelse
               </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 rounded text-sm"
-                style={{ 
-                  backgroundColor: 'var(--section-bg-2)', 
-                  border: '1px solid var(--border-color)',
-                  color: 'var(--text-color)'
-                }}
-                placeholder="Beskriv prosjektet..."
+                className="w-full px-4 py-3 bg-[#0a0a0a] border border-white/10 rounded-md text-white placeholder-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all resize-none"
+                placeholder="Kort beskrivelse av prosjektet..."
               />
             </div>
 
+            {/* Tags */}
             <div>
-              <label className="block text-sm mb-1" style={{ color: 'var(--text-muted)' }}>
-                Tags (kommadelt, valgfritt)
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Tags <span className="text-gray-500 text-xs">(kommaseparert)</span>
               </label>
               <input
                 type="text"
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
-                className="w-full px-3 py-2 rounded text-sm"
-                style={{ 
-                  backgroundColor: 'var(--section-bg-2)', 
-                  border: '1px solid var(--border-color)',
-                  color: 'var(--text-color)'
-                }}
+                className="w-full px-4 py-3 bg-[#0a0a0a] border border-white/10 rounded-md text-white placeholder-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
                 placeholder="ambient, miksing, mastering"
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm mb-1" style={{ color: 'var(--text-muted)' }}>
-                  Spotify URL {loadingSpotify && <span className="text-xs">(Henter metadata...)</span>}
-                </label>
-                <input
-                  type="text"
-                  value={spotifyUrl}
-                  onChange={(e) => handleSpotifyUrlChange(e.target.value)}
-                  onBlur={(e) => {
-                    // Also fetch on blur if URL is valid
-                    if (e.target.value) {
-                      handleSpotifyUrlChange(e.target.value);
-                    }
-                  }}
-                  className="w-full px-3 py-2 border border-green-500 bg-black text-green-500 font-mono text-sm placeholder-green-600"
-                  placeholder="https://open.spotify.com/track/..."
-                />
-                <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
-                  Lim inn Spotify-link for å automatisk hente bilde og info
-                </p>
-              </div>
+            {/* Media Links Section */}
+            <div className="border-t border-white/10 pt-6">
+              <h4 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">Medielenker</h4>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* YouTube URL */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    YouTube URL {loadingYoutube && <span className="text-blue-400 text-xs ml-2">Henter...</span>}
+                  </label>
+                  <input
+                    type="text"
+                    value={youtubeUrl}
+                    onChange={(e) => handleYoutubeUrlChange(e.target.value)}
+                    className="w-full px-4 py-3 bg-[#0a0a0a] border border-white/10 rounded-md text-white placeholder-gray-600 focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none transition-all"
+                    placeholder="https://www.youtube.com/watch?v=..."
+                  />
+                  {youtubeThumbnail && (
+                    <div className="mt-3 flex items-center gap-3">
+                      <img
+                        src={youtubeThumbnail}
+                        alt="YouTube thumbnail"
+                        className="w-24 h-14 object-cover rounded border border-white/10"
+                        onError={() => setYoutubeThumbnail(null)}
+                      />
+                      <span className="text-xs text-gray-500">YouTube thumbnail</span>
+                    </div>
+                  )}
+                </div>
 
-              <div>
-                <label className="block text-sm mb-1" style={{ color: 'var(--text-muted)' }}>
-                  Website URL
-                </label>
-                <input
-                  type="text"
-                  value={websiteUrl}
-                  onChange={(e) => setWebsiteUrl(e.target.value)}
-                  className="w-full px-3 py-2 border border-green-500 bg-black text-green-500 font-mono text-sm placeholder-green-600"
-                  placeholder="https://..."
-                />
-              </div>
+                {/* Spotify URL */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Spotify URL {loadingSpotify && <span className="text-green-400 text-xs ml-2">Henter...</span>}
+                  </label>
+                  <input
+                    type="text"
+                    value={spotifyUrl}
+                    onChange={(e) => handleSpotifyUrlChange(e.target.value)}
+                    className="w-full px-4 py-3 bg-[#0a0a0a] border border-white/10 rounded-md text-white placeholder-gray-600 focus:border-green-500 focus:ring-1 focus:ring-green-500 outline-none transition-all"
+                    placeholder="https://open.spotify.com/track/..."
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm mb-1" style={{ color: 'var(--text-muted)' }}>
-                  Musikk URL
-                </label>
-                <input
-                  type="text"
-                  value={musicUrl}
-                  onChange={(e) => setMusicUrl(e.target.value)}
-                  className="w-full px-3 py-2 border border-green-500 bg-black text-green-500 font-mono text-sm placeholder-green-600"
-                  placeholder="https://..."
-                />
+                {/* Website URL */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Nettside URL
+                  </label>
+                  <input
+                    type="text"
+                    value={websiteUrl}
+                    onChange={(e) => setWebsiteUrl(e.target.value)}
+                    className="w-full px-4 py-3 bg-[#0a0a0a] border border-white/10 rounded-md text-white placeholder-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+                    placeholder="https://..."
+                  />
+                </div>
+
+                {/* Music URL */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Direkte musikk-URL
+                  </label>
+                  <input
+                    type="text"
+                    value={musicUrl}
+                    onChange={(e) => setMusicUrl(e.target.value)}
+                    className="w-full px-4 py-3 bg-[#0a0a0a] border border-white/10 rounded-md text-white placeholder-gray-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all"
+                    placeholder="https://..."
+                  />
+                </div>
               </div>
             </div>
 
+            {/* Error/Success Messages */}
             {formError && (
-              <div className="text-sm text-red-400">{formError}</div>
+              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-md text-red-400 text-sm">
+                {formError}
+              </div>
             )}
             {formMessage && (
-              <div className="text-sm text-green-400">{formMessage}</div>
+              <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-md text-green-400 text-sm">
+                {formMessage}
+              </div>
             )}
 
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-2 px-4 border border-green-500 bg-black text-green-500 font-mono text-sm disabled:opacity-60 hover:bg-green-500 hover:text-black"
+              className="w-full py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
-              {submitting ? '[SAVING...]' : '[ADD PROJECT]'}
+              {submitting ? 'Lagrer...' : 'Legg til prosjekt'}
             </button>
           </form>
         </div>
@@ -360,24 +418,22 @@ export default function ProjectsTab() {
       {/* Projects List */}
       {loading ? (
         <div className="text-center py-12">
-          <div className="text-gray-400">Laster prosjekter...</div>
+          <div className="text-gray-500">Laster prosjekter...</div>
         </div>
       ) : projects.length === 0 ? (
-        <div 
-          className="p-12 text-center border border-green-500 bg-black"
-        >
-          <p className="text-gray-400">Ingen prosjekter ennå</p>
-          <p className="text-gray-500 text-sm mt-2">Klikk &quot;+ Nytt Prosjekt&quot; for å legge til</p>
+        <div className="bg-[#111] rounded-lg border border-white/10 p-12 text-center">
+          <p className="text-gray-400 mb-2">Ingen prosjekter ennå</p>
+          <p className="text-gray-600 text-sm">Klikk &quot;+ Nytt prosjekt&quot; for å legge til</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {projects.map((project) => (
             <div
               key={project.id}
-              className="overflow-hidden border border-green-500 bg-black"
+              className="bg-[#111] rounded-lg border border-white/10 overflow-hidden hover:border-white/20 transition-all group"
             >
               {/* Artwork */}
-              <div className="aspect-square relative" style={{ backgroundColor: 'var(--section-bg-2)' }}>
+              <div className="aspect-video relative bg-[#0a0a0a]">
                 {project.artworkUrl ? (
                   <img 
                     src={project.artworkUrl} 
@@ -386,7 +442,7 @@ export default function ProjectsTab() {
                   />
                 ) : (
                   <div className="flex items-center justify-center h-full">
-                    <span className="text-4xl" style={{ color: 'var(--text-muted)', opacity: 0.3 }}>
+                    <span className="text-4xl text-gray-700">
                       {project.title.charAt(0)}
                     </span>
                   </div>
@@ -394,31 +450,29 @@ export default function ProjectsTab() {
               </div>
 
               {/* Info */}
-              <div className="p-4">
-                <h3 className="font-semibold mb-1" style={{ color: 'var(--text-color)' }}>
-                  {project.title}
-                </h3>
-                {project.artist && (
-                  <p className="text-sm mb-2" style={{ color: 'var(--text-muted)' }}>
-                    {project.artist}
+              <div className="p-4 space-y-3">
+                <div>
+                  <h3 className="font-medium text-white text-lg">
+                    {project.title}
+                  </h3>
+                  {project.artist && (
+                    <p className="text-gray-500 text-sm">{project.artist}</p>
+                  )}
+                </div>
+
+                {project.description && (
+                  <p className="text-gray-400 text-sm line-clamp-2">
+                    {project.description}
                   </p>
                 )}
-                <p className="text-xs mb-3" style={{ color: 'var(--text-muted)' }}>
-                  {project.description}
-                </p>
 
                 {/* Tags */}
                 {project.tags && project.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-3">
+                  <div className="flex flex-wrap gap-1.5">
                     {project.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="text-xs px-2 py-0.5 rounded"
-                        style={{ 
-                          backgroundColor: 'var(--section-bg-2)', 
-                          color: 'var(--text-muted)',
-                          border: '1px solid var(--border-color)'
-                        }}
+                        className="text-xs px-2 py-1 rounded-full bg-white/5 text-gray-400 border border-white/10"
                       >
                         {tag}
                       </span>
@@ -427,13 +481,23 @@ export default function ProjectsTab() {
                 )}
 
                 {/* Links */}
-                <div className="flex gap-2 mb-3 text-xs">
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {(project as any).youtubeUrl && (
+                    <a 
+                      href={(project as any).youtubeUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-xs px-2 py-1 rounded bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                    >
+                      YouTube
+                    </a>
+                  )}
                   {project.spotifyUrl && (
                     <a 
                       href={project.spotifyUrl} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-green-400 hover:underline"
+                      className="text-xs px-2 py-1 rounded bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-colors"
                     >
                       Spotify
                     </a>
@@ -443,38 +507,24 @@ export default function ProjectsTab() {
                       href={project.websiteUrl} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-blue-400 hover:underline"
+                      className="text-xs px-2 py-1 rounded bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-colors"
                     >
                       Nettside
                     </a>
                   )}
-                  {project.musicUrl && !project.spotifyUrl && (
-                    <a 
-                      href={project.musicUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-purple-400 hover:underline"
-                    >
-                      Musikk
-                    </a>
-                  )}
                 </div>
 
-                <div className="text-[10px] text-gray-500">
-                  {new Date(project.createdAt).toLocaleDateString('no-NO', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                  })}
+                <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                  <span className="text-xs text-gray-600">
+                    {new Date(project.createdAt).toLocaleDateString('no-NO')}
+                  </span>
+                  <button
+                    onClick={() => handleDelete(project.id)}
+                    className="text-xs px-3 py-1.5 rounded bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                  >
+                    Slett
+                  </button>
                 </div>
-
-                {/* Delete button */}
-                <button
-                  onClick={() => handleDelete(project.id)}
-                  className="w-full py-2 px-3 border border-red-500 bg-black text-red-500 font-mono text-xs hover:bg-red-500 hover:text-black"
-                >
-                  [DELETE]
-                </button>
               </div>
             </div>
           ))}
@@ -483,4 +533,3 @@ export default function ProjectsTab() {
     </div>
   );
 }
-

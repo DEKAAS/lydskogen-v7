@@ -34,48 +34,57 @@ export default function SettingsTab() {
       });
       
       if (res.ok) {
-        const data = await res.json();
         setContent(prev => ({ ...prev, [key]: value }));
         setSuccess(key);
         setTimeout(() => setSuccess(null), 3000);
       } else {
         const errorData = await res.json().catch(() => ({}));
-        console.error('Save error details:', errorData);
-        alert(`Feil ved lagring: ${errorData.error || 'Ukjent feil'} (Sjekk om databasetabellen 'site_content' eksisterer)`);
+        alert(`Feil ved lagring: ${errorData.error || 'Ukjent feil'}`);
       }
     } catch (error) {
       console.error('Error saving content:', error);
-      alert('Feil ved lagring: Kunne ikke koble til serveren');
+      alert('Feil ved lagring');
     } finally {
       setSaving(null);
     }
   };
 
   if (loading) {
-    return <div className="text-white p-8">Laster innstillinger...</div>;
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-gray-500">Laster innstillinger...</div>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-3xl font-bold text-white mb-2">Innstillinger</h2>
-        <p className="text-gray-400">Administrer nettsidens tekster og innhold</p>
+      {/* Header */}
+      <div className="pb-6 border-b border-white/10">
+        <h2 className="text-2xl font-semibold text-white mb-1">Innstillinger</h2>
+        <p className="text-gray-500 text-sm">Administrer nettsidens tekster og innhold</p>
       </div>
 
-      <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
-        <h3 className="text-xl font-semibold text-white mb-4">Forside (Hero)</h3>
+      {/* Hero Section Settings */}
+      <div className="bg-[#111] rounded-lg border border-white/10 p-6">
+        <h3 className="text-lg font-medium text-white mb-4">Forside (Hero)</h3>
         
         <div className="space-y-4">
           <div>
-            <label className="block text-gray-300 mb-2 font-medium">Tagline / Undertittel</label>
-            <p className="text-sm text-gray-500 mb-2">Teksten som vises under &quot;LYDSKOG&quot; på forsiden.</p>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Tagline / Undertittel
+            </label>
+            <p className="text-xs text-gray-500 mb-3">
+              Teksten som vises under &quot;LYDSKOG&quot; på forsiden.
+            </p>
             <textarea
               value={content['hero_tagline'] || ''}
               onChange={(e) => setContent(prev => ({ ...prev, 'hero_tagline': e.target.value }))}
               rows={4}
-              className="w-full p-4 bg-black/50 text-white rounded border border-white/20 focus:border-accent-green focus:ring-1 focus:ring-accent-green transition-colors"
+              className="w-full px-4 py-3 bg-[#0a0a0a] border border-white/10 rounded-md text-white placeholder-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all resize-none"
+              placeholder="Skriv inn tagline..."
             />
-            <div className="flex justify-end mt-2">
+            <div className="flex justify-end mt-3">
               <button
                 onClick={() => handleSave(
                   'hero_tagline', 
@@ -83,14 +92,14 @@ export default function SettingsTab() {
                   'hero', 
                   'Hovedtekst under tittelen på forsiden'
                 )}
-                disabled={saving === 'hero_tagline' || success === 'hero_tagline'}
-                className={`px-4 py-2 font-semibold rounded transition-all ${
+                disabled={saving === 'hero_tagline'}
+                className={`px-5 py-2.5 rounded-md text-sm font-medium transition-all ${
                   success === 'hero_tagline' 
                     ? 'bg-green-600 text-white'
-                    : 'bg-accent-green text-base-dark hover:bg-accent-green/80'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
                 } disabled:opacity-50`}
               >
-                {saving === 'hero_tagline' ? 'Lagrer...' : success === 'hero_tagline' ? 'Lagret!' : 'Lagre endringer'}
+                {saving === 'hero_tagline' ? 'Lagrer...' : success === 'hero_tagline' ? 'Lagret!' : 'Lagre'}
               </button>
             </div>
           </div>
@@ -99,4 +108,3 @@ export default function SettingsTab() {
     </div>
   );
 }
-

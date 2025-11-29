@@ -10,48 +10,11 @@ interface AdminNavbarProps {
 }
 
 const navItems = [
-  { 
-    id: 'overview', 
-    label: 'Oversikt', 
-    icon: '📊',
-    description: 'Dashboard oversikt'
-  },
-  { 
-    id: 'projects', 
-    label: 'Portfolio', 
-    icon: '🎨',
-    description: 'Administrer portfolio-prosjekter'
-  },
-  { 
-    id: 'content', 
-    label: 'Innhold', 
-    icon: '📝',
-    description: 'Administrer musikk og artwork'
-  },
-  { 
-    id: 'orders', 
-    label: 'Bestillinger', 
-    icon: '🛍️',
-    description: 'Salg og bestillinger'
-  },
-  { 
-    id: 'analytics', 
-    label: 'Analyse', 
-    icon: '📈',
-    description: 'Brukerstatistikk og rapporter'
-  },
-  { 
-    id: 'musikkproduksjon', 
-    label: 'Musikkproduksjon', 
-    icon: '🎵',
-    description: 'Last opp demo-låter per sjanger'
-  },
-  { 
-    id: 'settings', 
-    label: 'Innstillinger', 
-    icon: '⚙️',
-    description: 'Sideinnstillinger og innhold'
-  }
+  { id: 'overview', label: 'Oversikt' },
+  { id: 'projects', label: 'Prosjekter' },
+  { id: 'musikkproduksjon', label: 'Musikk' },
+  { id: 'analytics', label: 'Statistikk' },
+  { id: 'settings', label: 'Innstillinger' }
 ]
 
 export default function AdminNavbar({ activeTab, onTabChange }: AdminNavbarProps) {
@@ -64,76 +27,76 @@ export default function AdminNavbar({ activeTab, onTabChange }: AdminNavbarProps
   }
 
   return (
-    <nav className="bg-black border-b border-green-500 sticky top-0 z-40">
+    <nav className="bg-[#0a0a0a] border-b border-white/10 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           
           {/* Logo / Brand */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <button 
               onClick={() => router.push('/')}
-              className="text-xl font-mono font-bold text-green-500 hover:text-green-400"
+              className="text-lg font-semibold text-white hover:text-gray-300 transition-colors"
             >
-              <span>LYDSKOG</span>
-              <span className="text-sm text-green-600 ml-2">[ADMIN]</span>
+              Lydskog
             </button>
+            <span className="text-xs text-gray-500 bg-white/5 px-2 py-1 rounded">Admin</span>
           </div>
 
           {/* Main Navigation - Desktop */}
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden lg:flex items-center gap-1">
             {navItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => onTabChange(item.id)}
-                className={`px-4 py-2 font-mono text-sm border relative ${
+                className={`px-4 py-2 text-sm rounded-md transition-all ${
                   activeTab === item.id
-                    ? 'bg-green-500 text-black border-green-500'
-                    : 'bg-black text-green-500 border-green-500 hover:bg-green-900 hover:text-green-400'
+                    ? 'bg-white/10 text-white'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
               >
-                <span className="flex items-center gap-2">
-                  <span>{item.icon}</span>
-                  <span>{item.label.toUpperCase()}</span>
-                </span>
+                {item.label}
               </button>
             ))}
           </div>
 
           {/* User Menu */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden text-gray-300 hover:text-white p-2"
+              className="lg:hidden text-gray-400 hover:text-white p-2 rounded-md hover:bg-white/5 transition-colors"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {isMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
               </svg>
             </button>
 
             {/* User Info */}
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
-                <div className="text-sm font-mono font-medium text-green-500">
-                  {session?.user?.name?.toUpperCase()}
+                <div className="text-sm font-medium text-white">
+                  {session?.user?.name}
                 </div>
-                <div className="text-xs text-green-600">
-                  [ADMIN]
+                <div className="text-xs text-gray-500">
+                  Administrator
                 </div>
               </div>
               
               {/* Profile Avatar */}
-              <div className="w-10 h-10 bg-green-500 border border-green-500 flex items-center justify-center text-black font-mono font-bold">
+              <div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
                 {session?.user?.name?.charAt(0).toUpperCase() || 'A'}
               </div>
               
               {/* Logout Button */}
               <button
                 onClick={handleLogout}
-                className="text-green-500 hover:text-green-400 border border-green-500 px-3 py-2 font-mono text-sm"
-                title="Logg ut"
+                className="text-gray-400 hover:text-white text-sm px-3 py-2 rounded-md hover:bg-white/5 transition-colors hidden sm:block"
               >
-                [EXIT]
+                Logg ut
               </button>
             </div>
           </div>
@@ -141,7 +104,7 @@ export default function AdminNavbar({ activeTab, onTabChange }: AdminNavbarProps
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden pb-4 border-t border-green-500 mt-2 pt-4">
+          <div className="lg:hidden pb-4 pt-2 border-t border-white/5 mt-2">
             <div className="grid grid-cols-2 gap-2">
               {navItems.map((item) => (
                 <button
@@ -150,21 +113,24 @@ export default function AdminNavbar({ activeTab, onTabChange }: AdminNavbarProps
                     onTabChange(item.id)
                     setIsMenuOpen(false)
                   }}
-                  className={`p-3 border text-left font-mono text-sm ${
+                  className={`p-3 text-left text-sm rounded-md transition-all ${
                     activeTab === item.id
-                      ? 'bg-green-500 text-black border-green-500'
-                      : 'bg-black text-green-500 border-green-500 hover:bg-green-900'
+                      ? 'bg-white/10 text-white'
+                      : 'text-gray-400 hover:bg-white/5 hover:text-white'
                   }`}
                 >
-                  <div className="flex items-center gap-2">
-                    <span>{item.icon}</span>
-                    <div>
-                      <div className="font-bold">{item.label.toUpperCase()}</div>
-                    </div>
-                  </div>
+                  {item.label}
                 </button>
               ))}
             </div>
+            
+            {/* Mobile Logout */}
+            <button
+              onClick={handleLogout}
+              className="w-full mt-3 p-3 text-left text-sm text-red-400 hover:bg-red-500/10 rounded-md transition-colors"
+            >
+              Logg ut
+            </button>
           </div>
         )}
       </div>

@@ -2,11 +2,12 @@
 
 import { useEffect, useRef, useCallback } from 'react'
 import { usePathname } from 'next/navigation'
+import { v4 as uuidv4 } from 'uuid'
 
 let sessionId: string | null = null
 let heartbeatInterval: NodeJS.Timeout | null = null
 
-// Generate or retrieve session ID
+// Generate or retrieve session ID (as proper UUID)
 function getSessionId(): string {
   if (typeof window === 'undefined') return ''
   
@@ -15,8 +16,8 @@ function getSessionId(): string {
     sessionId = sessionStorage.getItem('analytics_session_id')
     
     if (!sessionId) {
-      // Generate new session ID
-      sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      // Generate new session ID as proper UUID
+      sessionId = uuidv4()
       sessionStorage.setItem('analytics_session_id', sessionId)
     }
   }

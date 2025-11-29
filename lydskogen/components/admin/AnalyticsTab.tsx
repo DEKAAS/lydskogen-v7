@@ -32,119 +32,101 @@ export default function AnalyticsTab() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="border border-green-500 p-8 text-center">
-          <div className="text-green-500 font-mono">LOADING ANALYTICS...</div>
-        </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-gray-500">Laster statistikk...</div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex justify-between items-center border-b border-green-500 pb-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-white/10">
         <div>
-          <h2 className="text-2xl md:text-3xl font-mono font-bold text-green-500 mb-2">
-            ANALYTICS & STATISTIKK
-          </h2>
-          <p className="text-green-600 font-mono text-sm">
-            Detaljert analyse av brukeratferd og trafikk
-          </p>
+          <h2 className="text-2xl font-semibold text-white mb-1">Statistikk</h2>
+          <p className="text-gray-500 text-sm">Detaljert analyse av trafikk og brukeratferd</p>
         </div>
         
         <button 
           onClick={fetchAnalytics}
           disabled={loading}
-          className="px-4 py-2 border border-green-500 bg-black text-green-500 font-mono text-sm hover:bg-green-500 hover:text-black disabled:opacity-50"
+          className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:opacity-50 transition-all"
         >
-          {loading ? '[UPDATING...]' : '[REFRESH]'}
+          {loading ? 'Oppdaterer...' : 'Oppdater'}
         </button>
       </div>
 
       {/* Real-time Analytics */}
-      <div>
-        <RealTimeAnalytics />
-      </div>
+      <RealTimeAnalytics />
 
       {/* Recent Visits Log */}
-      <div className="mt-8">
+      <div className="bg-[#111] rounded-lg border border-white/10 p-6">
+        <h3 className="text-lg font-medium text-white mb-4">Siste besøk</h3>
         <RecentVisitsTable visits={stats?.recentVisits || []} />
       </div>
 
-      {/* Device & Geographic Stats */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="border border-green-500 bg-black p-4">
-          <h3 className="text-lg font-mono font-bold text-green-500 mb-4 flex items-center gap-2">
-            <span className="w-2 h-2 bg-green-500"></span>
-            ENHETSSTATISTIKK
-          </h3>
-          <div className="space-y-2">
-            {stats?.deviceStats.map((device, i) => (
-              <div key={i} className="flex items-center justify-between p-2 border border-green-500 bg-black">
-                <span className="text-green-400 font-mono text-sm capitalize">{device.device}</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-green-500 font-mono font-bold">{device.count}</span>
-                  <span className="text-green-600 font-mono text-xs">({device.percentage}%)</span>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Device Stats */}
+        <div className="bg-[#111] rounded-lg border border-white/10 p-6">
+          <h3 className="text-lg font-medium text-white mb-4">Enheter</h3>
+          <div className="space-y-3">
+            {stats?.deviceStats && stats.deviceStats.length > 0 ? (
+              stats.deviceStats.map((device, i) => (
+                <div key={i} className="flex items-center justify-between p-3 bg-[#0a0a0a] rounded-md border border-white/5">
+                  <span className="text-gray-300 text-sm capitalize">{device.device}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-white font-medium">{device.count}</span>
+                    <span className="text-gray-500 text-xs">{device.percentage}%</span>
+                  </div>
                 </div>
-              </div>
-            )) || (
-              <div className="text-green-600 font-mono text-center py-3 text-sm">
-                NO DATA AVAILABLE
-              </div>
+              ))
+            ) : (
+              <div className="text-gray-600 text-center py-6 text-sm">Ingen data</div>
             )}
           </div>
         </div>
         
-        <div className="border border-green-500 bg-black p-4">
-          <h3 className="text-lg font-mono font-bold text-green-500 mb-4 flex items-center gap-2">
-            <span className="w-2 h-2 bg-green-500"></span>
-            GEOGRAFISK FORDELING
-          </h3>
-          <div className="space-y-2">
-            {stats?.geographicStats.slice(0, 5).map((geo, i) => (
-              <div key={i} className="flex items-center justify-between p-2 border border-green-500 bg-black">
-                <span className="text-green-400 font-mono text-sm">{geo.country}</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-green-500 font-mono font-bold">{geo.count}</span>
-                  <span className="text-green-600 font-mono text-xs">({geo.percentage}%)</span>
+        {/* Geographic Stats */}
+        <div className="bg-[#111] rounded-lg border border-white/10 p-6">
+          <h3 className="text-lg font-medium text-white mb-4">Geografi</h3>
+          <div className="space-y-3">
+            {stats?.geographicStats && stats.geographicStats.length > 0 ? (
+              stats.geographicStats.slice(0, 5).map((geo, i) => (
+                <div key={i} className="flex items-center justify-between p-3 bg-[#0a0a0a] rounded-md border border-white/5">
+                  <span className="text-gray-300 text-sm">{geo.country}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-white font-medium">{geo.count}</span>
+                    <span className="text-gray-500 text-xs">{geo.percentage}%</span>
+                  </div>
                 </div>
-              </div>
-            )) || (
-              <div className="text-green-600 font-mono text-center py-3 text-sm">
-                NO DATA AVAILABLE
-              </div>
+              ))
+            ) : (
+              <div className="text-gray-600 text-center py-6 text-sm">Ingen data</div>
             )}
           </div>
         </div>
       </div>
 
-      {/* Analytics Export & Event Tracking */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Analytics Export */}
-        <div>
-          <AnalyticsExport />
-        </div>
+      {/* Export & Events */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <AnalyticsExport />
 
-        {/* Event Tracking */}
-        <div className="border border-green-500 bg-black p-4">
-          <h3 className="text-lg font-mono font-bold text-green-500 mb-4 flex items-center gap-2">
-            <span className="w-2 h-2 bg-green-500"></span>
-            TOP EVENTS
-          </h3>
-          <div className="space-y-2">
-            {stats?.topEvents.map((event, i) => (
-              <div key={i} className="flex items-center justify-between p-2 border border-green-500 bg-black">
-                <span className="text-green-400 font-mono text-sm truncate">{event.event}</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-green-500 font-mono font-bold">{event.count}</span>
-                  <span className="text-green-600 font-mono text-xs">({event.percentage}%)</span>
+        <div className="bg-[#111] rounded-lg border border-white/10 p-6">
+          <h3 className="text-lg font-medium text-white mb-4">Topp hendelser</h3>
+          <div className="space-y-3">
+            {stats?.topEvents && stats.topEvents.length > 0 ? (
+              stats.topEvents.map((event, i) => (
+                <div key={i} className="flex items-center justify-between p-3 bg-[#0a0a0a] rounded-md border border-white/5">
+                  <span className="text-gray-300 text-sm truncate">{event.event}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-white font-medium">{event.count}</span>
+                    <span className="text-gray-500 text-xs">{event.percentage}%</span>
+                  </div>
                 </div>
-              </div>
-            )) || (
-              <div className="text-green-600 font-mono text-center py-3 text-sm">
-                NO EVENT DATA
-              </div>
+              ))
+            ) : (
+              <div className="text-gray-600 text-center py-6 text-sm">Ingen hendelser</div>
             )}
           </div>
         </div>

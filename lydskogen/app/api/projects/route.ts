@@ -10,6 +10,7 @@ interface PortfolioProjectRow {
   spotify_url: string | null
   website_url: string | null
   music_url: string | null
+  youtube_url: string | null
   tags: string[] | null
   created_at: string
   updated_at: string
@@ -24,6 +25,7 @@ const mapProject = (row: PortfolioProjectRow) => ({
   spotifyUrl: row.spotify_url ?? undefined,
   websiteUrl: row.website_url ?? undefined,
   musicUrl: row.music_url ?? undefined,
+  youtubeUrl: row.youtube_url ?? undefined,
   tags: row.tags ?? [],
   createdAt: row.created_at,
   updatedAt: row.updated_at
@@ -74,6 +76,7 @@ export async function POST(request: Request) {
         spotify_url: body.spotifyUrl || null,
         website_url: body.websiteUrl || null,
         music_url: body.musicUrl || null,
+        youtube_url: body.youtubeUrl || null,
         tags: Array.isArray(body.tags) ? body.tags : []
       })
       .select()
@@ -104,6 +107,7 @@ export async function PUT(request: Request) {
       spotify_url: body.spotifyUrl ?? null,
       website_url: body.websiteUrl ?? null,
       music_url: body.musicUrl ?? null,
+      youtube_url: body.youtubeUrl ?? null,
       tags: Array.isArray(body.tags) ? body.tags : undefined
     }
 
