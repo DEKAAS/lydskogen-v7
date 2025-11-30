@@ -4,8 +4,7 @@ import "./globals.css";
 import AuthProvider from "@/components/AuthProvider";
 import AnalyticsProvider from "@/components/AnalyticsProvider";
 import { CartProvider } from "@/contexts/CartContext";
-import ParticleOverlay from "@/components/ParticleOverlay";
-import NoiseOverlay from "@/components/NoiseOverlay";
+import ClientOverlays from "@/components/ClientOverlays";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -69,8 +68,7 @@ export default function RootLayout({
   return (
     <html lang="no" className="scroll-smooth">
       <body className={`${inter.variable} ${spaceMono.variable} font-sans antialiased text-white`}>
-        <NoiseOverlay />
-        <ParticleOverlay />
+        <ClientOverlays />
         <CartProvider>
           <AuthProvider>
             <AnalyticsProvider>

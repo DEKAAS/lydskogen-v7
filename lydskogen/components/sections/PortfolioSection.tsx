@@ -38,7 +38,7 @@ const CREDIT_LABELS: Record<string, string> = {
   composed: 'Composed',
 };
 
-// Helper to extract YouTube video ID from various URL formats
+// Helper to extract YouTube video ID
 function getYouTubeVideoId(url: string): string | null {
   if (!url) return null;
   const patterns = [
@@ -47,7 +47,28 @@ function getYouTubeVideoId(url: string): string | null {
   ];
   for (const pattern of patterns) {
     const match = url.match(pattern);
-    if (match) return match[1];
+    if (match && match[1]) return match[1];
+  }
+  return null;
+}
+
+// Helper to extract Spotify ID
+function getSpotifyEmbedUrl(url: string): string | null {
+  if (!url) return null;
+  // Handle full URL or URI
+  try {
+    const urlObj = new URL(url);
+    const pathParts = urlObj.pathname.split('/').filter(Boolean);
+    // Check for track, album, playlist
+    if (['track', 'album', 'playlist', 'artist'].includes(pathParts[0]) && pathParts[1]) {
+       return `https://open.spotify.com/embed/${pathParts[0]}/${pathParts[1]}?utm_source=generator&theme=0`;
+    }
+  } catch (e) {
+    // Try regex fallback for non-standard URLs
+    const match = url.match(/(track|album|playlist|artist)\/([a-zA-Z0-9]+)/);
+    if (match && match[1] && match[2]) {
+        return `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0`;
+    }
   }
   return null;
 }
@@ -120,6 +141,8 @@ export default function ProjectsSection() {
         <div className="space-y-2">
           {projects.map((project, index) => {
             const isExpanded = expandedId === project.id;
+            const spotifyEmbedUrl = project.spotifyUrl ? getSpotifyEmbedUrl(project.spotifyUrl) : null;
+            const youtubeId = project.youtubeUrl ? getYouTubeVideoId(project.youtubeUrl) : null;
             
             return (
               <motion.div
@@ -129,7 +152,7 @@ export default function ProjectsSection() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
                 className={cn(
-                  "group relative border border-transparent rounded-sm transition-all duration-300 overflow-hidden",
+                  "group relative border border-transparent rounded-sm transition-all duration-300 overflow-hidden will-change-transform",
                   isExpanded 
                     ? "bg-white/5 border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)]" 
                     : "hover:bg-white/5 hover:border-white/5 border-b-white/5"
@@ -217,7 +240,7 @@ export default function ProjectsSection() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                      transition={{ duration: 0.3, ease: "circOut" }}
                       className="overflow-hidden bg-black/20"
                     >
                       <div className="p-4 md:p-8 border-t border-white/5 grid md:grid-cols-12 gap-8">
@@ -297,10 +320,10 @@ export default function ProjectsSection() {
                           {/* Media Embeds (YouTube / Spotify) */}
                           <div className="grid gap-4">
                             {/* YouTube Embed */}
-                            {project.youtubeUrl && getYouTubeVideoId(project.youtubeUrl) && (
+                            {youtubeId && (
                                 <div className="aspect-video w-full max-w-2xl bg-black rounded-sm overflow-hidden border border-white/10">
                                     <iframe
-                                      src={`https://www.youtube.com/embed/${getYouTubeVideoId(project.youtubeUrl)}`}
+                                      src={`https://www.youtube.com/embed/${youtubeId}`}
                                       title={project.title}
                                       width="100%"
                                       height="100%"
@@ -313,11 +336,11 @@ export default function ProjectsSection() {
                             )}
 
                             {/* Spotify Embed */}
-                            {project.spotifyUrl && (
+                            {spotifyEmbedUrl && (
                                 <div className="w-full max-w-2xl">
                                      <iframe 
                                         style={{ borderRadius: '12px' }} 
-                                        src={`https://open.spotify.com/embed/track/${project.spotifyUrl.split('/').pop()?.split('?')[0]}?utm_source=generator&theme=0`} 
+                                        src={spotifyEmbedUrl} 
                                         width="100%" 
                                         height="152" 
                                         frameBorder="0" 

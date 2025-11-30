@@ -1,7 +1,8 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
+import { Play, Pause } from 'lucide-react';
 
 interface DemoTrack {
   id: string;
@@ -10,135 +11,164 @@ interface DemoTrack {
   audioUrl: string;
   description?: string;
   duration?: string;
+  bpm?: number;
 }
 
 // Default genres structure
 const defaultGenres = [
-  { id: 'ambient', name: 'AMBIENT', bpm: 80, color: 'bg-emerald-500' },
-  { id: 'hiphop', name: 'HIP_HOP', bpm: 90, color: 'bg-yellow-500' },
-  { id: 'lofi', name: 'LO_FI', bpm: 75, color: 'bg-purple-500' },
-  { id: 'soundscape', name: 'SOUNDSCAPE', bpm: 60, color: 'bg-blue-500' }
+  { id: 'ambient', name: 'AMBIENT', bpm: 80, color: 'bg-emerald-500', gradient: 'from-emerald-500/20 to-emerald-900/10' },
+  { id: 'hiphop', name: 'HIP_HOP', bpm: 90, color: 'bg-yellow-500', gradient: 'from-yellow-500/20 to-yellow-900/10' },
+  { id: 'lofi', name: 'LO_FI', bpm: 75, color: 'bg-purple-500', gradient: 'from-purple-500/20 to-purple-900/10' },
+  { id: 'soundscape', name: 'SOUNDSCAPE', bpm: 60, color: 'bg-blue-500', gradient: 'from-blue-500/20 to-blue-900/10' }
 ];
 
-const SequencerRow = ({ genre, isActive, isPlaying, onClick }: { genre: any, isActive: boolean, isPlaying: boolean, onClick: () => void }) => {
-  return (
-    <div 
-      onClick={onClick}
-      className={`relative flex items-center gap-4 p-4 border border-white/5 hover:bg-white/5 transition-colors cursor-pointer group ${isActive ? 'bg-white/5 border-l-2 border-l-accent-green' : ''}`}
-    >
-      {/* Track Info */}
-      <div className="w-24 md:w-32 flex-shrink-0">
-        <div className={`font-mono text-sm font-bold ${isActive ? 'text-white' : 'text-gray-500 group-hover:text-gray-300'}`}>
-          {genre.name}
-        </div>
-        <div className="font-mono text-[10px] text-gray-600 flex items-center gap-2">
-            {genre.bpm} BPM
-            {isActive && isPlaying && <span className="w-1.5 h-1.5 rounded-full bg-accent-green animate-pulse"/>}
-        </div>
-      </div>
-
-      {/* Steps Grid */}
-      <div className="flex-1 flex gap-1 h-8 items-center">
-        {[...Array(16)].map((_, i) => (
-          <div 
-            key={i}
-            className={`flex-1 h-full rounded-sm transition-all duration-300 
-              ${i % 4 === 0 ? 'w-1.5' : 'w-1'} 
-              ${isActive && Math.random() > 0.5 ? genre.color : 'bg-[#1a1c1a]'} 
-              ${isActive ? 'opacity-80' : 'opacity-30'}
-              ${i >= 8 ? 'hidden md:block' : ''} // Hide steps 8-15 on mobile
-            `}
-          />
-        ))}
-      </div>
-    </div>
-  );
+const formatTime = (seconds: number): string => {
+  if (isNaN(seconds)) return '0:00';
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
 export default function AudioDemosSection() {
-  const [genres, setGenres] = useState<any[]>(defaultGenres);
-  const [activeGenre, setActiveGenre] = useState(defaultGenres[0].id);
+  const [tracks, setTracks] = useState<any[]>([]);
+  const [activeTrack, setActiveTrack] = useState<any | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [backgrounds, setBackgrounds] = useState<Record<string, string>>({});
+  
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const progressBarRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({ email: '', description: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    audioRef.current = new Audio();
     
+    // Fetch backgrounds first
+    fetch('/api/genres/backgrounds')
+      .then(res => res.json())
+      .then(data => {
+        setBackgrounds(data.backgrounds || {});
+      })
+      .catch(err => console.error('Failed to load backgrounds:', err));
+
     // Fetch tracks from API
     fetch('/api/music')
       .then(res => res.json())
       .then(data => {
-        const tracks: DemoTrack[] = data.music || [];
+        const fetchedTracks: DemoTrack[] = data.music || [];
         
-        // Update genres with audio URLs from fetched tracks
-        const updatedGenres = defaultGenres.map(genre => {
-          // Find a track for this genre
-          const track = tracks.find(t => t.genre === genre.id);
+        // Map tracks to include genre info from defaults
+        const enrichedTracks = fetchedTracks.map(track => {
+          const genreInfo = defaultGenres.find(g => g.id === track.genre);
           return {
-            ...genre,
-            audioUrl: track ? track.audioUrl : null, // Use track URL if found
-            trackTitle: track ? track.title : null
+            ...track,
+            genreName: genreInfo?.name || track.genre.toUpperCase(),
+            genreBpm: genreInfo?.bpm || track.bpm || 0,
+            genreColor: genreInfo?.color || 'bg-gray-500',
+            genreGradient: genreInfo?.gradient || 'from-gray-500/20 to-gray-900/10'
           };
         });
         
-        setGenres(updatedGenres);
+        setTracks(enrichedTracks);
+        
+        // Set first track as active if available
+        if (enrichedTracks.length > 0 && !activeTrack) {
+          setActiveTrack(enrichedTracks[0]);
+        }
       })
       .catch(err => console.error('Failed to load demo tracks:', err));
 
+    // Initialize audio element
+    audioRef.current = new Audio();
+
     return () => {
-        if (audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current = null;
-        }
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
     };
   }, []);
 
   useEffect(() => {
-      if (!audioRef.current) return;
-      
-      const genre = genres.find(g => g.id === activeGenre);
-      if (genre && genre.audioUrl) {
-          audioRef.current.src = genre.audioUrl;
-          audioRef.current.load(); // Ensure new source is loaded
-      } else {
-          // No audio for this genre
-          audioRef.current.removeAttribute('src');
-      }
-      
+    if (!audioRef.current || !activeTrack?.audioUrl) return;
+
+    const audio = audioRef.current;
+    
+    // Update audio source
+    audio.src = activeTrack.audioUrl;
+    audio.load();
+
+    // Event listeners
+    const updateTime = () => setCurrentTime(audio.currentTime);
+    const updateDuration = () => setDuration(audio.duration);
+    const handleEnded = () => {
       setIsPlaying(false);
-      
-  }, [activeGenre, genres]); // Re-run when activeGenre changes OR when genres (and audioUrls) are loaded
+      setCurrentTime(0);
+    };
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+
+    audio.addEventListener('timeupdate', updateTime);
+    audio.addEventListener('loadedmetadata', updateDuration);
+    audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('pause', handlePause);
+
+    return () => {
+      audio.removeEventListener('timeupdate', updateTime);
+      audio.removeEventListener('loadedmetadata', updateDuration);
+      audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('pause', handlePause);
+    };
+  }, [activeTrack]);
+
+  useEffect(() => {
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.play().catch(e => {
+        console.error("Audio play failed:", e);
+        setIsPlaying(false);
+      });
+    } else {
+      audioRef.current.pause();
+    }
+  }, [isPlaying]);
 
   const togglePlay = () => {
-      if (!audioRef.current) return;
-      
-      const genre = genres.find(g => g.id === activeGenre);
-      if (!genre?.audioUrl) {
-          alert('Ingen demo lastet opp for denne sjangeren ennå.');
-          return;
-      }
-
-      if (isPlaying) {
-          audioRef.current.pause();
-          setIsPlaying(false);
-      } else {
-          audioRef.current.play()
-            .then(() => setIsPlaying(true))
-            .catch(e => {
-                console.error("Audio play failed:", e);
-                setIsPlaying(false);
-            });
-          
-          // Auto-stop when ended
-          audioRef.current.onended = () => setIsPlaying(false);
-      }
+    if (!activeTrack?.audioUrl) {
+      alert('Ingen demo lastet opp for dette sporet ennå.');
+      return;
+    }
+    setIsPlaying(!isPlaying);
   };
-  
+
+  const selectTrack = (track: any) => {
+    if (activeTrack?.id === track.id && isPlaying) {
+      setIsPlaying(false);
+    }
+    setActiveTrack(track);
+    setCurrentTime(0);
+  };
+
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!audioRef.current || !progressBarRef.current || !duration) return;
+    
+    const rect = progressBarRef.current.getBoundingClientRect();
+    const percent = (e.clientX - rect.left) / rect.width;
+    const newTime = percent * duration;
+    
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
+  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -147,29 +177,30 @@ export default function AudioDemosSection() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            name: 'Produksjon Forespørsel',
-            email: formData.email,
-            type: `Produksjon: ${genres.find(g => g.id === activeGenre)?.name}`,
-            message: formData.description,
-            source: 'AudioDemosSection',
-            subject: `Bestilling Produksjon`
+          name: 'Produksjon Forespørsel',
+          email: formData.email,
+          type: `Produksjon: ${activeTrack?.genreName || 'Generell'}`,
+          message: formData.description,
+          source: 'AudioDemosSection',
+          subject: `Bestilling Produksjon`
         })
       });
       if (response.ok) {
-          alert('Takk! Din forespørsel er sendt.');
-          setShowModal(false);
-          setFormData({ email: '', description: '' });
+        alert('Takk! Din forespørsel er sendt.');
+        setShowModal(false);
+        setFormData({ email: '', description: '' });
       } else {
-          alert('Feil ved sending.');
+        alert('Feil ved sending.');
       }
     } catch {
-        alert('Feil ved sending.');
+      alert('Feil ved sending.');
     } finally {
-        setIsSubmitting(false);
+      setIsSubmitting(false);
     }
   };
 
-  const currentGenre = genres.find(g => g.id === activeGenre);
+  // Get background image for current track's genre
+  const currentBgImage = activeTrack ? backgrounds[activeTrack.genre] : null;
 
   return (
     <section id="audio-demos" className="py-12 md:py-24 bg-[#050605] relative border-b border-white/5">
@@ -180,12 +211,12 @@ export default function AudioDemosSection() {
           [02.5] Showcase — Lydproduksjon
         </div>
 
-        <div className="grid lg:grid-cols-12 gap-12">
+        <div className="grid lg:grid-cols-3 gap-8 md:gap-12">
           
-          {/* Left: Info & Player Controls */}
-          <div className="lg:col-span-4 space-y-8">
+          {/* Left: Track List */}
+          <div className="lg:col-span-1 space-y-6">
             <div>
-              <h2 className="text-3xl md:text-5xl font-mono font-bold text-white mb-6 tracking-tighter">
+              <h2 className="text-3xl md:text-4xl font-mono font-bold text-white mb-4 tracking-tighter">
                 HØR PÅ VÅRE<br/>DEMOER
               </h2>
               <p className="text-gray-400 text-sm md:text-base font-light leading-relaxed">
@@ -193,140 +224,268 @@ export default function AudioDemosSection() {
               </p>
             </div>
 
-            <div className="p-6 border border-white/10 bg-white/5 rounded-lg backdrop-blur-sm">
-              <h3 className="font-mono text-white text-sm mb-4 flex justify-between items-center">
-                  <span>NOW_PLAYING</span>
-                  {isPlaying && <span className="text-accent-green text-[10px] animate-pulse">● LIVE</span>}
-              </h3>
-              
-              <div className="space-y-4 font-mono text-xs">
-                <div className="flex justify-between border-b border-white/5 pb-2">
-                  <span className="text-gray-500">SPOR</span>
-                  <span className="text-accent-green font-bold truncate pl-4">
-                    {currentGenre?.trackTitle || currentGenre?.name || 'IKKE VALGT'}
-                  </span>
-                </div>
-                <div className="flex justify-between border-b border-white/5 pb-2">
-                  <span className="text-gray-500">TEMPO</span>
-                  <span className="text-white">{currentGenre?.bpm} BPM</span>
-                </div>
-                <div className="flex justify-between border-b border-white/5 pb-2">
-                  <span className="text-gray-500">STATUS</span>
-                  <span className={currentGenre?.audioUrl ? "text-white" : "text-gray-600"}>
-                    {currentGenre?.audioUrl ? 'KLAR TIL AVSPILLING' : 'INGEN LYDFIL'}
-                  </span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 mt-6">
-                  <button 
-                    onClick={togglePlay}
-                    disabled={!currentGenre?.audioUrl}
-                    className={`py-3 font-mono font-bold text-sm border transition-all ${
-                        isPlaying 
-                        ? 'border-accent-green text-accent-green bg-accent-green/10' 
-                        : !currentGenre?.audioUrl
-                            ? 'border-gray-800 text-gray-600 cursor-not-allowed'
-                            : 'border-white/20 text-white hover:bg-white/10'
-                    }`}
+            {/* Track List */}
+            <div className="space-y-2">
+              {mounted && tracks.length > 0 ? (
+                tracks.map((track) => (
+                  <div
+                    key={track.id}
+                    onClick={() => selectTrack(track)}
+                    className={`
+                      p-4 border rounded-sm cursor-pointer transition-all
+                      ${activeTrack?.id === track.id
+                        ? 'border-accent-green bg-accent-green/5 shadow-[0_0_20px_rgba(132,140,114,0.1)]'
+                        : 'border-white/5 hover:border-white/10 hover:bg-white/5'
+                      }
+                    `}
                   >
-                    {isPlaying ? 'PAUSE ||' : 'PLAY ▶'}
-                  </button>
-                  <button 
-                    onClick={() => setShowModal(true)}
-                    className="bg-accent-green text-black font-mono font-bold py-3 text-sm hover:bg-white transition-colors"
-                  >
-                    BESTILL
-                  </button>
-              </div>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="font-mono text-sm font-bold text-white mb-1 truncate">
+                          {track.title || track.genreName}
+                        </div>
+                        <div className="flex items-center gap-3 text-xs text-gray-400 font-mono">
+                          <span className="text-accent-green">{track.genreName}</span>
+                          {track.genreBpm > 0 && (
+                            <>
+                              <span className="text-white/30">•</span>
+                              <span>{track.genreBpm} BPM</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      {activeTrack?.id === track.id && isPlaying && (
+                        <motion.div
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ duration: 1, repeat: Infinity }}
+                          className="w-2 h-2 rounded-full bg-accent-green flex-shrink-0 mt-1"
+                        />
+                      )}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="p-8 border border-white/5 rounded-sm text-center">
+                  <p className="text-gray-500 text-sm font-mono">
+                    {mounted ? 'Ingen demoer tilgjengelig' : 'Laster demoer...'}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Right: The Sequencer Visualizer */}
-          <div className="lg:col-span-8">
-            <div className="bg-[#080a08] border border-white/10 rounded-xl p-1 h-full flex flex-col">
-              {/* Transport Bar */}
-              <div className="flex items-center justify-between p-4 border-b border-white/5 mb-1 bg-[#0a0c0a]">
-                <div className="flex gap-4">
-                  <div className={`w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50 ${isPlaying ? 'animate-pulse' : ''}`} />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50" />
-                  <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50" />
-                </div>
-                <div className="font-mono text-[10px] text-gray-600 tracking-widest">
-                    {isPlaying ? 'PLAYBACK_ACTIVE' : 'SEQUENCER_READY'}
-                </div>
-              </div>
-
-              {/* Tracks */}
-              <div className="space-y-1 p-4 flex-1">
-                {mounted && genres.map((genre) => (
-                  <SequencerRow 
-                    key={genre.id} 
-                    genre={genre} 
-                    isActive={activeGenre === genre.id}
-                    isPlaying={isPlaying}
-                    onClick={() => setActiveGenre(genre.id)}
-                  />
-                ))}
-                
-                {/* Empty Slots filler */}
-                <div className="h-full min-h-[100px] border border-white/5 border-dashed opacity-20 flex items-center justify-center mt-2 rounded">
-                   <span className="font-mono text-[10px] text-gray-600">Drag & Drop Samples (Demo)</span>
-                </div>
-              </div>
-
-              {/* Timeline/Playhead Area */}
-              <div className="h-8 border-t border-white/5 bg-[#0a0c0a] relative overflow-hidden">
-                {isPlaying && (
-                    <motion.div 
-                    animate={{ x: ['0%', '100%'] }}
-                    transition={{ duration: 4, ease: "linear", repeat: Infinity }}
-                    className="absolute top-0 bottom-0 w-px bg-accent-green/50 shadow-[0_0_10px_rgba(132,140,114,0.5)]"
+          {/* Center & Right: Player & Info */}
+          <div className="lg:col-span-2">
+            {activeTrack ? (
+              <div className={`
+                relative p-8 md:p-12 border border-white/10 rounded-xl overflow-hidden
+                bg-gradient-to-br ${activeTrack.genreGradient || 'from-gray-500/20 to-gray-900/10'}
+                backdrop-blur-sm
+              `}>
+                {/* Background Image with Overlay */}
+                {currentBgImage && (
+                  <div className="absolute inset-0 z-0">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] z-10" />
+                    <img 
+                      src={currentBgImage} 
+                      alt="Background" 
+                      className="w-full h-full object-cover opacity-50"
                     />
+                  </div>
                 )}
-                <div className="flex justify-between px-4 pt-2">
-                  {[...Array(8)].map((_, i) => (
-                    <span key={i} className="font-mono text-[8px] text-gray-700">{i + 1}.0</span>
-                  ))}
+
+                {/* Content Container */}
+                <div className="relative z-20">
+                  {/* Now Playing Header */}
+                  <div className="mb-8">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-mono text-white/60 text-xs tracking-widest uppercase">
+                        NOW_PLAYING
+                      </h3>
+                      {isPlaying && (
+                        <motion.div
+                          animate={{ opacity: [1, 0.5, 1] }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                          className="flex items-center gap-2"
+                        >
+                          <div className="w-2 h-2 rounded-full bg-accent-green" />
+                          <span className="font-mono text-accent-green text-[10px]">LIVE</span>
+                        </motion.div>
+                      )}
+                    </div>
+                    <h4 className="text-2xl md:text-3xl font-mono font-bold text-white mb-3 drop-shadow-md">
+                      {activeTrack.title || activeTrack.genreName}
+                    </h4>
+                    <div className="flex items-center gap-4 text-sm font-mono text-gray-300">
+                      <span className="text-accent-green font-bold">{activeTrack.genreName}</span>
+                      {activeTrack.genreBpm > 0 && (
+                        <>
+                          <span className="text-white/40">•</span>
+                          <span>TEMPO: {activeTrack.genreBpm} BPM</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Player Controls */}
+                  <div className="space-y-6">
+                    {/* Play Button */}
+                    <div className="flex items-center justify-center">
+                      <button
+                        onClick={togglePlay}
+                        disabled={!activeTrack.audioUrl}
+                        className={`
+                          group relative w-20 h-20 md:w-24 md:h-24 rounded-full
+                          flex items-center justify-center
+                          transition-all duration-300
+                          ${activeTrack.audioUrl
+                            ? isPlaying
+                              ? 'bg-accent-green hover:bg-accent-green/90 shadow-[0_0_40px_rgba(132,140,114,0.4)]'
+                              : 'bg-white/10 hover:bg-white/20 border-2 border-white/20 backdrop-blur-md'
+                            : 'bg-white/5 border-2 border-white/10 cursor-not-allowed opacity-50'
+                          }
+                        `}
+                      >
+                        <AnimatePresence mode="wait">
+                          {isPlaying ? (
+                            <motion.div
+                              key="pause"
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              exit={{ scale: 0, opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              <Pause className="w-8 h-8 md:w-10 md:h-10 text-black" fill="currentColor" />
+                            </motion.div>
+                          ) : (
+                            <motion.div
+                              key="play"
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              exit={{ scale: 0, opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              <Play className="w-8 h-8 md:w-10 md:h-10 text-white ml-1" fill="currentColor" />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </button>
+                    </div>
+
+                    {/* Progress Bar */}
+                    {activeTrack.audioUrl && (
+                      <div className="space-y-2">
+                        <div
+                          ref={progressBarRef}
+                          onClick={handleProgressClick}
+                          className="relative h-1.5 bg-white/20 rounded-full cursor-pointer group backdrop-blur-sm"
+                        >
+                          <motion.div
+                            className="absolute left-0 top-0 h-full bg-accent-green rounded-full shadow-[0_0_10px_rgba(132,140,114,0.5)]"
+                            style={{ width: `${progressPercent}%` }}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${progressPercent}%` }}
+                            transition={{ duration: 0.1, ease: 'linear' }}
+                          />
+                          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                        <div className="flex justify-between items-center text-xs font-mono text-gray-400">
+                          <span>{formatTime(currentTime)}</span>
+                          <span>{formatTime(duration)}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Metadata & Action */}
+                    <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/10">
+                      <div className="flex-1 space-y-2 text-xs font-mono">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">STATUS</span>
+                          <span className={activeTrack.audioUrl ? "text-accent-green font-bold" : "text-gray-500"}>
+                            {activeTrack.audioUrl ? 'KLAR' : 'INGEN LYDFIL'}
+                          </span>
+                        </div>
+                        {activeTrack.description && (
+                          <p className="text-gray-300 text-xs leading-relaxed mt-3 line-clamp-2">
+                            {activeTrack.description}
+                          </p>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => setShowModal(true)}
+                        className="bg-accent-green text-black font-mono font-bold px-6 py-3 text-sm hover:bg-white transition-colors whitespace-nowrap shadow-lg"
+                      >
+                        BESTILL
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="p-12 md:p-16 border border-white/10 rounded-xl bg-white/5 text-center">
+                <p className="text-gray-500 text-sm font-mono">
+                  Velg en demo for å begynne avspilling
+                </p>
+              </div>
+            )}
           </div>
 
         </div>
       </div>
 
-      {/* Simple Order Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm" onClick={() => setShowModal(false)}>
-          <div className="bg-[#0a0c0a] border border-white/10 p-8 max-w-md w-full relative" onClick={e => e.stopPropagation()}>
-            <button onClick={() => setShowModal(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white">[LUKK]</button>
-            <h3 className="text-xl font-mono text-white mb-6">PRODUKSJON FORESPØRSEL</h3>
-            <form className="space-y-4" onSubmit={handleSubmit}>
-              <input 
-                type="email" placeholder="DIN E-POST" 
-                className="w-full bg-black border border-white/20 p-3 text-white font-mono text-sm focus:border-accent-green outline-none"
-                required
-                value={formData.email}
-                onChange={e => setFormData({...formData, email: e.target.value})}
-              />
-              <textarea 
-                placeholder="BESKRIV PROSJEKTET DITT..." rows={4}
-                className="w-full bg-black border border-white/20 p-3 text-white font-mono text-sm focus:border-accent-green outline-none"
-                required
-                value={formData.description}
-                onChange={e => setFormData({...formData, description: e.target.value})}
-              />
-              <button 
-                disabled={isSubmitting}
-                className="w-full bg-accent-green text-black font-mono font-bold py-3 hover:bg-white transition-colors disabled:opacity-50"
+      {/* Order Modal */}
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
+            onClick={() => setShowModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-[#0a0c0a] border border-white/10 p-8 max-w-md w-full relative"
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowModal(false)}
+                className="absolute top-4 right-4 text-gray-500 hover:text-white font-mono text-sm"
               >
-                {isSubmitting ? 'SENDER...' : 'SEND'}
+                [LUKK]
               </button>
-            </form>
-          </div>
-        </div>
-      )}
+              <h3 className="text-xl font-mono text-white mb-6">PRODUKSJON FORESPØRSEL</h3>
+              <form className="space-y-4" onSubmit={handleSubmit}>
+                <input
+                  type="email"
+                  placeholder="DIN E-POST"
+                  className="w-full bg-black border border-white/20 p-3 text-white font-mono text-sm focus:border-accent-green outline-none"
+                  required
+                  value={formData.email}
+                  onChange={e => setFormData({ ...formData, email: e.target.value })}
+                />
+                <textarea
+                  placeholder="BESKRIV PROSJEKTET DITT..."
+                  rows={4}
+                  className="w-full bg-black border border-white/20 p-3 text-white font-mono text-sm focus:border-accent-green outline-none resize-none"
+                  required
+                  value={formData.description}
+                  onChange={e => setFormData({ ...formData, description: e.target.value })}
+                />
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-accent-green text-black font-mono font-bold py-3 hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? 'SENDER...' : 'SEND'}
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

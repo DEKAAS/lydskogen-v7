@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import WindowMockup from '@/components/WindowMockup';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface FormData {
   name: string;
@@ -18,9 +18,18 @@ export default function ArtistNettsideSection() {
     name: '', email: '', type: 'linktree', description: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const mockupRef = useRef<HTMLDivElement>(null);
 
   const handleOrder = () => setShowModal(true);
   const handleCloseModal = () => { setShowModal(false); setFormData({ name: '', email: '', type: 'linktree', description: '' }); };
+
+  const handleTabChange = (tab: 'linktree' | 'artist') => {
+    setActiveTab(tab);
+    // Smooth scroll to mockup on mobile/tablet if needed
+    if (window.innerWidth < 1024 && mockupRef.current) {
+      mockupRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,18 +78,30 @@ export default function ArtistNettsideSection() {
             </div>
 
             {/* Toggle Switch */}
-            <div className="flex gap-12 border-b border-white/10 pb-6">
+            <div className="flex gap-12 border-b border-white/10 pb-6 relative">
               <button 
-                onClick={() => setActiveTab('linktree')}
-                className={`text-sm font-mono uppercase tracking-wider pb-6 -mb-6 transition-all ${activeTab === 'linktree' ? 'text-accent-green border-b-2 border-accent-green' : 'text-gray-500 hover:text-white'}`}
+                onClick={() => handleTabChange('linktree')}
+                className={`text-sm font-mono uppercase tracking-wider pb-6 -mb-6 transition-all relative ${activeTab === 'linktree' ? 'text-accent-green' : 'text-gray-500 hover:text-white'}`}
               >
                 Valg A: Linktree
+                {activeTab === 'linktree' && (
+                  <motion.div 
+                    layoutId="activeTab"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-green"
+                  />
+                )}
               </button>
               <button 
-                onClick={() => setActiveTab('artist')}
-                className={`text-sm font-mono uppercase tracking-wider pb-6 -mb-6 transition-all ${activeTab === 'artist' ? 'text-accent-green border-b-2 border-accent-green' : 'text-gray-500 hover:text-white'}`}
+                onClick={() => handleTabChange('artist')}
+                className={`text-sm font-mono uppercase tracking-wider pb-6 -mb-6 transition-all relative ${activeTab === 'artist' ? 'text-accent-green' : 'text-gray-500 hover:text-white'}`}
               >
                 Valg B: Nettside
+                {activeTab === 'artist' && (
+                  <motion.div 
+                    layoutId="activeTab"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-green"
+                  />
+                )}
               </button>
             </div>
 
@@ -133,9 +154,21 @@ export default function ArtistNettsideSection() {
           </div>
 
           {/* RIGHT: Visual Mockup (Floating) */}
-          <div className="relative flex justify-center lg:justify-end">
+          <div ref={mockupRef} className="relative flex justify-center lg:justify-end min-h-[600px]">
             <div className="absolute inset-0 bg-gradient-to-b from-accent-green/5 to-transparent rounded-full blur-3xl opacity-20 pointer-events-none" />
-            <WindowMockup type={activeTab} />
+            
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="relative w-full flex justify-center lg:justify-end"
+              >
+                <WindowMockup type={activeTab} />
+              </motion.div>
+            </AnimatePresence>
           </div>
 
         </div>

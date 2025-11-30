@@ -10,6 +10,23 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   compress: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'rtimfutydixuwblqtizb.supabase.co',
+        pathname: '/storage/v1/object/public/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.ytimg.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.scdn.co',
+      },
+    ],
+  },
   headers: async () => [
     {
       source: "/(.*)",

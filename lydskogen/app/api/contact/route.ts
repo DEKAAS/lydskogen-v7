@@ -5,32 +5,8 @@ export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
     
-    // Save to orders system for admin tracking
-    try {
-      const orderResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/admin/orders`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          type: data.type || 'contact',
-          name: data.name,
-          email: data.email,
-          phone: data.phone,
-          subject: `${data.source || 'Skjema'} - ${data.genre || 'Ukjent sjanger'}`,
-          message: data.message || data.description,
-          formData: data,
-          source: data.source || 'ContactForm'
-        })
-      })
-      
-      if (!orderResponse.ok) {
-        console.error('Failed to save order to admin system')
-      }
-    } catch (orderError) {
-      console.error('Error saving to orders system:', orderError)
-      // Don't fail the entire request if order saving fails
-    }
+    // Save to orders system removed as OrdersTab is deprecated
+    // Proceed directly to email sending
     
     const resendApiKey = process.env.RESEND_API_KEY;
     if (!resendApiKey) {
