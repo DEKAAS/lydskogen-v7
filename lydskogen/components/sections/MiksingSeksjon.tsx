@@ -60,10 +60,12 @@ export default function MiksingSeksjon() {
         setShowModal(false);
         setFormData({ email: '', description: '' });
       } else {
-        alert('Det oppstod en feil.');
+        const data = await response.json().catch(() => ({}));
+        alert(`Det oppstod en feil: ${data.error || 'Ukjent'}`);
       }
     } catch (error) {
-      alert('Det oppstod en feil.');
+      console.error('Submission error:', error);
+      alert('Det oppstod en feil ved sending.');
     } finally {
       setIsSubmitting(false);
     }
@@ -94,7 +96,10 @@ export default function MiksingSeksjon() {
           {mixingPrices.map((plan) => (
             <div 
               key={plan.id}
-              onClick={() => handleSelect(plan.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSelect(plan.id);
+              }}
               className={`p-8 border transition-all duration-300 cursor-pointer group flex flex-col justify-between h-full relative overflow-hidden
                 ${activePlan === plan.id 
                   ? 'bg-white/5 border-accent-green shadow-[0_0_30px_-10px_rgba(43,245,116,0.1)]' 
@@ -129,7 +134,11 @@ export default function MiksingSeksjon() {
         <div className="mt-16 text-center">
           <p className="text-gray-500 text-sm font-mono mb-6">HAR DU SPESIELLE BEHOV ELLER STØRRE PROSJEKTER?</p>
           <button 
-            onClick={() => { setActivePlan(null); setShowModal(true); }}
+            onClick={(e) => { 
+                e.stopPropagation();
+                setActivePlan(null); 
+                setShowModal(true); 
+            }}
             className="px-8 py-3 border border-white/20 text-white font-mono text-sm hover:bg-white hover:text-black transition-colors"
           >
             TA KONTAKT
@@ -140,9 +149,27 @@ export default function MiksingSeksjon() {
 
       {/* Simple Order Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm" onClick={() => setShowModal(false)}>
-          <div className="bg-[#0a0c0a] border border-white/10 p-8 max-w-md w-full relative" onClick={e => e.stopPropagation()}>
-            <button onClick={() => setShowModal(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white">[LUKK]</button>
+        <div 
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm" 
+            onClick={(e) => {
+                // Ensure clicks on the backdrop close it
+                e.stopPropagation();
+                setShowModal(false);
+            }}
+        >
+          <div 
+            className="bg-[#0a0c0a] border border-white/10 p-8 max-w-md w-full relative" 
+            onClick={e => e.stopPropagation()} // Prevent closing when clicking inside
+          >
+            <button 
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setShowModal(false);
+                }} 
+                className="absolute top-4 right-4 text-gray-500 hover:text-white"
+            >
+                [LUKK]
+            </button>
             
             <h3 className="text-xl font-mono text-white mb-2">MIKSING FORESPØRSEL</h3>
             <p className="text-xs text-accent-green font-mono mb-6 uppercase">
