@@ -71,14 +71,17 @@ export default function HeaderHero() {
             <Link href="#artist" className="text-gray-300 hover:text-white hover:underline decoration-accent-green underline-offset-4 transition-all">
               [01] TJENESTER
             </Link>
-            <Link href="#portfolio" className="text-gray-300 hover:text-white hover:underline decoration-accent-green underline-offset-4 transition-all">
+            <Link href="#projects" className="text-gray-300 hover:text-white hover:underline decoration-accent-green underline-offset-4 transition-all">
               [02] PROSJEKTER
             </Link>
+            <Link href="#miksing" className="text-gray-300 hover:text-white hover:underline decoration-accent-green underline-offset-4 transition-all">
+              [03] MIKSING
+            </Link>
             <Link href="#om" className="text-gray-300 hover:text-white hover:underline decoration-accent-green underline-offset-4 transition-all">
-              [03] OM OSS
+              [04] OM OSS
             </Link>
             <Link href="#contact" className="text-gray-300 hover:text-white hover:underline decoration-accent-green underline-offset-4 transition-all">
-              [04] KONTAKT
+              [05] KONTAKT
             </Link>
           </nav>
         </div>
