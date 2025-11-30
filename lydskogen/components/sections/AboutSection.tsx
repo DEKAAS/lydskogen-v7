@@ -100,7 +100,7 @@ export default function AboutSection() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, ease: "circOut" }}
-                className="relative aspect-[3/4] rounded-sm overflow-hidden border border-white/10 shadow-2xl bg-[#0a0a0a] w-full"
+                className="relative aspect-[3/4] rounded-sm overflow-hidden border border-white/10 shadow-2xl w-full"
               >
                 <Image
                   src={sideImage}

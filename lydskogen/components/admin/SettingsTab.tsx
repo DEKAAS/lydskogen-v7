@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Trash2 } from 'lucide-react';
 
 export default function SettingsTab() {
   const [content, setContent] = useState<Record<string, string>>({});
@@ -74,6 +75,33 @@ export default function SettingsTab() {
     } catch (error) {
       console.error(error);
       alert('Feil ved opplasting');
+    } finally {
+      setUploading(null);
+    }
+  };
+
+  const handleDeleteImage = async (key: string) => {
+    const url = content[key];
+    if (!url) return;
+
+    if (!confirm('Er du sikker på at du vil slette dette bildet?')) return;
+
+    setUploading(key); // Reuse uploading state to show activity
+    try {
+      const res = await fetch(`/api/admin/delete-image?url=${encodeURIComponent(url)}`, {
+        method: 'DELETE'
+      });
+
+      if (res.ok) {
+        // Remove from database/content
+        handleSave(key, '', 'about'); // Save empty string
+        setContent(prev => ({ ...prev, [key]: '' }));
+      } else {
+        alert('Feil ved sletting av bilde');
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert('Feil ved sletting');
     } finally {
       setUploading(null);
     }
@@ -229,47 +257,85 @@ export default function SettingsTab() {
                 <label className="block text-sm font-medium text-gray-300 mb-3">Bakgrunnsbilde</label>
                 <div className="relative aspect-video bg-[#0a0a0a] border border-white/10 rounded-md overflow-hidden mb-3 group">
                     {content['about_bg_image'] ? (
-                        <img src={content['about_bg_image']} alt="Background" className="w-full h-full object-cover" />
+                        <>
+                            <img src={content['about_bg_image']} alt="Background" className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                                <label className="cursor-pointer px-4 py-2 bg-white text-black text-xs font-bold rounded hover:bg-gray-200">
+                                    ENDRE
+                                    <input 
+                                        type="file" 
+                                        className="hidden" 
+                                        accept="image/*"
+                                        onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'about_bg_image')}
+                                    />
+                                </label>
+                                <button 
+                                    onClick={() => handleDeleteImage('about_bg_image')}
+                                    className="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded hover:bg-red-700 flex items-center gap-1"
+                                >
+                                    <Trash2 size={14} /> SLETT
+                                </button>
+                            </div>
+                        </>
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-600 text-xs">Ingen bilde valgt</div>
+                        <div className="w-full h-full flex flex-col items-center justify-center text-gray-600 text-xs gap-2">
+                            <span>Ingen bilde valgt</span>
+                            <label className="cursor-pointer px-4 py-2 bg-white/10 text-white text-xs font-bold rounded hover:bg-white/20">
+                                LAST OPP
+                                <input 
+                                    type="file" 
+                                    className="hidden" 
+                                    accept="image/*"
+                                    onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'about_bg_image')}
+                                />
+                            </label>
+                        </div>
                     )}
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <label className="cursor-pointer px-4 py-2 bg-white text-black text-xs font-bold rounded hover:bg-gray-200">
-                            ENDRE BILDE
-                            <input 
-                                type="file" 
-                                className="hidden" 
-                                accept="image/*"
-                                onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'about_bg_image')}
-                            />
-                        </label>
-                    </div>
                 </div>
-                {uploading === 'about_bg_image' && <p className="text-xs text-blue-400 animate-pulse">Laster opp...</p>}
+                {uploading === 'about_bg_image' && <p className="text-xs text-blue-400 animate-pulse">Jobber...</p>}
              </div>
 
              {/* Side Image */}
              <div>
                 <label className="block text-sm font-medium text-gray-300 mb-3">Sidebilde (Valgfritt)</label>
-                <div className="relative aspect-[3/4] bg-[#0a0a0a] border border-white/10 rounded-md overflow-hidden mb-3 group w-2/3 mx-auto">
+                <div className="relative aspect-[3/4] border border-white/10 rounded-md overflow-hidden mb-3 group w-2/3 mx-auto">
                     {content['about_side_image'] ? (
-                        <img src={content['about_side_image']} alt="Side" className="w-full h-full object-cover" />
+                        <>
+                            <img src={content['about_side_image']} alt="Side" className="w-full h-full object-cover" />
+                             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                                <label className="cursor-pointer px-4 py-2 bg-white text-black text-xs font-bold rounded hover:bg-gray-200">
+                                    ENDRE
+                                    <input 
+                                        type="file" 
+                                        className="hidden" 
+                                        accept="image/*"
+                                        onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'about_side_image')}
+                                    />
+                                </label>
+                                <button 
+                                    onClick={() => handleDeleteImage('about_side_image')}
+                                    className="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded hover:bg-red-700 flex items-center gap-1"
+                                >
+                                    <Trash2 size={14} /> SLETT
+                                </button>
+                            </div>
+                        </>
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-600 text-xs">Ingen bilde valgt</div>
+                        <div className="w-full h-full flex flex-col items-center justify-center text-gray-600 text-xs gap-2">
+                            <span>Ingen bilde valgt</span>
+                             <label className="cursor-pointer px-4 py-2 bg-white/10 text-white text-xs font-bold rounded hover:bg-white/20">
+                                LAST OPP
+                                <input 
+                                    type="file" 
+                                    className="hidden" 
+                                    accept="image/*"
+                                    onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'about_side_image')}
+                                />
+                            </label>
+                        </div>
                     )}
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <label className="cursor-pointer px-4 py-2 bg-white text-black text-xs font-bold rounded hover:bg-gray-200">
-                            ENDRE BILDE
-                            <input 
-                                type="file" 
-                                className="hidden" 
-                                accept="image/*"
-                                onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'about_side_image')}
-                            />
-                        </label>
-                    </div>
                 </div>
-                {uploading === 'about_side_image' && <p className="text-xs text-blue-400 animate-pulse text-center">Laster opp...</p>}
+                {uploading === 'about_side_image' && <p className="text-xs text-blue-400 animate-pulse text-center">Jobber...</p>}
              </div>
           </div>
 
