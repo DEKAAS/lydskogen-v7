@@ -2,14 +2,13 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 
 export default function HeaderHero() {
-  const [tagline, setTagline] = useState('Laster...');
-  const [mounted, setMounted] = useState(false);
+  const [tagline, setTagline] = useState(
+    'Miksing, artwork og Artist-side for prosjekter som trenger en rolig og tydelig helhet.'
+  );
 
   useEffect(() => {
-    setMounted(true);
     fetch('/api/content')
       .then(res => res.json())
       .then(data => {
@@ -18,120 +17,74 @@ export default function HeaderHero() {
       .catch(err => console.error('Error fetching tagline:', err));
   }, []);
 
-  // Split tagline into words for staggered animation
-  const words = tagline.split(' ');
-
   return (
-    <section id="hero" className="hero-section relative h-screen flex flex-col overflow-hidden bg-base-dark">
-      {/* Background Image with darkening */}
+    <section id="hero" className="hero-section relative min-h-screen overflow-hidden bg-[#07100b] px-4 py-6 text-stone-100 md:px-8">
       <div 
-        className="absolute inset-0 z-0"
+        className="absolute inset-0"
         style={{
           backgroundImage: 'url(/images/hero.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          opacity: 0.6
+          opacity: 0.35
         }}
       />
-      
-      {/* Gradient Overlay for text readability and bottom transition */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-base-dark/80 via-base-dark/40 to-[#000000]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#07100b]/80 via-[#07100b]/75 to-[#07100b]" />
+      <div className="absolute left-[-10%] top-1/3 h-80 w-80 rounded-full bg-[#4f6f52]/20 blur-3xl" />
+      <div className="absolute bottom-10 right-[-8%] h-96 w-96 rounded-full bg-[#8a6f4d]/20 blur-3xl" />
 
-      {/* Content Container */}
-      <div className="relative z-10 flex-1 flex flex-col p-6 md:p-12 max-w-[1600px] mx-auto w-full">
-        
-        {/* Header Row: Title Left, Nav Right */}
-        <div className="flex justify-between items-start">
-          
-          {/* Brand Title (Top Left) */}
-          <div className="flex flex-col">
-            <motion.h1 
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="text-4xl md:text-7xl lg:text-8xl font-mono font-bold tracking-tighter text-white"
-              style={{ textShadow: '0 4px 30px rgba(0,0,0,0.5)' }}
-            >
-              LYDSKOG
-            </motion.h1>
-            
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="mt-2 flex items-center gap-2 text-accent-green font-mono text-xs md:text-sm tracking-widest uppercase"
-            >
-              <span className="w-2 h-2 bg-accent-green rounded-full animate-pulse" />
-              <span>Fokus på lyd og bilde</span>
-            </motion.div>
-          </div>
-
-          {/* Navigation (Top Right) */}
-          <nav className="hidden md:flex flex-col items-end gap-2 font-mono text-sm">
-            <Link href="#artist" className="text-gray-300 hover:text-white hover:underline decoration-accent-green underline-offset-4 transition-all">
-              [01] TJENESTER
+      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-3rem)] max-w-6xl flex-col">
+        <header className="flex items-center justify-between rounded-full border border-white/10 bg-white/[0.06] px-5 py-4 shadow-2xl shadow-black/10 backdrop-blur-xl">
+          <Link href="/" className="text-sm font-semibold uppercase tracking-[0.35em] text-stone-100">
+            Lydskog
+          </Link>
+          <nav className="hidden items-center gap-6 text-sm text-stone-300 md:flex">
+            <Link href="#services" className="transition-colors hover:text-white">
+              Tjenester
             </Link>
-            <Link href="#projects" className="text-gray-300 hover:text-white hover:underline decoration-accent-green underline-offset-4 transition-all">
-              [02] PROSJEKTER
+            <Link href="#projects" className="transition-colors hover:text-white">
+              Prosjekter
             </Link>
-            <Link href="#miksing" className="text-gray-300 hover:text-white hover:underline decoration-accent-green underline-offset-4 transition-all">
-              [03] MIKSING
+            <Link href="#om" className="transition-colors hover:text-white">
+              Om
             </Link>
-            <Link href="#om" className="text-gray-300 hover:text-white hover:underline decoration-accent-green underline-offset-4 transition-all">
-              [04] OM OSS
-            </Link>
-            <Link href="#contact" className="text-gray-300 hover:text-white hover:underline decoration-accent-green underline-offset-4 transition-all">
-              [05] KONTAKT
+            <Link href="#contact" className="transition-colors hover:text-white">
+              Kontakt
             </Link>
           </nav>
-        </div>
+        </header>
 
-        {/* Dynamic Tagline (Middle Left) */}
-        <div className="mt-24 md:mt-48 max-w-2xl">
-          <div className="text-lg md:text-3xl lg:text-4xl font-light leading-relaxed text-gray-200">
-            {mounted && words.map((word, i) => (
-              <motion.span
-                key={i}
-                initial={{ opacity: 0, filter: 'blur(10px)' }}
-                animate={{ opacity: 1, filter: 'blur(0px)' }}
-                transition={{ 
-                  delay: 1 + (i * 0.05), 
-                  duration: 0.8,
-                  ease: "easeOut"
-                }}
-                className="inline-block mr-2 md:mr-3"
+        <div className="flex flex-1 items-center py-24">
+          <div className="max-w-4xl rounded-[2rem] border border-white/10 bg-white/[0.07] p-8 shadow-2xl shadow-black/20 backdrop-blur-xl md:p-12">
+            <p className="mb-6 text-sm uppercase tracking-[0.35em] text-[#d8caa8]">
+              Miksing · Artwork · Artist-side
+            </p>
+            <h1 className="text-5xl font-semibold tracking-tight text-white md:text-7xl lg:text-8xl">
+              Lydskog
+            </h1>
+            <p className="mt-8 max-w-2xl text-lg leading-8 text-stone-200 md:text-2xl md:leading-10">
+              {tagline}
+            </p>
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="#contact"
+                className="rounded-full bg-[#d8caa8] px-6 py-3 text-center text-sm font-semibold text-[#10180f] transition-colors hover:bg-white"
               >
-                {word}
-              </motion.span>
-            ))}
-          </div>
-          
-          <motion.div 
-            initial={{ opacity: 0, width: 0 }}
-            animate={{ opacity: 1, width: '100px' }}
-            transition={{ delay: 2, duration: 1 }}
-            className="h-1 bg-accent-green mt-8"
-          />
+                Start en samtale
+              </Link>
+              <Link
+                href="#services"
+                className="rounded-full border border-white/15 bg-white/10 px-6 py-3 text-center text-sm font-medium text-white backdrop-blur transition-colors hover:bg-white/15"
+              >
+                Se tjenester
+              </Link>
+            </div>
+        </div>
         </div>
 
-        {/* Bottom Info */}
-        <div className="mt-auto flex justify-between items-end text-xs md:text-sm font-mono text-gray-500">
-          <div>
-            <p>EST. 2025</p>
-            <p>OSLO, NORWAY</p>
-          </div>
-          <div className="flex flex-col items-end">
-            <p>SCROLL TO EXPLORE</p>
-            <motion.div 
-              animate={{ y: [0, 10, 0] }}
-              transition={{ repeat: Infinity, duration: 2 }}
-              className="mt-2"
-            >
-              ↓
-            </motion.div>
-          </div>
+        <div className="mb-6 flex flex-col justify-between gap-4 rounded-[1.5rem] border border-white/10 bg-black/15 px-5 py-4 text-sm text-stone-400 backdrop-blur md:flex-row">
+          <span>Oslo, Norway</span>
+          <span>Rolig design for lyd, bilde og artistprofiler</span>
         </div>
-
       </div>
     </section>
   );

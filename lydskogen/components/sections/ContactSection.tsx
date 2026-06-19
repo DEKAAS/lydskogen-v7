@@ -93,39 +93,29 @@ export default function ContactSection() {
 
   return (
     <section
-      className="py-16"
+      className="bg-[#07100b] px-4 py-24 md:px-8 md:py-32"
       id="contact"
-      style={{
-        backgroundColor: '#050605'
-      }}
     >
-      <div className="container mx-auto px-4 max-w-4xl">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{color: 'var(--text-color)'}}>
-            Kontakt
+      <div className="mx-auto max-w-4xl">
+        <div className="mb-12 text-center">
+          <p className="mb-4 text-sm uppercase tracking-[0.35em] text-[#b6a98c]">Kontakt</p>
+          <h2 className="mb-4 text-4xl font-semibold tracking-tight text-white md:text-6xl">
+            Fortell kort om prosjektet ditt.
           </h2>
-          <p className="text-lg" style={{color: 'var(--text-muted)'}}>
-            Ta kontakt for å diskutere ditt neste prosjekt
+          <p className="text-lg leading-8 text-stone-300">
+            Skriv noen linjer om hva du trenger hjelp med, så tar vi samtalen videre.
           </p>
         </div>
 
-        <div className="rounded-lg p-8 border max-w-2xl mx-auto" style={{
-          background: 'rgba(0,0,0,0.35)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.08)'
-        }}>
+        <div className="mx-auto max-w-2xl rounded-[2rem] border border-white/10 bg-white/[0.06] p-6 shadow-2xl shadow-black/20 backdrop-blur-xl md:p-8">
           {submitSuccess ? (
-            <div className="p-4 rounded-md text-center" style={{
-              background: 'var(--card-bg)',
-              border: '1px solid var(--border-color)',
-              color: 'var(--text-color)'
-            }}>
+            <div className="rounded-2xl border border-[#b6a98c]/30 bg-[#b6a98c]/10 p-4 text-center text-stone-100">
               <p>Takk for din henvendelse! Vi svarer deg så snart som mulig.</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label htmlFor="name" className="block mb-2" style={{color: 'var(--text-color)', opacity: 0.9}}>
+                <label htmlFor="name" className="mb-2 block text-sm text-stone-300">
                   Navn
                 </label>
                 <input
@@ -134,19 +124,13 @@ export default function ContactSection() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full rounded p-3 focus:outline-none focus:ring-2 transition-all duration-300"
-                  style={{
-                    background: 'var(--card-bg)',
-                    backdropFilter: 'blur(10px)',
-                    border: errors.name ? '1px solid #ef4444' : '1px solid var(--border-color)',
-                    color: 'var(--text-color)'
-                  }}
+                  className={`w-full rounded-2xl border bg-black/20 p-3 text-white outline-none backdrop-blur transition-colors focus:border-[#b6a98c] ${errors.name ? 'border-red-500' : 'border-white/10'}`}
                 />
                 {errors.name && <p className="text-sm mt-1" style={{color: '#ef4444'}}>{errors.name}</p>}
               </div>
               
               <div className="mb-4">
-                <label htmlFor="email" className="block mb-2" style={{color: 'var(--text-color)', opacity: 0.9}}>
+                <label htmlFor="email" className="mb-2 block text-sm text-stone-300">
                   E-post
                 </label>
                 <input
@@ -155,19 +139,13 @@ export default function ContactSection() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full rounded p-3 focus:outline-none focus:ring-2 transition-all duration-300"
-                  style={{
-                    background: 'var(--card-bg)',
-                    backdropFilter: 'blur(10px)',
-                    border: errors.email ? '1px solid #ef4444' : '1px solid var(--border-color)',
-                    color: 'var(--text-color)'
-                  }}
+                  className={`w-full rounded-2xl border bg-black/20 p-3 text-white outline-none backdrop-blur transition-colors focus:border-[#b6a98c] ${errors.email ? 'border-red-500' : 'border-white/10'}`}
                 />
                 {errors.email && <p className="text-sm mt-1" style={{color: '#ef4444'}}>{errors.email}</p>}
               </div>
               
               <div className="mb-6">
-                <label htmlFor="message" className="block mb-2" style={{color: 'var(--text-color)', opacity: 0.9}}>
+                <label htmlFor="message" className="mb-2 block text-sm text-stone-300">
                   Melding
                 </label>
                 <textarea
@@ -176,13 +154,7 @@ export default function ContactSection() {
                   value={formData.message}
                   onChange={handleChange}
                   rows={5}
-                  className="w-full rounded p-3 focus:outline-none focus:ring-2 transition-all duration-300 resize-none"
-                  style={{
-                    background: 'var(--card-bg)',
-                    backdropFilter: 'blur(10px)',
-                    border: errors.message ? '1px solid #ef4444' : '1px solid var(--border-color)',
-                    color: 'var(--text-color)'
-                  }}
+                  className={`w-full resize-none rounded-2xl border bg-black/20 p-3 text-white outline-none backdrop-blur transition-colors focus:border-[#b6a98c] ${errors.message ? 'border-red-500' : 'border-white/10'}`}
                 ></textarea>
                 {errors.message && <p className="text-sm mt-1" style={{color: '#ef4444'}}>{errors.message}</p>}
               </div>
@@ -190,16 +162,11 @@ export default function ContactSection() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3 font-semibold rounded transition-all duration-300 disabled:opacity-70 hover:opacity-90"
-                style={{
-                  background: 'var(--accent-green)',
-                  border: '1px solid var(--border-color)',
-                  color: 'var(--text-color)'
-                }}
+                className="w-full rounded-full bg-[#d8caa8] py-3 font-semibold text-[#10180f] transition-colors hover:bg-white disabled:opacity-70"
               >
                 {isSubmitting ? (
                   <span className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" style={{color: 'var(--text-color)'}}>
+                    <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-[#10180f]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>

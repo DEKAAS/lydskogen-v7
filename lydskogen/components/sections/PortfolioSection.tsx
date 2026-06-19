@@ -1,17 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ChevronDown, 
-  ChevronUp, 
-  ExternalLink, 
-  Music, 
-  Play, 
-  Youtube, 
-  Disc 
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useEffect, useState } from 'react';
+import { ExternalLink, Music } from 'lucide-react';
 
 interface Project {
   id: string;
@@ -28,7 +18,6 @@ interface Project {
   createdAt?: string;
 }
 
-// Credit labels for display
 const CREDIT_LABELS: Record<string, string> = {
   mixed: 'Mixed',
   produced: 'Produced',
@@ -38,46 +27,9 @@ const CREDIT_LABELS: Record<string, string> = {
   composed: 'Composed',
 };
 
-// Helper to extract YouTube video ID
-function getYouTubeVideoId(url: string): string | null {
-  if (!url) return null;
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\s?]+)/,
-    /youtube\.com\/watch\?.*v=([^&\s]+)/
-  ];
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match && match[1]) return match[1];
-  }
-  return null;
-}
-
-// Helper to extract Spotify ID
-function getSpotifyEmbedUrl(url: string): string | null {
-  if (!url) return null;
-  // Handle full URL or URI
-  try {
-    const urlObj = new URL(url);
-    const pathParts = urlObj.pathname.split('/').filter(Boolean);
-    // Check for track, album, playlist
-    if (['track', 'album', 'playlist', 'artist'].includes(pathParts[0]) && pathParts[1]) {
-       return `https://open.spotify.com/embed/${pathParts[0]}/${pathParts[1]}?utm_source=generator&theme=0`;
-    }
-  } catch (e) {
-    // Try regex fallback for non-standard URLs
-    const match = url.match(/(track|album|playlist|artist)\/([a-zA-Z0-9]+)/);
-    if (match && match[1] && match[2]) {
-        return `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0`;
-    }
-  }
-  return null;
-}
-
 export default function ProjectsSection() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-  const lastClickTime = useRef<number>(0);
 
   useEffect(() => {
     fetch('/api/projects')
@@ -92,312 +44,117 @@ export default function ProjectsSection() {
       });
   }, []);
 
-  // Debounced toggle to prevent double-click glitch
-  const toggleExpand = useCallback((id: string) => {
-    const now = Date.now();
-    if (now - lastClickTime.current < 300) return; // Ignore clicks within 300ms
-    lastClickTime.current = now;
-    setExpandedId(prev => prev === id ? null : id);
-  }, []);
-
   if (isLoading) {
     return (
-      <div className="py-24 bg-[#050605] text-center font-mono text-gray-500 animate-pulse">
-        [LOADING_ARCHIVE...]
+      <div className="bg-[#07100b] px-4 py-24 text-center text-stone-500 md:px-8">
+        Laster prosjekter...
       </div>
     );
   }
 
   if (projects.length === 0) return null;
 
+  const featuredProjects = projects.slice(0, 6);
+
   return (
-    <section id="projects" className="bg-[#050605] min-h-screen relative pb-12 md:pb-24">
-      {/* Section Header - Technical Style */}
-      <div className="sticky top-0 z-30 bg-[#050605]/95 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-[1600px] mx-auto px-6 md:px-12 py-6 flex justify-between items-center">
-          <h2 className="font-mono text-xl md:text-3xl text-white font-bold tracking-tighter">
-            [02] PROSJEKTER
-          </h2>
-          <div className="hidden md:flex gap-6 text-xs font-mono text-gray-500 uppercase tracking-widest">
-            <span>TOTAL_ENTRIES: {projects.length.toString().padStart(2, '0')}</span>
-            <span className="text-accent-green">STATUS: ONLINE</span>
-          </div>
-        </div>
+    <section id="projects" className="relative overflow-hidden bg-[#07100b] px-4 py-24 text-stone-100 md:px-8 md:py-32">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-[10%] top-20 h-72 w-72 rounded-full bg-[#8a6f4d]/10 blur-3xl" />
+        <div className="absolute bottom-0 right-[5%] h-80 w-80 rounded-full bg-[#4f6f52]/15 blur-3xl" />
       </div>
 
-      {/* Projects Tracklist - Technical Archive Style */}
-      <div className="max-w-[1600px] mx-auto px-4 md:px-12 pt-8">
-        
-        {/* Table Header */}
-        <div className="hidden md:grid grid-cols-12 gap-4 text-[10px] font-mono text-gray-500 uppercase tracking-widest border-b border-white/10 pb-3 mb-4 px-4">
-          <div className="col-span-1">ID</div>
-          <div className="col-span-4">TITLE</div>
-          <div className="col-span-3">ARTIST</div>
-          <div className="col-span-2">TYPE</div>
-          <div className="col-span-2 text-right">ACTION</div>
+      <div className="relative mx-auto max-w-6xl">
+        <div className="mb-12 grid gap-8 md:grid-cols-[0.8fr_1.2fr] md:items-end">
+          <div>
+            <p className="mb-4 text-sm uppercase tracking-[0.35em] text-[#b6a98c]">Prosjekter</p>
+            <h2 className="text-4xl font-semibold tracking-tight text-white md:text-6xl">
+              Utvalgt arbeid
+            </h2>
+          </div>
+          <p className="max-w-2xl text-base leading-8 text-stone-300 md:text-lg">
+            Et lite utvalg av prosjekter som viser lydarbeid, artwork og visuell retning. Holdt enkelt, slik at arbeidet får puste.
+          </p>
         </div>
 
-        {/* Rows */}
-        <div className="space-y-2">
-          {projects.map((project, index) => {
-            const isExpanded = expandedId === project.id;
-            const spotifyEmbedUrl = project.spotifyUrl ? getSpotifyEmbedUrl(project.spotifyUrl) : null;
-            const youtubeId = project.youtubeUrl ? getYouTubeVideoId(project.youtubeUrl) : null;
-            
-            return (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                className={cn(
-                  "group relative border border-transparent rounded-sm transition-all duration-300 overflow-hidden will-change-transform",
-                  isExpanded 
-                    ? "bg-white/5 border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)]" 
-                    : "hover:bg-white/5 hover:border-white/5 border-b-white/5"
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {featuredProjects.map((project) => (
+            <article
+              key={project.id}
+              className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.06] shadow-2xl shadow-black/20 backdrop-blur-xl"
+            >
+              <div className="aspect-square bg-white/5">
+                {project.artworkUrl ? (
+                  <img
+                    src={project.artworkUrl}
+                    alt={project.title}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-stone-500">
+                    <Music size={40} strokeWidth={1.5} />
+                  </div>
                 )}
-              >
-                {/* Main Row Clickable Area */}
-                <div 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleExpand(project.id);
-                  }}
-                  className="grid grid-cols-12 gap-4 items-center p-4 cursor-pointer select-none"
-                >
-                  {/* ID Column */}
-                  <div className="col-span-2 md:col-span-1 font-mono text-xs text-gray-600 group-hover:text-accent-green transition-colors">
-                    {index.toString().padStart(3, '0')}
-                  </div>
+              </div>
 
-                  {/* Title Column */}
-                  <div className="col-span-8 md:col-span-4 flex items-center gap-4">
-                    {/* Thumbnail - Always visible now for better visual anchor */}
-                    <div className="relative w-10 h-10 md:w-12 md:h-12 bg-white/10 rounded-sm overflow-hidden flex-shrink-0">
-                      {project.artworkUrl ? (
-                        <img 
-                          src={project.artworkUrl} 
-                          alt={project.title} 
-                          className={cn(
-                            "w-full h-full object-cover transition-all duration-500",
-                            isExpanded ? "scale-110 grayscale-0" : "grayscale group-hover:grayscale-0"
-                          )} 
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-600">
-                          <Disc size={16} />
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="flex flex-col min-w-0">
-                      <span className={cn(
-                        "font-mono text-sm md:text-base font-bold truncate transition-colors",
-                        isExpanded ? "text-accent-green" : "text-white group-hover:text-white"
-                      )}>
-                        {project.title}
-                      </span>
-                      <span className="md:hidden text-xs text-gray-500 truncate mt-0.5">
-                        {project.artist}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Artist Column (Desktop) */}
-                  <div className="col-span-3 hidden md:block font-mono text-sm text-gray-400 truncate">
-                    {project.artist || '-'}
-                  </div>
-
-                  {/* Type Column (Desktop) */}
-                  <div className="col-span-2 hidden md:block">
-                    {project.tags && project.tags.length > 0 ? (
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full border border-white/10 bg-white/5 text-[10px] font-mono text-gray-400 uppercase tracking-wider">
-                        {project.tags[0]}
-                      </span>
-                    ) : (
-                      <span className="text-gray-700 text-xs">-</span>
-                    )}
-                  </div>
-
-                  {/* Action Column */}
-                  <div className="col-span-2 md:col-span-2 flex justify-end items-center gap-4">
-                     <span className="text-[10px] font-mono text-gray-600 hidden md:inline-block group-hover:text-gray-400 transition-colors uppercase tracking-widest">
-                        {isExpanded ? 'COLLAPSE' : 'EXPAND'}
-                     </span>
-                     {isExpanded ? (
-                        <ChevronUp className="w-5 h-5 text-accent-green" />
-                     ) : (
-                        <ChevronDown className="w-5 h-5 text-gray-600 group-hover:text-white transition-colors" />
-                     )}
-                  </div>
+              <div className="p-6">
+                <div className="mb-4 flex flex-wrap gap-2">
+                  {project.credits?.slice(0, 3).map((credit) => (
+                    <span
+                      key={credit}
+                      className="rounded-full border border-[#b6a98c]/20 bg-[#b6a98c]/10 px-3 py-1 text-xs text-[#e6dcc4]"
+                    >
+                      {CREDIT_LABELS[credit] || credit}
+                    </span>
+                  ))}
+                  {!project.credits?.length && project.tags?.slice(0, 2).map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-stone-300"
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </div>
 
-                {/* Expanded Content Area */}
-                <AnimatePresence>
-                  {isExpanded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: "circOut" }}
-                      className="overflow-hidden bg-black/20"
+                <h3 className="text-2xl font-semibold tracking-tight text-white">{project.title}</h3>
+                {project.artist && <p className="mt-1 text-sm text-[#b6a98c]">{project.artist}</p>}
+                <p className="mt-4 line-clamp-4 text-sm leading-7 text-stone-300">{project.description}</p>
+
+                <div className="mt-6 flex flex-wrap gap-3">
+                  {project.spotifyUrl && (
+                    <a
+                      href={project.spotifyUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rounded-full border border-white/15 px-4 py-2 text-sm text-stone-200 transition-colors hover:bg-white/10"
                     >
-                      <div className="p-4 md:p-8 border-t border-white/5 grid md:grid-cols-12 gap-8">
-                        
-                        {/* Left: Large Artwork & Stats */}
-                        <div className="md:col-span-4 lg:col-span-3 space-y-6">
-                           <div className="aspect-square w-full bg-white/5 rounded-sm overflow-hidden border border-white/10 shadow-2xl relative group/art">
-                              {project.artworkUrl ? (
-                                <img 
-                                  src={project.artworkUrl} 
-                                  alt={project.title} 
-                                  className="w-full h-full object-cover" 
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-gray-600">
-                                  <Music size={48} strokeWidth={1} />
-                                </div>
-                              )}
-                              
-                              {/* Spotify Overlay Button */}
-                              {project.spotifyUrl && (
-                                <a 
-                                  href={project.spotifyUrl}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="absolute inset-0 bg-black/60 opacity-0 group-hover/art:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white font-mono text-xs tracking-widest backdrop-blur-sm"
-                                >
-                                   <Play size={16} className="fill-white" /> OPEN SPOTIFY
-                                </a>
-                              )}
-                           </div>
-
-                           {/* Metadata Grid */}
-                           <div className="grid grid-cols-2 gap-4 text-[10px] font-mono text-gray-500">
-                              <div>
-                                <span className="block uppercase tracking-widest mb-1 text-gray-700">Released</span>
-                                <span className="text-gray-300">{project.createdAt ? new Date(project.createdAt).getFullYear() : 'N/A'}</span>
-                              </div>
-                              <div>
-                                <span className="block uppercase tracking-widest mb-1 text-gray-700">Genre</span>
-                                <span className="text-gray-300">{project.tags?.[0] || 'N/A'}</span>
-                              </div>
-                           </div>
-
-                           {/* Credits - By Lydskog */}
-                           {project.credits && project.credits.length > 0 && (
-                             <div className="pt-4 border-t border-white/10">
-                               <span className="block text-[10px] font-mono uppercase tracking-widest text-gray-700 mb-3">By Lydskog</span>
-                               <div className="flex flex-wrap gap-2">
-                                 {project.credits.map((credit) => (
-                                   <span 
-                                     key={credit}
-                                     className="text-[10px] font-mono px-2 py-1 bg-accent-green/10 text-accent-green border border-accent-green/20 rounded"
-                                   >
-                                     {CREDIT_LABELS[credit] || credit}
-                                   </span>
-                                 ))}
-                               </div>
-                             </div>
-                           )}
-                        </div>
-
-                        {/* Right: Content, Description & Media */}
-                        <div className="md:col-span-8 lg:col-span-9 space-y-8">
-                          
-                          {/* Description */}
-                          <div>
-                            <h3 className="text-white font-mono text-lg font-bold mb-4 flex items-center gap-3">
-                               ABOUT_PROJECT
-                               <div className="h-px flex-1 bg-white/10" />
-                            </h3>
-                            <p className="text-gray-400 text-sm md:text-base leading-relaxed font-light max-w-2xl">
-                              {project.description}
-                            </p>
-                          </div>
-
-                          {/* Media Embeds (YouTube / Spotify) */}
-                          <div className="grid gap-4">
-                            {/* YouTube Embed */}
-                            {youtubeId && (
-                                <div className="aspect-video w-full max-w-2xl bg-black rounded-sm overflow-hidden border border-white/10">
-                                    <iframe
-                                      src={`https://www.youtube.com/embed/${youtubeId}`}
-                                      title={project.title}
-                                      width="100%"
-                                      height="100%"
-                                      frameBorder="0"
-                                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                      allowFullScreen
-                                      className="w-full h-full"
-                                    />
-                                </div>
-                            )}
-
-                            {/* Spotify Embed */}
-                            {spotifyEmbedUrl && (
-                                <div className="w-full max-w-2xl">
-                                     <iframe 
-                                        style={{ borderRadius: '12px' }} 
-                                        src={spotifyEmbedUrl} 
-                                        width="100%" 
-                                        height="152" 
-                                        frameBorder="0" 
-                                        allowFullScreen 
-                                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                                        loading="lazy"
-                                        className="bg-transparent"
-                                     />
-                                </div>
-                            )}
-                          </div>
-
-                          {/* External Links */}
-                          <div className="flex flex-wrap gap-3 pt-4 border-t border-white/5">
-                            {project.youtubeUrl && (
-                              <a 
-                                href={project.youtubeUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-sm text-xs font-mono text-red-400 transition-colors"
-                              >
-                                <Youtube size={14} /> YOUTUBE
-                              </a>
-                            )}
-                            {project.websiteUrl && (
-                              <a 
-                                href={project.websiteUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-sm text-xs font-mono text-gray-300 transition-colors"
-                              >
-                                <ExternalLink size={14} /> VISIT WEBSITE
-                              </a>
-                            )}
-                            {project.spotifyUrl && (
-                              <a 
-                                href={project.spotifyUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="flex items-center gap-2 px-4 py-2 bg-[#1DB954]/10 hover:bg-[#1DB954]/20 border border-[#1DB954]/20 rounded-sm text-xs font-mono text-[#1DB954] transition-colors"
-                              >
-                                <Music size={14} /> SPOTIFY
-                              </a>
-                            )}
-                          </div>
-
-                        </div>
-                      </div>
-                    </motion.div>
+                      Spotify
+                    </a>
                   )}
-                </AnimatePresence>
-              </motion.div>
-            );
-          })}
+                  {project.websiteUrl && (
+                    <a
+                      href={project.websiteUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-sm text-stone-200 transition-colors hover:bg-white/10"
+                    >
+                      Nettside <ExternalLink size={14} />
+                    </a>
+                  )}
+                  {project.youtubeUrl && (
+                    <a
+                      href={project.youtubeUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rounded-full border border-white/15 px-4 py-2 text-sm text-stone-200 transition-colors hover:bg-white/10"
+                    >
+                      YouTube
+                    </a>
+                  )}
+                </div>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>

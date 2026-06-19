@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 
 export default function AboutSection() {
   const [content, setContent] = useState<Record<string, string>>({});
@@ -37,71 +36,50 @@ export default function AboutSection() {
 
   return (
     <section
-      className="relative py-24 md:py-32 overflow-hidden min-h-[80vh] flex items-center w-full"
+      className="relative flex min-h-[70vh] w-full items-center overflow-hidden bg-[#07100b] px-4 py-24 md:px-8 md:py-32"
       id="om"
     >
-      {/* Background Image with Overlay */}
       {bgImage && (
-        <div className="absolute inset-0 z-0 w-full h-full">
+        <div className="absolute inset-0 z-0 h-full w-full">
           <Image
             src={bgImage}
             alt="Background"
             fill
-            className="object-cover opacity-60"
+            className="object-cover opacity-30"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#050605]/90 via-[#050605]/60 to-[#050605]" />
-          <div className="absolute inset-0 backdrop-blur-[1px]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#07100b]/90 via-[#07100b]/75 to-[#07100b]" />
         </div>
       )}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute bottom-10 left-[-10%] h-80 w-80 rounded-full bg-[#4f6f52]/15 blur-3xl" />
+        <div className="absolute right-[-8%] top-10 h-72 w-72 rounded-full bg-[#8a6f4d]/10 blur-3xl" />
+      </div>
 
-      <div className="container mx-auto px-6 md:px-12 max-w-[1600px] relative z-10 w-full">
-        
-        {/* Section Label */}
-        <div className="flex items-center gap-4 mb-16 text-accent-warm/80 font-mono text-xs tracking-widest uppercase">
-          <span className="w-12 h-[1px] bg-accent-warm/50"></span>
-          [04] Studio — Bak Kulissene
-        </div>
-
-        <div className={`flex flex-col ${sideImage ? 'lg:flex-row' : ''} gap-16 lg:gap-24 items-start`}>
-          
-          {/* Text Content */}
-          <div className={`flex-1 w-full ${sideImage ? 'lg:w-3/5' : 'max-w-4xl'} space-y-12`}>
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
+      <div className="relative z-10 mx-auto w-full max-w-6xl">
+        <div className={`grid gap-8 ${sideImage ? 'lg:grid-cols-[1.1fr_0.9fr]' : ''} items-start`}>
+          <div className="rounded-[2rem] border border-white/10 bg-white/[0.06] p-8 shadow-2xl shadow-black/20 backdrop-blur-xl md:p-10">
+            <p className="mb-6 text-sm uppercase tracking-[0.35em] text-[#b6a98c]">Kort om</p>
+            <h2
               className={`
-                font-bold text-white leading-tight tracking-tighter
+                font-semibold text-white leading-tight tracking-tight
                 ${sizeClasses[titleSize]}
                 ${isMono ? 'font-mono' : 'font-sans'}
               `}
             >
               <span className="whitespace-pre-wrap block max-w-full break-words">{title}</span>
-            </motion.h2>
+            </h2>
 
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-              className="text-lg md:text-xl text-gray-300 font-light leading-relaxed whitespace-pre-wrap break-words max-w-full"
+            <div
+              className="mt-8 max-w-3xl whitespace-pre-wrap break-words text-lg font-light leading-8 text-stone-300 md:text-xl md:leading-9"
             >
               {text}
-            </motion.div>
+            </div>
           </div>
 
-          {/* Side Image (Optional) */}
           {sideImage && (
-            <div className="w-full lg:w-2/5">
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, ease: "circOut" }}
-                className="relative aspect-[3/4] rounded-sm overflow-hidden border border-white/10 shadow-2xl w-full"
-              >
+            <div className="w-full">
+              <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl">
                 <Image
                   src={sideImage}
                   alt="Om oss bilde"
@@ -109,12 +87,10 @@ export default function AboutSection() {
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 40vw"
                 />
-                {/* Subtle Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-              </motion.div>
+              </div>
             </div>
           )}
-
         </div>
       </div>
     </section>

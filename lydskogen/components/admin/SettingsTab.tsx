@@ -3,6 +3,33 @@
 import { useState, useEffect } from 'react';
 import { Trash2 } from 'lucide-react';
 
+const serviceSections = [
+  {
+    id: 'miksing',
+    label: 'Miksing',
+    title: 'Miksing',
+    eyebrow: 'Lyd som lander',
+    description:
+      'Ryddig miks med fokus på balanse, dybde og varme. For artister som vil at låten skal føles ferdig uten å miste uttrykket sitt.',
+  },
+  {
+    id: 'artwork',
+    label: 'Artwork',
+    title: 'Artwork',
+    eyebrow: 'Visuelt uttrykk',
+    description:
+      'Cover og visuelt materiale som henger sammen med lyden. Enkelt, stemningsfullt og tilpasset release, profil eller kampanje.',
+  },
+  {
+    id: 'artist-side',
+    label: 'Artist-side',
+    title: 'Artist-side',
+    eyebrow: 'Din egen profil',
+    description:
+      'En enkel nettside for artister med bio, utgivelser, lenker og kontakt. Et mer personlig hjem enn en standard lenkeside.',
+  },
+];
+
 export default function SettingsTab() {
   const [content, setContent] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
@@ -161,6 +188,85 @@ export default function SettingsTab() {
               </button>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Services Settings */}
+      <div className="bg-[#111] rounded-lg border border-white/10 p-6">
+        <h3 className="text-lg font-medium text-white mb-2">Tjenester</h3>
+        <p className="text-sm text-gray-500 mb-6">
+          Tekstene som vises i tjenestekortene på forsiden.
+        </p>
+
+        <div className="space-y-8">
+          {serviceSections.map((service) => {
+            const titleKey = `service_${service.id}_title`;
+            const eyebrowKey = `service_${service.id}_eyebrow`;
+            const descriptionKey = `service_${service.id}_description`;
+
+            return (
+              <div key={service.id} className="rounded-lg border border-white/10 bg-[#0a0a0a] p-5">
+                <div className="mb-5 flex items-center justify-between gap-4">
+                  <div>
+                    <h4 className="font-medium text-white">{service.label}</h4>
+                    <p className="text-xs text-gray-500">Rediger overskrift, undertittel og kort beskrivelse.</p>
+                  </div>
+                  {success?.startsWith(`service_${service.id}_`) && (
+                    <span className="text-xs text-green-400">Lagret</span>
+                  )}
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Tittel</label>
+                    <input
+                      type="text"
+                      value={content[titleKey] ?? service.title}
+                      onChange={(e) => setContent(prev => ({ ...prev, [titleKey]: e.target.value }))}
+                      className="w-full px-4 py-3 bg-black border border-white/10 rounded-md text-white focus:border-blue-500 outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Liten undertittel</label>
+                    <input
+                      type="text"
+                      value={content[eyebrowKey] ?? service.eyebrow}
+                      onChange={(e) => setContent(prev => ({ ...prev, [eyebrowKey]: e.target.value }))}
+                      className="w-full px-4 py-3 bg-black border border-white/10 rounded-md text-white focus:border-blue-500 outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Beskrivelse</label>
+                  <textarea
+                    value={content[descriptionKey] ?? service.description}
+                    onChange={(e) => setContent(prev => ({ ...prev, [descriptionKey]: e.target.value }))}
+                    rows={4}
+                    className="w-full px-4 py-3 bg-black border border-white/10 rounded-md text-white focus:border-blue-500 outline-none resize-y"
+                  />
+                </div>
+
+                <div className="mt-4 flex justify-end">
+                  <button
+                    onClick={async () => {
+                      await handleSave(titleKey, content[titleKey] ?? service.title, 'services', `${service.label} tittel`);
+                      await handleSave(eyebrowKey, content[eyebrowKey] ?? service.eyebrow, 'services', `${service.label} undertittel`);
+                      await handleSave(descriptionKey, content[descriptionKey] ?? service.description, 'services', `${service.label} beskrivelse`);
+                    }}
+                    disabled={
+                      saving === titleKey ||
+                      saving === eyebrowKey ||
+                      saving === descriptionKey
+                    }
+                    className="px-5 py-2.5 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {saving === titleKey || saving === eyebrowKey || saving === descriptionKey ? 'Lagrer...' : 'Lagre tjeneste'}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 

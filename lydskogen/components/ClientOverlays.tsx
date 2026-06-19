@@ -2,16 +2,17 @@
 
 import dynamic from 'next/dynamic';
 
-// Lazy load visual overlays to prevent chunk load errors and improve TTI
-const ParticleOverlay = dynamic(() => import("@/components/ParticleOverlay"), { ssr: false });
+// Keep the page texture subtle; heavier visual effects make the minimal design feel busy.
 const NoiseOverlay = dynamic(() => import("@/components/NoiseOverlay"), { ssr: false });
 
 export default function ClientOverlays() {
   return (
     <>
       <NoiseOverlay />
-      <ParticleOverlay />
     </>
   );
 }
+
+
+
 

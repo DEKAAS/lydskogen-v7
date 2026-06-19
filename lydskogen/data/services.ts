@@ -130,9 +130,9 @@ export const serviceSections: ServiceSection[] = [
     cards: [
       {
         id: 'artistpage',
-        title: 'Artistside / Linktree',
-        description: 'Profesjonell nettside for artister',
-        icon: '🔗',
+        title: 'Artist-side',
+        description: 'Enkel og profesjonell artistprofil',
+        icon: '✦',
         link: '/tjenester/artistside',
         category: 'projects',
         gradient: { from: '#3C2B4F', to: '#5C3D78' },
@@ -208,9 +208,9 @@ export const serviceDetails: Record<string, ServiceDetail> = {
   },
   artistside: {
     id: 'artistside',
-    title: 'Artistside / Linktree',
-    description: 'Profesjonell nettside som samler alle dine lenker og innhold på ett sted',
-    longDescription: 'En skreddersydd artistside fungerer som ditt digitale visittkort. Vi lager responsive nettsider som ser profesjonelle ut på alle enheter, med integrert hosting og domene.',
+    title: 'Artist-side',
+    description: 'Profesjonell artistprofil med bio, musikklenker, visuelt uttrykk og kontakt',
+    longDescription: 'En skreddersydd Artist-side fungerer som ditt digitale hjem. Vi lager en enkel og responsiv nettside som presenterer artistprofilen din tydelig på alle enheter, med integrert hosting og domene.',
     features: [
       'Responsivt design optimalisert for alle enheter',
       'Integrerte sosiale medier og strømmelenker',
