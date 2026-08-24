@@ -31,7 +31,7 @@ export default function HomeButton() {
   return (
     <motion.button
       onClick={scrollToTop}
-      className="fixed bottom-6 left-6 z-50 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white p-4 rounded-full shadow-xl hover:shadow-2xl transition-all duration-200 border border-green-400/30 relative overflow-hidden group"
+      className="group fixed bottom-6 left-6 z-50 overflow-hidden rounded-full border border-[#d8caa8] bg-[#f4efe4]/90 p-4 text-[#2d352b] shadow-lg shadow-[#8a7d62]/15 backdrop-blur transition-colors hover:bg-[#e7ddc9]"
       initial={{ opacity: 0, scale: 0 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0 }}

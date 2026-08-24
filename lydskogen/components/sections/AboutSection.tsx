@@ -36,7 +36,7 @@ export default function AboutSection() {
 
   return (
     <section
-      className="relative flex min-h-[70vh] w-full items-center overflow-hidden bg-[#07100b] px-4 py-24 md:px-8 md:py-32"
+      className="relative w-full overflow-hidden bg-[#f4efe4] px-5 text-[#1d241d]"
       id="om"
     >
       {bgImage && (
@@ -45,24 +45,20 @@ export default function AboutSection() {
             src={bgImage}
             alt="Background"
             fill
-            className="object-cover opacity-30"
+            className="object-cover opacity-[0.08]"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#07100b]/90 via-[#07100b]/75 to-[#07100b]" />
+          <div className="absolute inset-0 bg-[#f4efe4]/85" />
         </div>
       )}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute bottom-10 left-[-10%] h-80 w-80 rounded-full bg-[#4f6f52]/15 blur-3xl" />
-        <div className="absolute right-[-8%] top-10 h-72 w-72 rounded-full bg-[#8a6f4d]/10 blur-3xl" />
-      </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-6xl">
+      <div className="relative z-10 mx-auto w-full max-w-6xl border-t border-[#d8caa8] py-16 md:py-24">
         <div className={`grid gap-8 ${sideImage ? 'lg:grid-cols-[1.1fr_0.9fr]' : ''} items-start`}>
-          <div className="rounded-[2rem] border border-white/10 bg-white/[0.06] p-8 shadow-2xl shadow-black/20 backdrop-blur-xl md:p-10">
-            <p className="mb-6 text-sm uppercase tracking-[0.35em] text-[#b6a98c]">Kort om</p>
+          <div>
+            <p className="mb-6 text-sm uppercase tracking-[0.35em] text-[#8a7d62]">Kort om</p>
             <h2
               className={`
-                font-semibold text-white leading-tight tracking-tight
+                font-semibold text-[#1d241d] leading-tight tracking-tight
                 ${sizeClasses[titleSize]}
                 ${isMono ? 'font-mono' : 'font-sans'}
               `}
@@ -71,7 +67,7 @@ export default function AboutSection() {
             </h2>
 
             <div
-              className="mt-8 max-w-3xl whitespace-pre-wrap break-words text-lg font-light leading-8 text-stone-300 md:text-xl md:leading-9"
+              className="mt-8 max-w-3xl whitespace-pre-wrap break-words text-lg font-light leading-8 text-[#4f5749] md:text-xl md:leading-9"
             >
               {text}
             </div>
@@ -79,15 +75,14 @@ export default function AboutSection() {
 
           {sideImage && (
             <div className="w-full">
-              <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl">
+              <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[1.5rem] border border-[#d8caa8] bg-[#ded2ba] p-3">
                 <Image
                   src={sideImage}
                   alt="Om oss bilde"
                   fill
-                  className="object-cover"
+                  className="rounded-[1.1rem] object-cover p-3"
                   sizes="(max-width: 768px) 100vw, 40vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
               </div>
             </div>
           )}

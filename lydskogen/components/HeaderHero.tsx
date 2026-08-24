@@ -18,70 +18,64 @@ export default function HeaderHero() {
   }, []);
 
   return (
-    <section id="hero" className="hero-section relative min-h-screen overflow-hidden bg-[#07100b] px-4 py-6 text-stone-100 md:px-8">
-      <div 
-        className="absolute inset-0"
-        style={{
-          backgroundImage: 'url(/images/hero.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          opacity: 0.35
-        }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#07100b]/80 via-[#07100b]/75 to-[#07100b]" />
-      <div className="absolute left-[-10%] top-1/3 h-80 w-80 rounded-full bg-[#4f6f52]/20 blur-3xl" />
-      <div className="absolute bottom-10 right-[-8%] h-96 w-96 rounded-full bg-[#8a6f4d]/20 blur-3xl" />
-
-      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-3rem)] max-w-6xl flex-col">
-        <header className="flex items-center justify-between rounded-full border border-white/10 bg-white/[0.06] px-5 py-4 shadow-2xl shadow-black/10 backdrop-blur-xl">
-          <Link href="/" className="text-sm font-semibold uppercase tracking-[0.35em] text-stone-100">
+    <section id="hero" className="hero-section bg-[#f4efe4] px-5 text-[#1d241d]">
+      <div className="mx-auto flex min-h-screen max-w-6xl flex-col">
+        <header className="flex items-center justify-between py-6">
+          <Link href="/" className="text-sm font-semibold uppercase tracking-[0.35em] text-[#1d241d]">
             Lydskog
           </Link>
-          <nav className="hidden items-center gap-6 text-sm text-stone-300 md:flex">
-            <Link href="#services" className="transition-colors hover:text-white">
+          <nav className="hidden items-center gap-6 text-sm text-[#5c604f] md:flex">
+            <Link href="#services" className="transition-colors hover:text-[#1d241d]">
               Tjenester
             </Link>
-            <Link href="#projects" className="transition-colors hover:text-white">
+            <Link href="#projects" className="transition-colors hover:text-[#1d241d]">
               Prosjekter
             </Link>
-            <Link href="#om" className="transition-colors hover:text-white">
+            <Link href="#om" className="transition-colors hover:text-[#1d241d]">
               Om
             </Link>
-            <Link href="#contact" className="transition-colors hover:text-white">
+            <Link href="#contact" className="transition-colors hover:text-[#1d241d]">
               Kontakt
             </Link>
           </nav>
         </header>
 
-        <div className="flex flex-1 items-center py-24">
-          <div className="max-w-4xl rounded-[2rem] border border-white/10 bg-white/[0.07] p-8 shadow-2xl shadow-black/20 backdrop-blur-xl md:p-12">
-            <p className="mb-6 text-sm uppercase tracking-[0.35em] text-[#d8caa8]">
+        <div className="grid flex-1 items-center gap-12 py-16 lg:grid-cols-[1.2fr_0.8fr] lg:py-24">
+          <div>
+            <p className="mb-5 text-sm uppercase tracking-[0.35em] text-[#8a7d62]">
               Miksing · Artwork · Artist-side
             </p>
-            <h1 className="text-5xl font-semibold tracking-tight text-white md:text-7xl lg:text-8xl">
+            <h1 className="text-6xl font-semibold tracking-tight text-[#1d241d] md:text-8xl lg:text-9xl">
               Lydskog
             </h1>
-            <p className="mt-8 max-w-2xl text-lg leading-8 text-stone-200 md:text-2xl md:leading-10">
+            <p className="mt-7 max-w-2xl text-lg leading-8 text-[#4f5749] md:text-2xl md:leading-10">
               {tagline}
             </p>
-            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="#contact"
-                className="rounded-full bg-[#d8caa8] px-6 py-3 text-center text-sm font-semibold text-[#10180f] transition-colors hover:bg-white"
+                className="rounded-full bg-[#35412f] px-6 py-3 text-center text-sm font-semibold text-[#f8f3e8] transition-colors hover:bg-[#4f5749]"
               >
                 Start en samtale
               </Link>
               <Link
                 href="#services"
-                className="rounded-full border border-white/15 bg-white/10 px-6 py-3 text-center text-sm font-medium text-white backdrop-blur transition-colors hover:bg-white/15"
+                className="rounded-full border border-[#d8caa8] px-6 py-3 text-center text-sm font-medium text-[#2d352b] transition-colors hover:bg-[#e7ddc9]"
               >
                 Se tjenester
               </Link>
             </div>
-        </div>
+          </div>
+
+          <div className="border-l border-[#d8caa8] py-4 pl-8 lg:pl-12">
+            <p className="text-xs uppercase tracking-[0.3em] text-[#8a7d62]">Kreativt studio</p>
+            <p className="mt-5 max-w-sm text-2xl font-medium leading-9 text-[#2d352b]">
+              Lyd, visuell retning og artistprofil samlet i én rolig helhet.
+            </p>
+          </div>
         </div>
 
-        <div className="mb-6 flex flex-col justify-between gap-4 rounded-[1.5rem] border border-white/10 bg-black/15 px-5 py-4 text-sm text-stone-400 backdrop-blur md:flex-row">
+        <div className="mb-6 flex flex-col justify-between gap-4 border-t border-[#d8caa8] py-6 text-sm text-[#5c604f] md:flex-row">
           <span>Oslo, Norway</span>
           <span>Rolig design for lyd, bilde og artistprofiler</span>
         </div>

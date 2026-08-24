@@ -8,7 +8,7 @@ import HomeButton from '@/components/HomeButton';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#07100b] text-white">
+    <div className="min-h-screen bg-[#f4efe4] text-[#1d241d]">
       {/* Header Hero Section */}
       <HeaderHero />
 
@@ -25,7 +25,7 @@ export default function Home() {
       <ContactSection />
 
       {/* Footer */}
-      <div className="bg-[#07100b]">
+      <div className="bg-[#f4efe4]">
         <Footer />
       </div>
 
