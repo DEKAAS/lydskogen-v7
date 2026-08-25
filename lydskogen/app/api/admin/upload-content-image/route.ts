@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import sharp from 'sharp'
 
+const MAX_FILE_SIZE = 4 * 1024 * 1024
+
 export async function POST(request: NextRequest) {
   try {
     // Verify Supabase connection
@@ -15,6 +17,13 @@ export async function POST(request: NextRequest) {
 
     if (!file) {
       return NextResponse.json({ error: "No file received." }, { status: 400 })
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json({
+        error: "Image is too large",
+        details: "Bildet må være mindre enn 4 MB etter optimalisering."
+      }, { status: 413 })
     }
 
     // Validate file type

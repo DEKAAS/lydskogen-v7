@@ -8,6 +8,73 @@ const ARTWORK_SLOTS = Array.from(
   (_, index) => `artwork_showcase_${index + 1}`
 );
 
+const MAX_SOURCE_SIZE = 50 * 1024 * 1024;
+const TARGET_UPLOAD_SIZE = 3.5 * 1024 * 1024;
+const MAX_IMAGE_DIMENSION = 2400;
+
+const canvasToBlob = (
+  canvas: HTMLCanvasElement,
+  quality: number
+) => new Promise<Blob>((resolve, reject) => {
+  canvas.toBlob(
+    (blob) => blob ? resolve(blob) : reject(new Error('Kunne ikke optimalisere bildet')),
+    'image/webp',
+    quality
+  );
+});
+
+const prepareImageForUpload = async (file: File) => {
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+  if (!allowedTypes.includes(file.type)) {
+    throw new Error('Velg et bilde i JPG-, PNG- eller WebP-format.');
+  }
+
+  if (file.size > MAX_SOURCE_SIZE) {
+    throw new Error('Bildet er større enn 50 MB. Velg en mindre fil.');
+  }
+
+  if (file.size <= TARGET_UPLOAD_SIZE) {
+    return file;
+  }
+
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(
+    1,
+    MAX_IMAGE_DIMENSION / Math.max(bitmap.width, bitmap.height)
+  );
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+
+  const context = canvas.getContext('2d');
+  if (!context) {
+    bitmap.close();
+    throw new Error('Nettleseren kunne ikke behandle bildet.');
+  }
+
+  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+
+  let quality = 0.88;
+  let blob = await canvasToBlob(canvas, quality);
+
+  while (blob.size > TARGET_UPLOAD_SIZE && quality > 0.48) {
+    quality -= 0.1;
+    blob = await canvasToBlob(canvas, quality);
+  }
+
+  if (blob.size > TARGET_UPLOAD_SIZE) {
+    throw new Error('Bildet kunne ikke komprimeres nok. Prøv en mindre fil.');
+  }
+
+  const baseName = file.name.replace(/\.[^.]+$/, '');
+  return new File([blob], `${baseName}.webp`, {
+    type: 'image/webp',
+    lastModified: Date.now(),
+  });
+};
+
 export default function MediaTab() {
   const [content, setContent] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
@@ -48,18 +115,29 @@ export default function MediaTab() {
     setWorkingKey(key);
 
     try {
+      const preparedFile = await prepareImageForUpload(file);
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', preparedFile);
       formData.append('key', key);
 
       const uploadResponse = await fetch('/api/admin/upload-content-image', {
         method: 'POST',
         body: formData,
       });
-      const uploadData = await uploadResponse.json();
+      const responseText = await uploadResponse.text();
+      let uploadData: { url?: string; error?: string; details?: string } = {};
+
+      try {
+        uploadData = responseText ? JSON.parse(responseText) : {};
+      } catch {
+        if (uploadResponse.status === 413 || responseText.includes('Request Entity Too Large')) {
+          throw new Error('Bildet er fortsatt for stort etter optimalisering.');
+        }
+        throw new Error('Serveren returnerte et ugyldig svar. Prøv igjen.');
+      }
 
       if (!uploadResponse.ok || !uploadData.url) {
-        throw new Error(uploadData.error || 'Kunne ikke laste opp bildet');
+        throw new Error(uploadData.details || uploadData.error || 'Kunne ikke laste opp bildet');
       }
 
       const previousUrl = content[key];
