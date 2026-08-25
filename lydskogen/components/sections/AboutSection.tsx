@@ -17,8 +17,14 @@ export default function AboutSection() {
 
   const title = content['about_title'] || 'HVEM ER LYDSKOG';
   const text = content['about_content'] || 'Lydskog er et kreativt studio som tilbyr profesjonelle lyd- og designtjenester for artister og skapere.\n\nMed fokus på kvalitet og personlig tilnærming hjelper vi deg med å løfte dine prosjekter til et nytt nivå.';
-  const bgImage = content['about_bg_image']; // Optional background
-  const sideImage = content['about_side_image']; // Optional side image
+  const legacyImages = [content['about_side_image'], content['about_bg_image']].filter(Boolean);
+  const configuredImages = Array.from(
+    { length: 6 },
+    (_, index) => content[`about_gallery_${index + 1}`]
+  ).filter(Boolean);
+  const aboutImages = configuredImages.length > 0
+    ? configuredImages
+    : Array.from(new Set(legacyImages));
   
   const titleSize = content['about_title_size'] || 'medium';
   const isMono = content['about_title_mono'] === 'true';
@@ -39,21 +45,8 @@ export default function AboutSection() {
       className="relative w-full overflow-hidden bg-[#f4efe4] px-5 text-[#1d241d]"
       id="om"
     >
-      {bgImage && (
-        <div className="absolute inset-0 z-0 h-full w-full">
-          <Image
-            src={bgImage}
-            alt="Background"
-            fill
-            className="object-cover opacity-[0.08]"
-            priority
-          />
-          <div className="absolute inset-0 bg-[#f4efe4]/85" />
-        </div>
-      )}
-
       <div className="relative z-10 mx-auto w-full max-w-6xl border-t border-[#d8caa8] py-16 md:py-24">
-        <div className={`grid gap-8 ${sideImage ? 'lg:grid-cols-[1.1fr_0.9fr]' : ''} items-start`}>
+        <div className={`grid gap-10 ${aboutImages.length > 0 ? 'lg:grid-cols-[0.9fr_1.1fr]' : ''} items-start`}>
           <div>
             <p className="mb-6 text-sm uppercase tracking-[0.35em] text-[#8a7d62]">Kort om</p>
             <h2
@@ -73,17 +66,28 @@ export default function AboutSection() {
             </div>
           </div>
 
-          {sideImage && (
-            <div className="w-full">
-              <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[1.5rem] border border-[#d8caa8] bg-[#ded2ba] p-3">
-                <Image
-                  src={sideImage}
-                  alt="Om oss bilde"
-                  fill
-                  className="rounded-[1.1rem] object-cover p-3"
-                  sizes="(max-width: 768px) 100vw, 40vw"
-                />
-              </div>
+          {aboutImages.length > 0 && (
+            <div className="grid grid-cols-2 gap-3">
+              {aboutImages.map((image, index) => (
+                <div
+                  key={`${image}-${index}`}
+                  className={`relative overflow-hidden rounded-[1.25rem] border border-[#d8caa8] bg-[#ded2ba] ${
+                    aboutImages.length === 1
+                      ? 'col-span-2 aspect-[4/3]'
+                      : index === 0 && aboutImages.length % 2 === 1
+                        ? 'col-span-2 aspect-[16/9]'
+                        : 'aspect-square'
+                  }`}
+                >
+                  <Image
+                    src={image}
+                    alt={`Om Lydskog ${index + 1}`}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 50vw, 30vw"
+                  />
+                </div>
+              ))}
             </div>
           )}
         </div>

@@ -23,4 +23,3 @@ CREATE POLICY "Public read access" ON site_content
 -- Policy: Admin write access (service role only for now, or admin user)
 CREATE POLICY "Admin write access" ON site_content
   FOR ALL USING (true) WITH CHECK (true); -- Adjust this if you have strict RLS auth
-

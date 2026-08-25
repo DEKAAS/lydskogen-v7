@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import AdminNavbar from '@/components/AdminNavbar'
 import OverviewTab from '@/components/admin/OverviewTab'
 import ProjectsTab from '@/components/admin/ProjectsTab'
+import MediaTab from '@/components/admin/MediaTab'
 import SettingsTab from '@/components/admin/SettingsTab'
 
 export default function AdminDashboard() {
@@ -39,6 +40,8 @@ export default function AdminDashboard() {
         return <OverviewTab />
       case 'projects':
         return <ProjectsTab />
+      case 'media':
+        return <MediaTab />
       case 'settings':
         return <SettingsTab />
       default:

@@ -6,6 +6,17 @@ const ALLOWED_GENRES = ['ambient', 'hiphop', 'lofi', 'soundscape']
 
 export async function POST(request: NextRequest) {
   try {
+    // Verify Supabase connection and environment variables
+    if (!supabaseAdmin) {
+      console.error('Supabase admin client not initialized')
+      return NextResponse.json({ error: "Server configuration error: Supabase client not initialized" }, { status: 500 })
+    }
+
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error('Missing Supabase environment variables')
+      return NextResponse.json({ error: "Server configuration error: Missing Supabase credentials" }, { status: 500 })
+    }
+
     const data = await request.formData()
     const file: File | null = data.get('file') as unknown as File
     const genreId = data.get('genreId') as string
@@ -15,7 +26,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!genreId || !ALLOWED_GENRES.includes(genreId)) {
-      return NextResponse.json({ error: "Invalid genre ID" }, { status: 400 })
+      return NextResponse.json({ error: `Invalid genre ID. Must be one of: ${ALLOWED_GENRES.join(', ')}` }, { status: 400 })
     }
 
     // Validate file type (image files)
@@ -29,13 +40,22 @@ export async function POST(request: NextRequest) {
 
     // Process image with Sharp for optimization
     // Resize to 1920x1080 (16:9) maintaining aspect ratio, fit inside
-    const processedBuffer = await sharp(buffer)
-      .resize(1920, 1080, { 
-        fit: 'cover',
-        position: 'center'
-      })
-      .jpeg({ quality: 85 })
-      .toBuffer()
+    let processedBuffer: Buffer
+    try {
+      processedBuffer = await sharp(buffer)
+        .resize(1920, 1080, {
+          fit: 'cover',
+          position: 'center'
+        })
+        .jpeg({ quality: 85 })
+        .toBuffer()
+    } catch (sharpError) {
+      console.error('Sharp processing error:', sharpError)
+      return NextResponse.json({
+        error: "Failed to process image",
+        details: sharpError instanceof Error ? sharpError.message : 'Unknown image processing error'
+      }, { status: 500 })
+    }
 
     // Create filename with timestamp to avoid conflicts
     const timestamp = Date.now()
@@ -61,32 +81,74 @@ export async function POST(request: NextRequest) {
       .getPublicUrl(filename)
 
     // Upsert record in database (update if exists, insert if not)
-    const { data: backgroundData, error: dbError } = await supabaseAdmin
+    // First check if record exists
+    const { data: existing, error: checkError } = await supabaseAdmin
       .from('genre_backgrounds')
-      .upsert({
-        genre_id: genreId,
-        background_image_url: urlData.publicUrl
-      }, {
-        onConflict: 'genre_id'
-      })
-      .select()
-      .single()
+      .select('id')
+      .eq('genre_id', genreId)
+      .maybeSingle()
 
-    if (dbError) {
-      console.error('Database error:', dbError)
-      // Try to clean up uploaded file
-      await supabaseAdmin.storage.from('artwork-images').remove([filename])
-      return NextResponse.json({ error: "Failed to save background metadata" }, { status: 500 })
+    if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows returned, which is fine
+      console.error('Error checking existing record:', checkError)
     }
 
-    return NextResponse.json({ 
+    let backgroundData
+    let dbError
+
+    if (existing) {
+      // Update existing record
+      const { data, error } = await supabaseAdmin
+        .from('genre_backgrounds')
+        .update({
+          background_image_url: urlData.publicUrl
+        })
+        .eq('genre_id', genreId)
+        .select()
+        .single()
+      backgroundData = data
+      dbError = error
+    } else {
+      // Insert new record
+      const { data, error } = await supabaseAdmin
+        .from('genre_backgrounds')
+        .insert({
+          genre_id: genreId,
+          background_image_url: urlData.publicUrl
+        })
+        .select()
+        .single()
+      backgroundData = data
+      dbError = error
+    }
+
+    if (dbError) {
+      console.error('Database error details:', {
+        message: dbError.message,
+        details: dbError.details,
+        hint: dbError.hint,
+        code: dbError.code
+      })
+      // Try to clean up uploaded file
+      await supabaseAdmin.storage.from('artwork-images').remove([filename])
+      return NextResponse.json({
+        error: "Failed to save background metadata",
+        details: dbError.message || 'Unknown database error',
+        code: dbError.code
+      }, { status: 500 })
+    }
+
+    return NextResponse.json({
       message: "Background image uploaded successfully",
       background: backgroundData
     })
 
   } catch (error) {
     console.error("Error uploading background image:", error)
-    return NextResponse.json({ error: "Error uploading background image" }, { status: 500 })
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+    return NextResponse.json({
+      error: "Error uploading background image",
+      details: errorMessage
+    }, { status: 500 })
   }
 }
 

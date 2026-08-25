@@ -25,5 +25,3 @@ ALTER TABLE login_attempts ENABLE ROW LEVEL SECURITY;
 -- Policy: Only service role can insert/read login attempts
 CREATE POLICY "Service role can manage login_attempts" ON login_attempts
   FOR ALL USING (true) WITH CHECK (true);
-
-

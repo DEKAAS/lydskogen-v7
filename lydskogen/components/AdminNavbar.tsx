@@ -12,6 +12,7 @@ interface AdminNavbarProps {
 const navItems = [
   { id: 'overview', label: 'Oversikt' },
   { id: 'projects', label: 'Prosjekter' },
+  { id: 'media', label: 'Media' },
   { id: 'settings', label: 'Innstillinger' }
 ]
 

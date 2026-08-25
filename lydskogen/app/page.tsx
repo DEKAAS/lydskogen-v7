@@ -5,12 +5,15 @@ import AboutSection from '@/components/sections/AboutSection';
 import ContactSection from '@/components/sections/ContactSection';
 import Footer from '@/components/Footer';
 import HomeButton from '@/components/HomeButton';
+import OrganicDivider from '@/components/OrganicDivider';
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#f4efe4] text-[#1d241d]">
       {/* Header Hero Section */}
       <HeaderHero />
+
+      <OrganicDivider />
 
       {/* Services Section */}
       <ServicesSection />

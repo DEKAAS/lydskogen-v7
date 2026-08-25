@@ -3,7 +3,6 @@ import { Inter, Space_Mono } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/components/AuthProvider";
 import AnalyticsProvider from "@/components/AnalyticsProvider";
-import { CartProvider } from "@/contexts/CartContext";
 import ClientOverlays from "@/components/ClientOverlays";
 
 const inter = Inter({
@@ -69,15 +68,13 @@ export default function RootLayout({
     <html lang="no" className="scroll-smooth">
       <body className={`${inter.variable} ${spaceMono.variable} font-sans antialiased text-white`}>
         <ClientOverlays />
-        <CartProvider>
-          <AuthProvider>
-            <AnalyticsProvider>
-              <main>
-              {children}
-              </main>
-            </AnalyticsProvider>
-          </AuthProvider>
-        </CartProvider>
+        <AuthProvider>
+          <AnalyticsProvider>
+            <main>
+            {children}
+            </main>
+          </AnalyticsProvider>
+        </AuthProvider>
       </body>
     </html>
   );

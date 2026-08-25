@@ -40,8 +40,8 @@ export default function HeaderHero() {
           </nav>
         </header>
 
-        <div className="grid flex-1 items-center gap-12 py-16 lg:grid-cols-[1.2fr_0.8fr] lg:py-24">
-          <div>
+        <div className="flex flex-1 items-center py-16 lg:py-24">
+          <div className="max-w-4xl">
             <p className="mb-5 text-sm uppercase tracking-[0.35em] text-[#8a7d62]">
               Miksing · Artwork · Artist-side
             </p>
@@ -66,18 +66,6 @@ export default function HeaderHero() {
               </Link>
             </div>
           </div>
-
-          <div className="border-l border-[#d8caa8] py-4 pl-8 lg:pl-12">
-            <p className="text-xs uppercase tracking-[0.3em] text-[#8a7d62]">Kreativt studio</p>
-            <p className="mt-5 max-w-sm text-2xl font-medium leading-9 text-[#2d352b]">
-              Lyd, visuell retning og artistprofil samlet i én rolig helhet.
-            </p>
-          </div>
-        </div>
-
-        <div className="mb-6 flex flex-col justify-between gap-4 border-t border-[#d8caa8] py-6 text-sm text-[#5c604f] md:flex-row">
-          <span>Oslo, Norway</span>
-          <span>Rolig design for lyd, bilde og artistprofiler</span>
         </div>
       </div>
     </section>

@@ -9,10 +9,14 @@ CREATE TABLE IF NOT EXISTS public.genre_backgrounds (
 
 ALTER TABLE public.genre_backgrounds ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY IF NOT EXISTS "Allow public read access on genre_backgrounds"
+-- Drop policies if they exist, then create them
+DROP POLICY IF EXISTS "Allow public read access on genre_backgrounds" ON public.genre_backgrounds;
+CREATE POLICY "Allow public read access on genre_backgrounds"
   ON public.genre_backgrounds FOR SELECT USING (true);
 
-CREATE POLICY IF NOT EXISTS "Allow all operations for service role on genre_backgrounds"
+-- Service role should bypass RLS automatically, but we add explicit policy for safety
+DROP POLICY IF EXISTS "Allow all operations for service role on genre_backgrounds" ON public.genre_backgrounds;
+CREATE POLICY "Allow all operations for service role on genre_backgrounds"
   ON public.genre_backgrounds FOR ALL USING (auth.role() = 'service_role');
 
 CREATE INDEX IF NOT EXISTS idx_genre_backgrounds_genre_id

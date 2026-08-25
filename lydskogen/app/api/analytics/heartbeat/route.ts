@@ -20,6 +20,11 @@ function getDeviceType(userAgent: string): 'desktop' | 'mobile' | 'tablet' {
 
 export async function POST(request: NextRequest) {
   try {
+    if (!supabaseAdmin) {
+      console.error('Supabase admin client not initialized')
+      return NextResponse.json({ error: 'Database not configured' }, { status: 500 })
+    }
+
     const { sessionId, pageUrl } = await request.json()
     
     if (!sessionId || !pageUrl) {

@@ -27,5 +27,3 @@ CREATE POLICY "Allow service role full access on site_visits" ON public.site_vis
 CREATE INDEX IF NOT EXISTS idx_site_visits_created_at ON public.site_visits(created_at);
 CREATE INDEX IF NOT EXISTS idx_site_visits_page_path ON public.site_visits(page_path);
 CREATE INDEX IF NOT EXISTS idx_site_visits_session_id ON public.site_visits(session_id);
-
-
